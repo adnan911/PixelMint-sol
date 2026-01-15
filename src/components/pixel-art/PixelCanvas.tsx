@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { usePixelCanvas } from "@/hooks/use-pixel-canvas";
 import type { CanvasGrid, Tool, Color } from "@/types/pixel-art";
 import { floodFill } from "@/utils/canvas-utils";
@@ -13,7 +13,6 @@ interface PixelCanvasProps {
 }
 
 const GRID_SIZE = 32;
-const PIXEL_SIZE = 16; // 16px per pixel = 512px total canvas
 
 export const PixelCanvas: React.FC<PixelCanvasProps> = ({
   canvasGrid,
@@ -23,21 +22,46 @@ export const PixelCanvas: React.FC<PixelCanvasProps> = ({
   onPixelChange,
   onColorPick,
 }) => {
+  const [isDrawing, setIsDrawing] = useState(false);
+  const [pixelSize, setPixelSize] = useState(16);
+  const containerRef = useRef<HTMLDivElement>(null);
+
   const canvasRef = usePixelCanvas({
     canvasGrid,
     gridSize: GRID_SIZE,
-    pixelSize: PIXEL_SIZE,
+    pixelSize,
     showGrid,
   });
-  const [isDrawing, setIsDrawing] = useState(false);
 
-  const getPixelCoords = (e: React.MouseEvent<HTMLCanvasElement>) => {
+  // Calculate optimal pixel size based on container
+  useEffect(() => {
+    const updateSize = () => {
+      if (containerRef.current) {
+        const container = containerRef.current;
+        const containerWidth = container.clientWidth;
+        const containerHeight = container.clientHeight;
+        
+        // Calculate max pixel size that fits in container with padding
+        const maxWidth = Math.floor((containerWidth - 32) / GRID_SIZE);
+        const maxHeight = Math.floor((containerHeight - 32) / GRID_SIZE);
+        const newPixelSize = Math.min(maxWidth, maxHeight, 16);
+        
+        setPixelSize(Math.max(newPixelSize, 8)); // Minimum 8px per pixel
+      }
+    };
+
+    updateSize();
+    window.addEventListener("resize", updateSize);
+    return () => window.removeEventListener("resize", updateSize);
+  }, []);
+
+  const getPixelCoords = (clientX: number, clientY: number) => {
     const canvas = canvasRef.current;
     if (!canvas) return null;
 
     const rect = canvas.getBoundingClientRect();
-    const x = Math.floor((e.clientX - rect.left) / PIXEL_SIZE);
-    const y = Math.floor((e.clientY - rect.top) / PIXEL_SIZE);
+    const x = Math.floor((clientX - rect.left) / pixelSize);
+    const y = Math.floor((clientY - rect.top) / pixelSize);
 
     if (x >= 0 && x < GRID_SIZE && y >= 0 && y < GRID_SIZE) {
       return { x, y };
@@ -45,8 +69,8 @@ export const PixelCanvas: React.FC<PixelCanvasProps> = ({
     return null;
   };
 
-  const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    const coords = getPixelCoords(e);
+  const handleStart = (clientX: number, clientY: number) => {
+    const coords = getPixelCoords(clientX, clientY);
     if (!coords) return;
 
     const { x, y } = coords;
@@ -69,20 +93,20 @@ export const PixelCanvas: React.FC<PixelCanvasProps> = ({
 
     // Start drawing for pencil/eraser
     setIsDrawing(true);
-    handleDraw(e);
+    handleDraw(clientX, clientY);
   };
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+  const handleMove = (clientX: number, clientY: number) => {
     if (!isDrawing) return;
-    handleDraw(e);
+    handleDraw(clientX, clientY);
   };
 
-  const handleMouseUp = () => {
+  const handleEnd = () => {
     setIsDrawing(false);
   };
 
-  const handleDraw = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    const coords = getPixelCoords(e);
+  const handleDraw = (clientX: number, clientY: number) => {
+    const coords = getPixelCoords(clientX, clientY);
     if (!coords) return;
 
     const { x, y } = coords;
@@ -100,17 +124,57 @@ export const PixelCanvas: React.FC<PixelCanvasProps> = ({
     }
   };
 
+  // Mouse events
+  const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    e.preventDefault();
+    handleStart(e.clientX, e.clientY);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    handleMove(e.clientX, e.clientY);
+  };
+
+  const handleMouseUp = () => {
+    handleEnd();
+  };
+
+  // Touch events
+  const handleTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    e.preventDefault();
+    if (e.touches.length > 0) {
+      const touch = e.touches[0];
+      handleStart(touch.clientX, touch.clientY);
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    e.preventDefault();
+    if (e.touches.length > 0) {
+      const touch = e.touches[0];
+      handleMove(touch.clientX, touch.clientY);
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    e.preventDefault();
+    handleEnd();
+  };
+
   return (
-    <div className="flex items-center justify-center p-4">
+    <div ref={containerRef} className="w-full h-full flex items-center justify-center">
       <canvas
         ref={canvasRef}
-        width={GRID_SIZE * PIXEL_SIZE}
-        height={GRID_SIZE * PIXEL_SIZE}
+        width={GRID_SIZE * pixelSize}
+        height={GRID_SIZE * pixelSize}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
-        className="border-2 border-border cursor-crosshair rounded-sm shadow-lg bg-card"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchEnd}
+        className="border-2 border-border cursor-crosshair rounded-sm shadow-lg bg-card touch-none"
         style={{
           imageRendering: "pixelated",
           backgroundImage:

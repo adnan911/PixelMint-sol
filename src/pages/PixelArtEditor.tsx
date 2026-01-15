@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { PixelCanvas } from "@/components/pixel-art/PixelCanvas";
 import { Toolbar } from "@/components/pixel-art/Toolbar";
 import { ColorPicker } from "@/components/pixel-art/ColorPicker";
@@ -7,7 +7,16 @@ import { useHistory } from "@/hooks/use-history";
 import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts";
 import { createEmptyCanvas } from "@/utils/canvas-utils";
 import type { Tool, Color, CanvasGrid } from "@/types/pixel-art";
-import { Palette } from "lucide-react";
+import { Palette, Settings, Undo2, Redo2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 const CANVAS_SIZE = 32;
 
@@ -15,6 +24,8 @@ export default function PixelArtEditor() {
   const [currentTool, setCurrentTool] = useState<Tool>("pencil");
   const [currentColor, setCurrentColor] = useState<Color>("#000000");
   const [showGrid, setShowGrid] = useState(true);
+  const [controlsOpen, setControlsOpen] = useState(false);
+  const [colorsOpen, setColorsOpen] = useState(false);
 
   const {
     state: canvasGrid,
@@ -32,12 +43,13 @@ export default function PixelArtEditor() {
 
   const handleColorPick = (color: Color) => {
     setCurrentColor(color);
-    setCurrentTool("pencil"); // Switch back to pencil after picking color
+    setCurrentTool("pencil");
   };
 
   const handleClear = () => {
     setCanvasGrid(createEmptyCanvas(CANVAS_SIZE));
     clearHistory();
+    setControlsOpen(false);
   };
 
   const handleToggleGrid = () => {
@@ -53,76 +65,156 @@ export default function PixelArtEditor() {
     canRedo,
   });
 
+  // Prevent body scroll on mobile
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    document.body.style.position = "fixed";
+    document.body.style.width = "100%";
+    document.body.style.height = "100%";
+    
+    return () => {
+      document.body.style.overflow = "";
+      document.body.style.position = "";
+      document.body.style.width = "";
+      document.body.style.height = "";
+    };
+  }, []);
+
   return (
-    <div className="min-h-screen w-full bg-background">
+    <div className="fixed inset-0 flex flex-col bg-background overflow-hidden">
       {/* Header */}
-      <header className="border-b border-border bg-card">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary text-primary-foreground">
-              <Palette className="h-6 w-6" />
+      <header className="flex-shrink-0 border-b border-border bg-card px-4 py-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary text-primary-foreground">
+              <Palette className="h-5 w-5" />
             </div>
-            <div>
-              <h1 className="text-2xl font-bold text-foreground">
-                Pixel Art Editor
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                Create beautiful pixel art in your browser
-              </p>
-            </div>
+            <h1 className="text-lg font-bold text-foreground">
+              Pixel Art
+            </h1>
+          </div>
+          
+          {/* Quick Actions */}
+          <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={undo}
+              disabled={!canUndo}
+              className="h-9 w-9"
+              aria-label="Undo"
+            >
+              <Undo2 className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={redo}
+              disabled={!canRedo}
+              className="h-9 w-9"
+              aria-label="Redo"
+            >
+              <Redo2 className="h-4 w-4" />
+            </Button>
+            
+            <Sheet open={controlsOpen} onOpenChange={setControlsOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-9 w-9">
+                  <Settings className="h-5 w-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[300px] overflow-y-auto">
+                <SheetHeader>
+                  <SheetTitle>Controls</SheetTitle>
+                  <SheetDescription>
+                    Manage your canvas and export your artwork
+                  </SheetDescription>
+                </SheetHeader>
+                <div className="mt-6">
+                  <Controls
+                    canvasGrid={canvasGrid}
+                    canvasSize={CANVAS_SIZE}
+                    showGrid={showGrid}
+                    canUndo={canUndo}
+                    canRedo={canRedo}
+                    onUndo={undo}
+                    onRedo={redo}
+                    onClear={handleClear}
+                    onToggleGrid={handleToggleGrid}
+                  />
+                </div>
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 xl:grid-cols-[auto_1fr_auto] gap-6 items-start">
-          {/* Left Sidebar - Tools */}
-          <div className="xl:sticky xl:top-8">
+      {/* Canvas Area */}
+      <div className="flex-1 flex items-center justify-center overflow-hidden p-2 @container">
+        <div className="w-full h-full flex items-center justify-center">
+          <PixelCanvas
+            canvasGrid={canvasGrid}
+            currentTool={currentTool}
+            currentColor={currentColor}
+            showGrid={showGrid}
+            onPixelChange={handlePixelChange}
+            onColorPick={handleColorPick}
+          />
+        </div>
+      </div>
+
+      {/* Bottom Toolbar */}
+      <div className="flex-shrink-0 border-t border-border bg-card">
+        <div className="px-4 py-3 space-y-3">
+          {/* Color Selector */}
+          <div className="flex items-center gap-2">
+            <div
+              className="w-12 h-12 border-2 border-border rounded flex-shrink-0 shadow-sm"
+              style={{
+                backgroundColor:
+                  currentColor === "transparent" ? "#fff" : currentColor,
+                backgroundImage:
+                  currentColor === "transparent"
+                    ? "linear-gradient(45deg, hsl(var(--muted)) 25%, transparent 25%, transparent 75%, hsl(var(--muted)) 75%, hsl(var(--muted))), linear-gradient(45deg, hsl(var(--muted)) 25%, transparent 25%, transparent 75%, hsl(var(--muted)) 75%, hsl(var(--muted)))"
+                    : "none",
+                backgroundSize: "8px 8px",
+                backgroundPosition: "0 0, 4px 4px",
+              }}
+            />
+            
+            <Sheet open={colorsOpen} onOpenChange={setColorsOpen}>
+              <SheetTrigger asChild>
+                <Button variant="outline" className="flex-1 h-12">
+                  <Palette className="h-4 w-4 mr-2" />
+                  Choose Color
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="bottom" className="h-[80vh] overflow-y-auto">
+                <SheetHeader>
+                  <SheetTitle>Color Picker</SheetTitle>
+                  <SheetDescription>
+                    Select a color for drawing
+                  </SheetDescription>
+                </SheetHeader>
+                <div className="mt-6">
+                  <ColorPicker
+                    currentColor={currentColor}
+                    onColorChange={(color) => {
+                      setCurrentColor(color);
+                      setColorsOpen(false);
+                    }}
+                  />
+                </div>
+              </SheetContent>
+            </Sheet>
+          </div>
+
+          {/* Tools */}
+          <div className="flex justify-center">
             <Toolbar currentTool={currentTool} onToolChange={setCurrentTool} />
           </div>
-
-          {/* Center - Canvas */}
-          <div className="flex flex-col items-center gap-4">
-            <PixelCanvas
-              canvasGrid={canvasGrid}
-              currentTool={currentTool}
-              currentColor={currentColor}
-              showGrid={showGrid}
-              onPixelChange={handlePixelChange}
-              onColorPick={handleColorPick}
-            />
-          </div>
-
-          {/* Right Sidebar - Colors & Controls */}
-          <div className="xl:sticky xl:top-8 flex flex-col gap-4">
-            <ColorPicker
-              currentColor={currentColor}
-              onColorChange={setCurrentColor}
-            />
-            <Controls
-              canvasGrid={canvasGrid}
-              canvasSize={CANVAS_SIZE}
-              showGrid={showGrid}
-              canUndo={canUndo}
-              canRedo={canRedo}
-              onUndo={undo}
-              onRedo={redo}
-              onClear={handleClear}
-              onToggleGrid={handleToggleGrid}
-            />
-          </div>
         </div>
-      </main>
-
-      {/* Footer */}
-      <footer className="border-t border-border bg-card mt-12">
-        <div className="container mx-auto px-4 py-6">
-          <p className="text-center text-sm text-muted-foreground">
-            © 2026 Pixel Art Editor. Create, export, and share your pixel art.
-          </p>
-        </div>
-      </footer>
+      </div>
     </div>
   );
 }

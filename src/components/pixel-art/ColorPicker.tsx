@@ -32,17 +32,15 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({
   onColorChange,
 }) => {
   return (
-    <div className="flex flex-col gap-4 p-4 bg-card border border-border rounded-lg shadow-md">
-      <h3 className="text-sm font-semibold text-foreground">Colors</h3>
-
+    <div className="flex flex-col gap-4">
       {/* Current Color Display */}
       <div className="flex flex-col gap-2">
-        <Label htmlFor="current-color" className="text-xs">
+        <Label htmlFor="current-color" className="text-sm font-medium">
           Current Color
         </Label>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <div
-            className="w-12 h-12 border-2 border-border rounded flex-shrink-0"
+            className="w-16 h-16 border-2 border-border rounded flex-shrink-0 shadow-sm"
             style={{
               backgroundColor:
                 currentColor === "transparent" ? "#fff" : currentColor,
@@ -59,7 +57,7 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({
             type="text"
             value={currentColor}
             onChange={(e) => onColorChange(e.target.value)}
-            className="text-xs font-mono"
+            className="text-sm font-mono h-12"
             placeholder="#RRGGBB"
           />
         </div>
@@ -67,16 +65,16 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({
 
       {/* Color Palette */}
       <div className="flex flex-col gap-2">
-        <Label className="text-xs">Palette</Label>
-        <div className="grid grid-cols-4 gap-2">
+        <Label className="text-sm font-medium">Palette</Label>
+        <div className="grid grid-cols-4 gap-3">
           {DEFAULT_PALETTE.map((color, index) => (
             <button
               key={`${color}-${index}`}
               type="button"
               onClick={() => onColorChange(color)}
-              className={`w-10 h-10 border-2 rounded transition-all hover:scale-110 ${
+              className={`w-full aspect-square border-2 rounded-lg transition-all hover:scale-105 active:scale-95 ${
                 currentColor === color
-                  ? "border-primary ring-2 ring-primary ring-offset-2 ring-offset-background scale-110"
+                  ? "border-primary ring-2 ring-primary ring-offset-2 ring-offset-background scale-105"
                   : "border-border"
               }`}
               style={{
@@ -87,6 +85,7 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({
                     : "none",
                 backgroundSize: "8px 8px",
                 backgroundPosition: "0 0, 4px 4px",
+                minHeight: "48px",
               }}
               aria-label={`Select color ${color}`}
             />
@@ -96,7 +95,7 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({
 
       {/* HTML5 Color Picker */}
       <div className="flex flex-col gap-2">
-        <Label htmlFor="color-picker" className="text-xs">
+        <Label htmlFor="color-picker" className="text-sm font-medium">
           Custom Color
         </Label>
         <input
@@ -104,7 +103,7 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({
           type="color"
           value={currentColor === "transparent" ? "#FFFFFF" : currentColor}
           onChange={(e) => onColorChange(e.target.value)}
-          className="w-full h-10 cursor-pointer rounded border-2 border-border"
+          className="w-full h-14 cursor-pointer rounded-lg border-2 border-border"
         />
       </div>
     </div>

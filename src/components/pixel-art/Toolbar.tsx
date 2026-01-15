@@ -47,8 +47,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
 }) => {
   return (
     <TooltipProvider>
-      <div className="flex flex-col gap-2 p-4 bg-card border border-border rounded-lg shadow-md">
-        <h3 className="text-sm font-semibold text-foreground mb-2">Tools</h3>
+      <div className="flex gap-2 justify-center">
         {tools.map((tool) => (
           <Tooltip key={tool.id}>
             <TooltipTrigger asChild>
@@ -56,13 +55,13 @@ export const Toolbar: React.FC<ToolbarProps> = ({
                 variant={currentTool === tool.id ? "default" : "outline"}
                 size="icon"
                 onClick={() => onToolChange(tool.id)}
-                className="w-12 h-12"
+                className="h-12 w-12 flex-1 max-w-[80px]"
                 aria-label={tool.label}
               >
                 {tool.icon}
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="right">
+            <TooltipContent side="top">
               <p>
                 {tool.label} ({tool.shortcut})
               </p>
