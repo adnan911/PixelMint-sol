@@ -50,10 +50,10 @@ export const CanvasSizeSettings: React.FC<CanvasSizeSettingsProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] pixel-card border-4 font-retro">
         <DialogHeader>
-          <DialogTitle>Canvas Size</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="font-pixel text-primary text-sm">CANVAS SIZE</DialogTitle>
+          <DialogDescription className="font-retro text-base">
             Set custom canvas dimensions (8-256 pixels)
           </DialogDescription>
         </DialogHeader>
@@ -61,7 +61,7 @@ export const CanvasSizeSettings: React.FC<CanvasSizeSettingsProps> = ({
         <div className="space-y-4 py-4">
           {/* Presets */}
           <div className="space-y-2">
-            <Label>Presets</Label>
+            <Label className="font-retro text-base">Presets</Label>
             <div className="grid grid-cols-4 gap-2">
               {PRESETS.map((preset) => (
                 <Button
@@ -69,7 +69,7 @@ export const CanvasSizeSettings: React.FC<CanvasSizeSettingsProps> = ({
                   variant="outline"
                   size="sm"
                   onClick={() => handlePreset(preset.width, preset.height)}
-                  className="text-xs"
+                  className="text-xs pixel-button font-retro"
                 >
                   {preset.label}
                 </Button>
@@ -80,7 +80,7 @@ export const CanvasSizeSettings: React.FC<CanvasSizeSettingsProps> = ({
           {/* Custom Size */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="width">Width</Label>
+              <Label htmlFor="width" className="font-retro text-base">Width</Label>
               <Input
                 id="width"
                 type="number"
@@ -88,10 +88,11 @@ export const CanvasSizeSettings: React.FC<CanvasSizeSettingsProps> = ({
                 max={256}
                 value={width}
                 onChange={(e) => setWidth(parseInt(e.target.value) || 32)}
+                className="pixel-inset font-retro text-base"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="height">Height</Label>
+              <Label htmlFor="height" className="font-retro text-base">Height</Label>
               <Input
                 id="height"
                 type="number"
@@ -99,20 +100,21 @@ export const CanvasSizeSettings: React.FC<CanvasSizeSettingsProps> = ({
                 max={256}
                 value={height}
                 onChange={(e) => setHeight(parseInt(e.target.value) || 32)}
+                className="pixel-inset font-retro text-base"
               />
             </div>
           </div>
 
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground font-retro">
             Current: {currentWidth}×{currentHeight}
           </p>
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <Button variant="outline" onClick={() => onOpenChange(false)} className="pixel-button font-retro">
             Cancel
           </Button>
-          <Button onClick={handleApply}>Apply</Button>
+          <Button onClick={handleApply} className="pixel-button font-retro">Apply</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

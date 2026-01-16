@@ -205,6 +205,18 @@
   - [x] Removed setControlsOpen call from handleClear function
   - [x] Removed unused TransformControls and Controls component imports
   - [x] All 96 files passed lint checks
+- [x] Step 24: Apply pixel theme to Canvas Size dialog (Completed)
+  - [x] Added pixel-card class with border-4 to DialogContent
+  - [x] Applied font-pixel class to dialog title "CANVAS SIZE" with text-primary and text-sm
+  - [x] Applied font-retro class to dialog description with text-base
+  - [x] Added font-retro text-base to "Presets" label
+  - [x] Applied pixel-button and font-retro classes to all preset buttons
+  - [x] Added font-retro text-base to Width and Height labels
+  - [x] Applied pixel-inset and font-retro text-base classes to input fields
+  - [x] Added font-retro class to current size display text
+  - [x] Applied pixel-button and font-retro classes to Cancel and Apply buttons
+  - [x] Canvas size dialog now fully functional with pixel theme styling
+  - [x] All 96 files passed lint checks
 
 ## Features Implemented
 
