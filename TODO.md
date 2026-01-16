@@ -539,6 +539,11 @@
   - [x] Reduced button container spacing: gap-2 → removed (no gap needed)
   - [x] Overall dialog size reduced by approximately 65% from original (from 672px to 384px width)
   - [x] All 97 files passed lint checks
+- [x] Step 42: Fix dialog margins to 20px on both sides (Completed)
+  - [x] Removed custom hardcoded margins (mr-[2px] ml-[0px]) added by user
+  - [x] Restored mx-5 class for consistent 20px margins on both left and right sides
+  - [x] Verified mx-5 applies margin-left: 1.25rem (20px) and margin-right: 1.25rem (20px)
+  - [x] All 97 files passed lint checks
 
 ## Features Implemented
 
