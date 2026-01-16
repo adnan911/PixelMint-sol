@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import { EnhancedPixelCanvas } from "@/components/pixel-art/PixelCanvas";
 import { DrawingToolbar } from "@/components/pixel-art/DrawingToolbar";
 import { ColorPicker } from "@/components/pixel-art/ColorPicker";
+import { ColorSelector } from "@/components/pixel-art/ColorSelector";
 import { Controls } from "@/components/pixel-art/Controls";
 import { TransformControls } from "@/components/pixel-art/TransformControls";
 import { LayerPanel } from "@/components/pixel-art/LayerPanel";
@@ -93,6 +94,13 @@ export default function PixelArtEditor() {
   const [layersOpen, setLayersOpen] = useState(false);
   const [palettesOpen, setPalettesOpen] = useState(false);
   const [canvasSizeOpen, setCanvasSizeOpen] = useState(false);
+  const [quickColors, setQuickColors] = useState<Color[]>([
+    "#FF0000", // Red
+    "#00FF00", // Green
+    "#0000FF", // Blue
+    "#FFFF00", // Yellow
+    "#FF00FF", // Magenta
+  ]);
 
   // Initialize with one default layer and default palettes (memoized to prevent recreation)
   // Using defensive initialization to avoid conflicts with browser extensions
@@ -166,6 +174,12 @@ export default function PixelArtEditor() {
   const handleColorPick = (color: Color) => {
     setCurrentColor(color);
     setCurrentTool("pencil");
+  };
+
+  const handleQuickColorChange = (index: number, color: Color) => {
+    const newQuickColors = [...quickColors];
+    newQuickColors[index] = color;
+    setQuickColors(newQuickColors);
   };
 
   const handleClear = () => {
@@ -752,15 +766,28 @@ export default function PixelArtEditor() {
           />
         </div>
       </div>
-      {/* Bottom Status Bar */}
+      {/* Bottom Status Bar with Color Selector */}
       <div className="flex-shrink-0 border-t border-border bg-card px-2 sm:px-4 py-2">
-        <div className="text-center text-xs sm:text-sm text-muted-foreground">
-          <span className="font-medium text-foreground capitalize">{currentTool}</span>
-          {brushMode !== "normal" && ` | ${brushMode.charAt(0).toUpperCase() + brushMode.slice(1)}`}
-          {activeLayer && <span className="hidden sm:inline"> | {activeLayer.name}</span>}
-          {activeLayer?.locked && <span className="hidden sm:inline"> (Locked)</span>}
-          {activeLayer?.alphaLock && <span className="hidden sm:inline"> (Alpha Lock)</span>}
-          {selection.active && " | Selection"}
+        <div className="flex items-center justify-between gap-4">
+          {/* Status Info */}
+          <div className="flex-1 text-xs sm:text-sm text-muted-foreground">
+            <span className="font-medium text-foreground capitalize">{currentTool}</span>
+            {brushMode !== "normal" && ` | ${brushMode.charAt(0).toUpperCase() + brushMode.slice(1)}`}
+            {activeLayer && <span className="hidden sm:inline"> | {activeLayer.name}</span>}
+            {activeLayer?.locked && <span className="hidden sm:inline"> (Locked)</span>}
+            {activeLayer?.alphaLock && <span className="hidden sm:inline"> (Alpha Lock)</span>}
+            {selection.active && " | Selection"}
+          </div>
+          
+          {/* Color Selector */}
+          <div className="flex-shrink-0">
+            <ColorSelector
+              currentColor={currentColor}
+              onColorChange={setCurrentColor}
+              quickColors={quickColors}
+              onQuickColorChange={handleQuickColorChange}
+            />
+          </div>
         </div>
       </div>
       {/* Canvas Size Settings Dialog */}

@@ -32,12 +32,6 @@ const drawingTools: Array<{
   shortcut: string;
 }> = [
   {
-    id: "pencil",
-    icon: <Pencil className="h-5 w-5" />,
-    label: "Pencil",
-    shortcut: "P",
-  },
-  {
     id: "eraser",
     icon: <Eraser className="h-5 w-5" />,
     label: "Eraser",

@@ -419,6 +419,28 @@
   - [x] Changed footer padding: pb-6 on mobile vs pb-2 on sm for better bottom spacing
   - [x] Changed footer text to always use leading-relaxed (removed max-sm condition)
   - [x] All 96 files passed lint checks
+- [x] Step 37: Replace pencil tool with color selector in bottom toolbar (Completed)
+  - [x] Created new ColorSelector component at src/components/pixel-art/ColorSelector.tsx
+  - [x] Removed pencil tool from DrawingToolbar component (kept eraser, fill, eyedropper, shapes)
+  - [x] Added ColorSelector to bottom status bar with current color button
+  - [x] Implemented 5 quick color slots with default colors: Red, Green, Blue, Yellow, Magenta
+  - [x] Added click functionality to quick color slots to select color
+  - [x] Added right-click/context menu to edit quick color slots
+  - [x] Implemented popover dialog for editing quick colors with color picker and hex input
+  - [x] Added Save and Cancel buttons in quick color edit dialog
+  - [x] Created handleQuickColorChange function to update quick color slots
+  - [x] Added quickColors state array to PixelArtEditor
+  - [x] Implemented current color button with popover for color selection
+  - [x] Added color picker input and hex text input in current color popover
+  - [x] Updated bottom status bar layout: status info on left, color selector on right
+  - [x] Added flex layout with justify-between for proper spacing
+  - [x] Styled color buttons with 40px size, border-2, and hover effects
+  - [x] Added hover:border-primary transition to quick color slots
+  - [x] Implemented touch-friendly button sizes (min 40px)
+  - [x] Added pixel-card styling to popover dialogs
+  - [x] Used font-retro for labels and font-mono for hex inputs
+  - [x] Imported ColorSelector component in PixelArtEditor
+  - [x] All 97 files passed lint checks
 
 ## Features Implemented
 
