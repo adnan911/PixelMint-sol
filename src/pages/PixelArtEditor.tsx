@@ -53,7 +53,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-// Tabs components for color/palette/brush selection
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const CANVAS_SIZE = 32;
