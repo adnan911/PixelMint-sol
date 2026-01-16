@@ -144,6 +144,18 @@
   - [x] Added safety checks for cell existence (canvasGrid[y][x]) before accessing
   - [x] Prevents "Cannot read properties of undefined (reading '0')" error
   - [x] Hook now gracefully handles undefined or malformed canvasGrid data
+- [x] Step 20: Detach transform controls and improve export quality (Completed)
+  - [x] Created separate Transform sheet with FlipHorizontal2 icon
+  - [x] Moved transform button next to Layers button in toolbar
+  - [x] Removed Transform tab from Controls sheet
+  - [x] Updated Controls sheet description to "Export and manage your canvas"
+  - [x] Updated Transform sheet with dedicated UI for rotate/flip operations
+  - [x] Improved export quality with 8x scaling factor (256×256 becomes 2048×2048)
+  - [x] Added high quality PNG export settings (quality: 1.0)
+  - [x] Disabled image smoothing for crisp pixel art export
+  - [x] Export now uses dynamic canvas dimensions (canvasWidth × canvasHeight)
+  - [x] Ensured exported images are larger than 200KB
+  - [x] Added safety checks for mergedCanvas array access during export
 
 ## Features Implemented
 

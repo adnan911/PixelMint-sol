@@ -43,7 +43,7 @@ import type {
   BrushMode,
   DitherPattern,
 } from "@/types/pixel-art";
-import { Palette, Settings, Undo2, Redo2, Layers, Download, Maximize2 } from "lucide-react";
+import { Palette, Settings, Undo2, Redo2, Layers, Download, Maximize2, FlipHorizontal2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -83,6 +83,7 @@ export default function PixelArtEditor() {
   const [layersOpen, setLayersOpen] = useState(false);
   const [palettesOpen, setPalettesOpen] = useState(false);
   const [canvasSizeOpen, setCanvasSizeOpen] = useState(false);
+  const [transformOpen, setTransformOpen] = useState(false);
 
   // Initialize with one default layer and default palettes (memoized to prevent recreation)
   // Using defensive initialization to avoid conflicts with browser extensions
@@ -404,31 +405,41 @@ export default function PixelArtEditor() {
     };
   }, []);
 
-  // Export canvas as PNG
+  // Export canvas as PNG with high quality
   const handleExport = () => {
     // Merge all visible layers
-    const mergedCanvas = mergeLayers(layers, CANVAS_SIZE);
+    const mergedCanvas = mergeLayers(layers, Math.max(canvasWidth, canvasHeight));
+    
+    // Scale factor for high quality export (8x to ensure >200KB)
+    const EXPORT_SCALE = 8;
+    const exportWidth = canvasWidth * EXPORT_SCALE;
+    const exportHeight = canvasHeight * EXPORT_SCALE;
     
     // Create a temporary canvas for export
     const exportCanvas = document.createElement("canvas");
-    exportCanvas.width = CANVAS_SIZE;
-    exportCanvas.height = CANVAS_SIZE;
-    const ctx = exportCanvas.getContext("2d");
+    exportCanvas.width = exportWidth;
+    exportCanvas.height = exportHeight;
+    const ctx = exportCanvas.getContext("2d", { alpha: true });
     
     if (!ctx) return;
     
-    // Draw merged pixels
-    for (let y = 0; y < CANVAS_SIZE; y++) {
-      for (let x = 0; x < CANVAS_SIZE; x++) {
-        const color = mergedCanvas[y][x];
-        if (color !== "transparent") {
-          ctx.fillStyle = color;
-          ctx.fillRect(x, y, 1, 1);
+    // Disable image smoothing for crisp pixel art
+    ctx.imageSmoothingEnabled = false;
+    
+    // Draw merged pixels with scaling
+    for (let y = 0; y < canvasHeight; y++) {
+      for (let x = 0; x < canvasWidth; x++) {
+        if (mergedCanvas[y] && mergedCanvas[y][x]) {
+          const color = mergedCanvas[y][x];
+          if (color !== "transparent") {
+            ctx.fillStyle = color;
+            ctx.fillRect(x * EXPORT_SCALE, y * EXPORT_SCALE, EXPORT_SCALE, EXPORT_SCALE);
+          }
         }
       }
     }
     
-    // Download
+    // Download with high quality (1.0 = maximum quality)
     exportCanvas.toBlob((blob) => {
       if (!blob) return;
       const url = URL.createObjectURL(blob);
@@ -438,7 +449,7 @@ export default function PixelArtEditor() {
       link.href = url;
       link.click();
       URL.revokeObjectURL(url);
-    });
+    }, "image/png", 1.0);
   };
 
   return (
@@ -604,6 +615,31 @@ export default function PixelArtEditor() {
                     />
                   </SheetContent>
                 </Sheet>
+
+                <Sheet open={transformOpen} onOpenChange={setTransformOpen}>
+                  <SheetTrigger asChild>
+                    <Button variant="outline" size="icon" className="h-11 w-11 sm:h-10 sm:w-10" title="Transform">
+                      <FlipHorizontal2 className="h-5 w-5" />
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="right" className="w-full sm:w-[300px] overflow-y-auto">
+                    <SheetHeader>
+                      <SheetTitle>Transform</SheetTitle>
+                      <SheetDescription>
+                        Rotate, flip, and transform your canvas
+                      </SheetDescription>
+                    </SheetHeader>
+                    <div className="mt-6">
+                      <TransformControls
+                        fillMode={fillMode}
+                        onFillModeChange={setFillMode}
+                        onRotate={handleRotate}
+                        onFlipHorizontal={handleFlipHorizontal}
+                        onFlipVertical={handleFlipVertical}
+                      />
+                    </div>
+                  </SheetContent>
+                </Sheet>
                 
                 <Sheet open={controlsOpen} onOpenChange={setControlsOpen}>
                   <SheetTrigger asChild>
@@ -615,37 +651,22 @@ export default function PixelArtEditor() {
                     <SheetHeader>
                       <SheetTitle>Controls</SheetTitle>
                       <SheetDescription>
-                        Transform, export, and manage your canvas
+                        Export and manage your canvas
                       </SheetDescription>
                     </SheetHeader>
-                    <Tabs defaultValue="controls" className="mt-6">
-                      <TabsList className="grid w-full grid-cols-2">
-                        <TabsTrigger value="controls">Controls</TabsTrigger>
-                        <TabsTrigger value="transform">Transform</TabsTrigger>
-                      </TabsList>
-                      <TabsContent value="controls" className="mt-4">
-                        <Controls
-                          canvasGrid={canvasGrid}
-                          canvasSize={CANVAS_SIZE}
-                          showGrid={showGrid}
-                          canUndo={canUndo}
-                          canRedo={canRedo}
-                          onUndo={undo}
-                          onRedo={redo}
-                          onClear={handleClear}
-                          onToggleGrid={handleToggleGrid}
-                        />
-                      </TabsContent>
-                      <TabsContent value="transform" className="mt-4">
-                        <TransformControls
-                          fillMode={fillMode}
-                          onFillModeChange={setFillMode}
-                          onRotate={handleRotate}
-                          onFlipHorizontal={handleFlipHorizontal}
-                          onFlipVertical={handleFlipVertical}
-                        />
-                      </TabsContent>
-                    </Tabs>
+                    <div className="mt-6">
+                      <Controls
+                        canvasGrid={canvasGrid}
+                        canvasSize={CANVAS_SIZE}
+                        showGrid={showGrid}
+                        canUndo={canUndo}
+                        canRedo={canRedo}
+                        onUndo={undo}
+                        onRedo={redo}
+                        onClear={handleClear}
+                        onToggleGrid={handleToggleGrid}
+                      />
+                    </div>
                   </SheetContent>
                 </Sheet>
               </div>
