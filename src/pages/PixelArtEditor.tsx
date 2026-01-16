@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { EnhancedPixelCanvas } from "@/components/pixel-art/PixelCanvas";
 import { DrawingToolbar } from "@/components/pixel-art/DrawingToolbar";
 import { SelectionToolbar } from "@/components/pixel-art/SelectionToolbar";
@@ -29,7 +29,7 @@ import {
   mergeLayers,
   applyAlphaLock,
 } from "@/utils/layer-utils";
-import { DEFAULT_PALETTES, createPalette } from "@/utils/palette-utils";
+import { DEFAULT_PALETTES, createPalette, getDefaultPalettes } from "@/utils/palette-utils";
 import type { 
   Tool, 
   Color, 
@@ -80,14 +80,17 @@ export default function PixelArtEditor() {
   const [layersOpen, setLayersOpen] = useState(false);
   const [palettesOpen, setPalettesOpen] = useState(false);
 
-  // Initialize with one default layer and default palettes
-  const initialState: EditorState = {
-    layers: [createLayer("Background", CANVAS_SIZE)],
-    activeLayerId: "",
-    palettes: [...DEFAULT_PALETTES],
-    activePaletteId: DEFAULT_PALETTES[0].id,
-  };
-  initialState.activeLayerId = initialState.layers[0].id;
+  // Initialize with one default layer and default palettes (memoized to prevent recreation)
+  const initialState: EditorState = useMemo(() => {
+    const state: EditorState = {
+      layers: [createLayer("Background", CANVAS_SIZE)],
+      activeLayerId: "",
+      palettes: getDefaultPalettes(),
+      activePaletteId: "default",
+    };
+    state.activeLayerId = state.layers[0].id;
+    return state;
+  }, []);
 
   const {
     state: editorState,

@@ -54,6 +54,17 @@ export const DEFAULT_PALETTES: Palette[] = [
 ];
 
 /**
+ * Get default palettes (creates fresh copies)
+ */
+export function getDefaultPalettes(): Palette[] {
+  return DEFAULT_PALETTES.map((palette) => ({
+    id: palette.id,
+    name: palette.name,
+    colors: [...palette.colors],
+  }));
+}
+
+/**
  * Export palette to JSON
  */
 export function exportPaletteJSON(palette: Palette): string {
