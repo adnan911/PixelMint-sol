@@ -223,13 +223,17 @@
 - Bayer matrix dithering algorithms (2x2, 4x4, 8x8)
 - Dynamic brush mode system
 - Palette state management with undo/redo support
+- Comprehensive error handling for browser extension conflicts
+- Global error handlers in index.html and main.tsx
+- React Error Boundary component for graceful error recovery
+- Extension error suppression to prevent application crashes
 
 ## Notes
 - MVP focuses on 32×32 canvas with comprehensive toolset, layer system, and color management
 - No backend/database needed - fully client-side
 - Export as PNG with transparent background support (merges all visible layers)
 - Custom vibrant color scheme with purple primary and orange secondary
-- All lint checks passed successfully (94 files)
+- All lint checks passed successfully (95 files)
 - Mobile-optimized with fixed window layout
 - Touch-friendly interface with drawer controls
 - Canvas automatically resizes to fit viewport
@@ -253,3 +257,7 @@
 - Defensive object creation to prevent property descriptor conflicts with browser extensions
 - All factory functions (createLayer, createPalette, duplicateLayer) return plain objects
 - State initialization wrapped in try-catch for graceful error handling
+- Multi-layer error handling: inline script in HTML, global handlers in main.tsx, React Error Boundary
+- Chrome extension errors are caught and suppressed to prevent application crashes
+- Error Boundary provides user-friendly fallback UI for unexpected errors
+- Console.error is intercepted to filter out extension-related errors

@@ -4,6 +4,45 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      // Early error handler to suppress Chrome extension errors
+      // This must run before any other scripts to catch extension conflicts
+      (function() {
+        var originalError = console.error;
+        console.error = function() {
+          var args = Array.prototype.slice.call(arguments);
+          var errorMsg = args.join(' ');
+          
+          // Suppress property descriptor errors from Chrome extensions
+          if (errorMsg.includes('Invalid property descriptor') || 
+              errorMsg.includes('chrome-extension://')) {
+            console.warn('[Extension Error Suppressed]:', errorMsg);
+            return;
+          }
+          
+          originalError.apply(console, arguments);
+        };
+        
+        // Global error handler
+        window.addEventListener('error', function(event) {
+          if (event.filename && event.filename.includes('chrome-extension://')) {
+            console.warn('[Extension Error Suppressed]:', event.message);
+            event.preventDefault();
+            event.stopPropagation();
+            return false;
+          }
+        }, true);
+        
+        // Handle unhandled promise rejections
+        window.addEventListener('unhandledrejection', function(event) {
+          if (event.reason && event.reason.stack && 
+              event.reason.stack.includes('chrome-extension://')) {
+            console.warn('[Extension Promise Rejection Suppressed]:', event.reason);
+            event.preventDefault();
+          }
+        });
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
