@@ -11,34 +11,42 @@ export function generateLayerId(): string {
 
 /**
  * Create a new layer
+ * Returns a plain object to avoid property descriptor conflicts
  */
 export function createLayer(
   name: string,
   canvasSize: number,
   pixels?: CanvasGrid
 ): Layer {
-  return {
+  const layer: Layer = {
     id: generateLayerId(),
-    name,
+    name: String(name),
     pixels: pixels || createEmptyCanvas(canvasSize),
     opacity: 100,
     visible: true,
     locked: false,
-    blendMode: "normal",
+    blendMode: "normal" as const,
     alphaLock: false,
   };
+  return layer;
 }
 
 /**
  * Duplicate a layer
+ * Returns a plain object to avoid property descriptor conflicts
  */
 export function duplicateLayer(layer: Layer): Layer {
-  return {
-    ...layer,
+  const duplicated: Layer = {
     id: generateLayerId(),
-    name: `${layer.name} Copy`,
-    pixels: layer.pixels.map((row) => [...row]),
+    name: String(`${layer.name} Copy`),
+    pixels: layer.pixels.map((row) => row.map((c) => String(c))),
+    opacity: Number(layer.opacity),
+    visible: Boolean(layer.visible),
+    locked: Boolean(layer.locked),
+    blendMode: String(layer.blendMode) as Layer["blendMode"],
+    alphaLock: Boolean(layer.alphaLock),
   };
+  return duplicated;
 }
 
 /**

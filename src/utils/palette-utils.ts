@@ -9,13 +9,15 @@ export function generatePaletteId(): string {
 
 /**
  * Create a new palette
+ * Returns a plain object to avoid property descriptor conflicts
  */
 export function createPalette(name: string, colors: Color[] = []): Palette {
-  return {
+  const palette: Palette = {
     id: generatePaletteId(),
-    name,
-    colors,
+    name: String(name),
+    colors: colors.map((c) => String(c)),
   };
+  return palette;
 }
 
 /**
@@ -55,13 +57,18 @@ export const DEFAULT_PALETTES: Palette[] = [
 
 /**
  * Get default palettes (creates fresh copies)
+ * Returns completely plain objects to avoid property descriptor conflicts
  */
 export function getDefaultPalettes(): Palette[] {
-  return DEFAULT_PALETTES.map((palette) => ({
-    id: palette.id,
-    name: palette.name,
-    colors: [...palette.colors],
-  }));
+  return DEFAULT_PALETTES.map((palette) => {
+    // Create completely plain objects to avoid any property descriptor issues
+    const plainPalette: Palette = {
+      id: String(palette.id),
+      name: String(palette.name),
+      colors: palette.colors.map((c) => String(c)),
+    };
+    return plainPalette;
+  });
 }
 
 /**

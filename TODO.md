@@ -250,3 +250,6 @@
 - Random mode respects active palette colors
 - Dither mode uses industry-standard Bayer matrices
 - All palette operations integrated with undo/redo system
+- Defensive object creation to prevent property descriptor conflicts with browser extensions
+- All factory functions (createLayer, createPalette, duplicateLayer) return plain objects
+- State initialization wrapped in try-catch for graceful error handling

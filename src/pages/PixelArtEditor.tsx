@@ -81,15 +81,28 @@ export default function PixelArtEditor() {
   const [palettesOpen, setPalettesOpen] = useState(false);
 
   // Initialize with one default layer and default palettes (memoized to prevent recreation)
+  // Using defensive initialization to avoid conflicts with browser extensions
   const initialState: EditorState = useMemo(() => {
-    const state: EditorState = {
-      layers: [createLayer("Background", CANVAS_SIZE)],
-      activeLayerId: "",
-      palettes: getDefaultPalettes(),
-      activePaletteId: "default",
-    };
-    state.activeLayerId = state.layers[0].id;
-    return state;
+    try {
+      const state: EditorState = {
+        layers: [createLayer("Background", CANVAS_SIZE)],
+        activeLayerId: "",
+        palettes: getDefaultPalettes(),
+        activePaletteId: "default",
+      };
+      state.activeLayerId = state.layers[0].id;
+      return state;
+    } catch (error) {
+      console.error("Error initializing editor state:", error);
+      // Fallback to minimal state
+      const fallbackLayer = createLayer("Background", CANVAS_SIZE);
+      return {
+        layers: [fallbackLayer],
+        activeLayerId: fallbackLayer.id,
+        palettes: getDefaultPalettes(),
+        activePaletteId: "default",
+      };
+    }
   }, []);
 
   const {
