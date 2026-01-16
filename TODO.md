@@ -326,6 +326,27 @@
   - [x] Prevents .slice() being called on undefined values
   - [x] Fixed error chain: hexToRgba → blendColors → createEmptyCanvas → mergeLayers
   - [x] All 95 files passed lint checks
+- [x] Step 34: Create welcoming front page with animations and canvas size selection (Completed)
+  - [x] Created new WelcomePage component at src/pages/WelcomePage.tsx
+  - [x] Added animated hero section with Pixel Art Pro branding
+  - [x] Implemented bouncing logo animation with glow effect
+  - [x] Added animated gradient background with pixel grid overlay
+  - [x] Created canvas size selection grid with 6 options: 8×8, 16×16, 32×32, 64×64, 128×128, 256×256
+  - [x] Added size descriptions: Tiny, Small, Medium, Large, XL, XXL
+  - [x] Implemented interactive size selection with hover and active states
+  - [x] Added pulse animation to selected canvas size option
+  - [x] Created "START DRAWING" button with bounce animation
+  - [x] Added feature pills showing: Layers, Blend Modes, Advanced Tools
+  - [x] Implemented 9 custom CSS animations: fade-in, slide-down, slide-up, bounce-slow, bounce-subtle, pixel-glow, gradient, and delayed variants
+  - [x] Added staggered animation delays for smooth entrance effects
+  - [x] Created pixel-card-sm utility class for small card shadows
+  - [x] Updated PixelArtEditor to accept canvas size from URL params (?size=32)
+  - [x] Added useSearchParams hook to read size parameter
+  - [x] Updated initialState to use initialSize from URL params
+  - [x] Modified routes.tsx to add welcome page at "/" and editor at "/editor"
+  - [x] Implemented navigation from welcome page to editor with selected canvas size
+  - [x] Added 300ms transition animation before navigation
+  - [x] All 96 files passed lint checks
 
 ## Features Implemented
 

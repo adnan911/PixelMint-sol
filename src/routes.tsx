@@ -1,3 +1,4 @@
+import WelcomePage from './pages/WelcomePage';
 import PixelArtEditor from './pages/PixelArtEditor';
 import type { ReactNode } from 'react';
 
@@ -10,8 +11,13 @@ interface RouteConfig {
 
 const routes: RouteConfig[] = [
   {
-    name: 'Pixel Art Editor',
+    name: 'Welcome',
     path: '/',
+    element: <WelcomePage />
+  },
+  {
+    name: 'Pixel Art Editor',
+    path: '/editor',
     element: <PixelArtEditor />
   }
 ];

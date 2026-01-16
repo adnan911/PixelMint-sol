@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
 import { EnhancedPixelCanvas } from "@/components/pixel-art/PixelCanvas";
 import { DrawingToolbar } from "@/components/pixel-art/DrawingToolbar";
 import { ColorPicker } from "@/components/pixel-art/ColorPicker";
@@ -74,6 +75,9 @@ interface EditorState {
 }
 
 export default function PixelArtEditor() {
+  const [searchParams] = useSearchParams();
+  const initialSize = parseInt(searchParams.get("size") || "32", 10);
+  
   const [currentTool, setCurrentTool] = useState<Tool>("pencil");
   const [currentColor, setCurrentColor] = useState<Color>("#000000");
   const [showGrid, setShowGrid] = useState(true);
@@ -95,29 +99,29 @@ export default function PixelArtEditor() {
   const initialState: EditorState = useMemo(() => {
     try {
       const state: EditorState = {
-        layers: [createLayer("Background", CANVAS_SIZE)],
+        layers: [createLayer("Background", initialSize)],
         activeLayerId: "",
         palettes: getDefaultPalettes(),
         activePaletteId: "default",
-        canvasWidth: CANVAS_SIZE,
-        canvasHeight: CANVAS_SIZE,
+        canvasWidth: initialSize,
+        canvasHeight: initialSize,
       };
       state.activeLayerId = state.layers[0].id;
       return state;
     } catch (error) {
       console.error("Error initializing editor state:", error);
       // Fallback to minimal state
-      const fallbackLayer = createLayer("Background", CANVAS_SIZE);
+      const fallbackLayer = createLayer("Background", initialSize);
       return {
         layers: [fallbackLayer],
         activeLayerId: fallbackLayer.id,
         palettes: getDefaultPalettes(),
         activePaletteId: "default",
-        canvasWidth: CANVAS_SIZE,
-        canvasHeight: CANVAS_SIZE,
+        canvasWidth: initialSize,
+        canvasHeight: initialSize,
       };
     }
-  }, []);
+  }, [initialSize]);
 
   const {
     state: editorState,
