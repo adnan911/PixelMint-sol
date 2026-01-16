@@ -110,6 +110,14 @@
   - [x] Active touch feedback (active:scale-95 on mobile)
   - [x] Condensed status bar on mobile (hide layer details)
   - [x] Larger color sheet height on mobile (85vh vs 80vh)
+- [x] Step 16: Fix undo/redo functionality (Completed)
+  - [x] Refactored useHistory hook to use refs for tracking current state
+  - [x] Fixed stale closure issues in undo/redo callbacks
+  - [x] Eliminated race conditions in state updates
+  - [x] Proper history management with refs (historyRef, currentIndexRef)
+  - [x] Callbacks now use latest values via refs instead of dependencies
+  - [x] History correctly captures all state changes
+  - [x] Undo/redo now properly navigate through history stack
 
 ## Features Implemented
 
@@ -287,7 +295,8 @@
 - Random mode respects active palette colors
 - Dither mode uses industry-standard Bayer matrices
 - All palette operations integrated with undo/redo system
-- Undo/redo functionality working correctly with 20-step history
+- Undo/redo functionality working correctly with 20-step history using refs to avoid stale closures
+- History hook uses refs (historyRef, currentIndexRef) to track latest values and prevent race conditions
 - Defensive object creation to prevent property descriptor conflicts with browser extensions
 - All factory functions (createLayer, createPalette, duplicateLayer) return plain objects
 - State initialization wrapped in try-catch for graceful error handling

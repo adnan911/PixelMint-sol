@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 
 interface UseHistoryReturn<T> {
   state: T;
@@ -13,6 +13,7 @@ interface UseHistoryReturn<T> {
 /**
  * Custom hook for managing undo/redo history
  * Maintains a history stack with a maximum size
+ * Uses refs to avoid stale closure issues
  */
 export const useHistory = <T>(
   initialState: T,
@@ -20,38 +21,53 @@ export const useHistory = <T>(
 ): UseHistoryReturn<T> => {
   const [history, setHistory] = useState<T[]>([initialState]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  
+  // Use refs to track the latest values and avoid stale closures
+  const historyRef = useRef(history);
+  const currentIndexRef = useRef(currentIndex);
+  
+  // Update refs whenever state changes
+  historyRef.current = history;
+  currentIndexRef.current = currentIndex;
 
   const setState = useCallback(
     (newState: T) => {
-      setHistory((prev) => {
-        // Remove any future states if we're not at the end
-        const newHistory = prev.slice(0, currentIndex + 1);
-        // Add new state
-        newHistory.push(newState);
-        // Limit history size
-        if (newHistory.length > maxHistory) {
-          newHistory.shift();
-          setCurrentIndex(maxHistory - 1);
-        } else {
-          setCurrentIndex(newHistory.length - 1);
-        }
-        return newHistory;
-      });
+      const currentIdx = currentIndexRef.current;
+      const currentHistory = historyRef.current;
+      
+      // Remove any future states if we're not at the end
+      const newHistory = currentHistory.slice(0, currentIdx + 1);
+      
+      // Add new state
+      newHistory.push(newState);
+      
+      // Limit history size
+      if (newHistory.length > maxHistory) {
+        newHistory.shift();
+        setHistory(newHistory);
+        setCurrentIndex(maxHistory - 1);
+      } else {
+        setHistory(newHistory);
+        setCurrentIndex(newHistory.length - 1);
+      }
     },
-    [currentIndex, maxHistory]
+    [maxHistory]
   );
 
   const undo = useCallback(() => {
-    if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
+    const currentIdx = currentIndexRef.current;
+    if (currentIdx > 0) {
+      setCurrentIndex(currentIdx - 1);
     }
-  }, [currentIndex]);
+  }, []);
 
   const redo = useCallback(() => {
-    if (currentIndex < history.length - 1) {
-      setCurrentIndex(currentIndex + 1);
+    const currentIdx = currentIndexRef.current;
+    const historyLength = historyRef.current.length;
+    if (currentIdx < historyLength - 1) {
+      setCurrentIndex(currentIdx + 1);
     }
-  }, [currentIndex, history.length]);
+  }, []);
 
   const clearHistory = useCallback(() => {
     setHistory([initialState]);
