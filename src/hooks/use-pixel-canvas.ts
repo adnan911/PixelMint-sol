@@ -27,12 +27,18 @@ export const usePixelCanvas = ({
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
+    // Check if canvasGrid is valid
+    if (!canvasGrid || !Array.isArray(canvasGrid) || canvasGrid.length === 0) return;
+
     // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // Draw pixels
     for (let y = 0; y < gridSize; y++) {
       for (let x = 0; x < gridSize; x++) {
+        // Safety check for row existence
+        if (!canvasGrid[y] || !canvasGrid[y][x]) continue;
+        
         const color = canvasGrid[y][x];
         if (color !== "transparent") {
           ctx.fillStyle = color;
