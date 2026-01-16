@@ -1,4 +1,4 @@
-import type { CanvasGrid, Color } from "@/types/pixel-art";
+import type { CanvasGrid, Color, Point, FillMode } from "@/types/pixel-art";
 
 /**
  * Create an empty canvas grid filled with transparent pixels
@@ -10,8 +10,157 @@ export const createEmptyCanvas = (size: number): CanvasGrid => {
 };
 
 /**
- * Flood fill algorithm for the fill tool
- * Returns a new grid with the filled pixels
+ * Bresenham's line algorithm for drawing lines
+ */
+export const drawLine = (
+  grid: CanvasGrid,
+  x0: number,
+  y0: number,
+  x1: number,
+  y1: number,
+  color: Color
+): CanvasGrid => {
+  const newGrid = grid.map((row) => [...row]);
+  
+  const dx = Math.abs(x1 - x0);
+  const dy = Math.abs(y1 - y0);
+  const sx = x0 < x1 ? 1 : -1;
+  const sy = y0 < y1 ? 1 : -1;
+  let err = dx - dy;
+
+  let x = x0;
+  let y = y0;
+
+  while (true) {
+    if (x >= 0 && x < grid[0].length && y >= 0 && y < grid.length) {
+      newGrid[y][x] = color;
+    }
+
+    if (x === x1 && y === y1) break;
+
+    const e2 = 2 * err;
+    if (e2 > -dy) {
+      err -= dy;
+      x += sx;
+    }
+    if (e2 < dx) {
+      err += dx;
+      y += sy;
+    }
+  }
+
+  return newGrid;
+};
+
+/**
+ * Midpoint circle algorithm for drawing circles
+ */
+export const drawCircle = (
+  grid: CanvasGrid,
+  centerX: number,
+  centerY: number,
+  radius: number,
+  color: Color,
+  filled = false
+): CanvasGrid => {
+  const newGrid = grid.map((row) => [...row]);
+  
+  const setPixel = (x: number, y: number) => {
+    if (x >= 0 && x < grid[0].length && y >= 0 && y < grid.length) {
+      newGrid[y][x] = color;
+    }
+  };
+
+  const drawCirclePoints = (cx: number, cy: number, x: number, y: number) => {
+    setPixel(cx + x, cy + y);
+    setPixel(cx - x, cy + y);
+    setPixel(cx + x, cy - y);
+    setPixel(cx - x, cy - y);
+    setPixel(cx + y, cy + x);
+    setPixel(cx - y, cy + x);
+    setPixel(cx + y, cy - x);
+    setPixel(cx - y, cy - x);
+  };
+
+  if (filled) {
+    // Fill circle using horizontal lines
+    for (let y = -radius; y <= radius; y++) {
+      const x = Math.floor(Math.sqrt(radius * radius - y * y));
+      for (let i = -x; i <= x; i++) {
+        setPixel(centerX + i, centerY + y);
+      }
+    }
+  } else {
+    // Draw circle outline using midpoint algorithm
+    let x = 0;
+    let y = radius;
+    let d = 1 - radius;
+
+    drawCirclePoints(centerX, centerY, x, y);
+
+    while (x < y) {
+      if (d < 0) {
+        d += 2 * x + 3;
+      } else {
+        d += 2 * (x - y) + 5;
+        y--;
+      }
+      x++;
+      drawCirclePoints(centerX, centerY, x, y);
+    }
+  }
+
+  return newGrid;
+};
+
+/**
+ * Draw rectangle/square
+ */
+export const drawRectangle = (
+  grid: CanvasGrid,
+  x0: number,
+  y0: number,
+  x1: number,
+  y1: number,
+  color: Color,
+  filled = false
+): CanvasGrid => {
+  const newGrid = grid.map((row) => [...row]);
+  
+  const minX = Math.min(x0, x1);
+  const maxX = Math.max(x0, x1);
+  const minY = Math.min(y0, y1);
+  const maxY = Math.max(y0, y1);
+
+  if (filled) {
+    for (let y = minY; y <= maxY; y++) {
+      for (let x = minX; x <= maxX; x++) {
+        if (x >= 0 && x < grid[0].length && y >= 0 && y < grid.length) {
+          newGrid[y][x] = color;
+        }
+      }
+    }
+  } else {
+    // Draw outline
+    for (let x = minX; x <= maxX; x++) {
+      if (x >= 0 && x < grid[0].length) {
+        if (minY >= 0 && minY < grid.length) newGrid[minY][x] = color;
+        if (maxY >= 0 && maxY < grid.length) newGrid[maxY][x] = color;
+      }
+    }
+    for (let y = minY; y <= maxY; y++) {
+      if (y >= 0 && y < grid.length) {
+        if (minX >= 0 && minX < grid[0].length) newGrid[y][minX] = color;
+        if (maxX >= 0 && maxX < grid[0].length) newGrid[y][maxX] = color;
+      }
+    }
+  }
+
+  return newGrid;
+};
+
+/**
+ * Flood fill algorithm (contiguous mode)
  */
 export const floodFill = (
   grid: CanvasGrid,
@@ -22,28 +171,19 @@ export const floodFill = (
   const gridSize = grid.length;
   const targetColor = grid[startY][startX];
 
-  // No change needed if same color
   if (targetColor === newColor) return grid;
 
-  // Create a deep copy of the grid
   const newGrid = grid.map((row) => [...row]);
-
-  // Use stack-based flood fill to avoid recursion depth issues
   const stack: [number, number][] = [[startX, startY]];
 
   while (stack.length > 0) {
     const [x, y] = stack.pop()!;
 
-    // Boundary check
     if (x < 0 || x >= gridSize || y < 0 || y >= gridSize) continue;
-
-    // Color check
     if (newGrid[y][x] !== targetColor) continue;
 
-    // Fill pixel
     newGrid[y][x] = newColor;
 
-    // Add neighbors to stack (4-directional)
     stack.push([x + 1, y]);
     stack.push([x - 1, y]);
     stack.push([x, y + 1]);
@@ -54,14 +194,157 @@ export const floodFill = (
 };
 
 /**
+ * Global fill - replace all instances of a color
+ */
+export const globalFill = (
+  grid: CanvasGrid,
+  targetColor: Color,
+  newColor: Color
+): CanvasGrid => {
+  if (targetColor === newColor) return grid;
+
+  return grid.map((row) =>
+    row.map((pixel) => (pixel === targetColor ? newColor : pixel))
+  );
+};
+
+/**
+ * Rotate canvas 90 degrees clockwise
+ */
+export const rotateClockwise = (grid: CanvasGrid): CanvasGrid => {
+  const size = grid.length;
+  const newGrid = createEmptyCanvas(size);
+
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      newGrid[x][size - 1 - y] = grid[y][x];
+    }
+  }
+
+  return newGrid;
+};
+
+/**
+ * Flip canvas horizontally
+ */
+export const flipHorizontal = (grid: CanvasGrid): CanvasGrid => {
+  return grid.map((row) => [...row].reverse());
+};
+
+/**
+ * Flip canvas vertically
+ */
+export const flipVertical = (grid: CanvasGrid): CanvasGrid => {
+  return [...grid].reverse();
+};
+
+/**
+ * Extract pixels from selection area
+ */
+export const extractSelection = (
+  grid: CanvasGrid,
+  x: number,
+  y: number,
+  width: number,
+  height: number
+): CanvasGrid => {
+  const selection: CanvasGrid = [];
+  
+  for (let dy = 0; dy < height; dy++) {
+    const row: Color[] = [];
+    for (let dx = 0; dx < width; dx++) {
+      const px = x + dx;
+      const py = y + dy;
+      if (px >= 0 && px < grid[0].length && py >= 0 && py < grid.length) {
+        row.push(grid[py][px]);
+      } else {
+        row.push("transparent");
+      }
+    }
+    selection.push(row);
+  }
+  
+  return selection;
+};
+
+/**
+ * Paste pixels at position
+ */
+export const pastePixels = (
+  grid: CanvasGrid,
+  pixels: CanvasGrid,
+  x: number,
+  y: number
+): CanvasGrid => {
+  const newGrid = grid.map((row) => [...row]);
+  
+  for (let dy = 0; dy < pixels.length; dy++) {
+    for (let dx = 0; dx < pixels[dy].length; dx++) {
+      const px = x + dx;
+      const py = y + dy;
+      if (px >= 0 && px < grid[0].length && py >= 0 && py < grid.length) {
+        const color = pixels[dy][dx];
+        if (color !== "transparent") {
+          newGrid[py][px] = color;
+        }
+      }
+    }
+  }
+  
+  return newGrid;
+};
+
+/**
+ * Clear selection area
+ */
+export const clearSelection = (
+  grid: CanvasGrid,
+  x: number,
+  y: number,
+  width: number,
+  height: number
+): CanvasGrid => {
+  const newGrid = grid.map((row) => [...row]);
+  
+  for (let dy = 0; dy < height; dy++) {
+    for (let dx = 0; dx < width; dx++) {
+      const px = x + dx;
+      const py = y + dy;
+      if (px >= 0 && px < grid[0].length && py >= 0 && py < grid.length) {
+        newGrid[py][px] = "transparent";
+      }
+    }
+  }
+  
+  return newGrid;
+};
+
+/**
+ * Check if point is inside polygon (for lasso selection)
+ */
+export const isPointInPolygon = (point: Point, polygon: Point[]): boolean => {
+  let inside = false;
+  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+    const xi = polygon[i].x;
+    const yi = polygon[i].y;
+    const xj = polygon[j].x;
+    const yj = polygon[j].y;
+
+    const intersect =
+      yi > point.y !== yj > point.y &&
+      point.x < ((xj - xi) * (point.y - yi)) / (yj - yi) + xi;
+    if (intersect) inside = !inside;
+  }
+  return inside;
+};
+
+/**
  * Export canvas grid to PNG file
- * Creates a canvas at actual pixel dimensions and triggers download
  */
 export const exportCanvasToPNG = (
   canvasGrid: CanvasGrid,
   gridSize: number
 ): void => {
-  // Create temporary canvas at actual pixel dimensions
   const canvas = document.createElement("canvas");
   canvas.width = gridSize;
   canvas.height = gridSize;
@@ -72,7 +355,6 @@ export const exportCanvasToPNG = (
     return;
   }
 
-  // Draw each pixel
   for (let y = 0; y < gridSize; y++) {
     for (let x = 0; x < gridSize; x++) {
       const color = canvasGrid[y][x];
@@ -83,7 +365,6 @@ export const exportCanvasToPNG = (
     }
   }
 
-  // Convert to blob and download
   canvas.toBlob((blob) => {
     if (!blob) {
       console.error("Failed to create blob");
@@ -100,7 +381,6 @@ export const exportCanvasToPNG = (
     link.href = url;
     link.click();
 
-    // Cleanup
     URL.revokeObjectURL(url);
   }, "image/png");
 };

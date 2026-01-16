@@ -6,20 +6,24 @@ interface UseKeyboardShortcutsProps {
   onUndo: () => void;
   onRedo: () => void;
   onToggleGrid: () => void;
+  onCopy: () => void;
+  onCut: () => void;
+  onPaste: () => void;
   canUndo: boolean;
   canRedo: boolean;
 }
 
 /**
  * Custom hook for handling keyboard shortcuts
- * P = pencil, E = eraser, F = fill, I = eyedropper
- * Ctrl+Z = undo, Ctrl+Y = redo, G = toggle grid
  */
 export const useKeyboardShortcuts = ({
   onToolChange,
   onUndo,
   onRedo,
   onToggleGrid,
+  onCopy,
+  onCut,
+  onPaste,
   canUndo,
   canRedo,
 }: UseKeyboardShortcutsProps) => {
@@ -33,48 +37,86 @@ export const useKeyboardShortcuts = ({
         return;
       }
 
-      // Tool shortcuts
-      if (!e.ctrlKey && !e.metaKey) {
+      // Clipboard shortcuts
+      if (e.ctrlKey || e.metaKey) {
         switch (e.key.toLowerCase()) {
-          case "p":
+          case "c":
             e.preventDefault();
-            onToolChange("pencil");
+            onCopy();
             break;
-          case "e":
+          case "x":
             e.preventDefault();
-            onToolChange("eraser");
+            onCut();
             break;
-          case "f":
+          case "v":
             e.preventDefault();
-            onToolChange("fill");
+            onPaste();
             break;
-          case "i":
-            e.preventDefault();
-            onToolChange("eyedropper");
+          case "z":
+            if (e.shiftKey && canRedo) {
+              e.preventDefault();
+              onRedo();
+            } else if (!e.shiftKey && canUndo) {
+              e.preventDefault();
+              onUndo();
+            }
             break;
-          case "g":
-            e.preventDefault();
-            onToggleGrid();
+          case "y":
+            if (canRedo) {
+              e.preventDefault();
+              onRedo();
+            }
             break;
         }
+        return;
       }
 
-      // Undo/Redo shortcuts
-      if (e.ctrlKey || e.metaKey) {
-        if (e.key === "z" && !e.shiftKey && canUndo) {
+      // Tool shortcuts
+      switch (e.key.toLowerCase()) {
+        case "p":
           e.preventDefault();
-          onUndo();
-        } else if (
-          ((e.key === "y" && !e.shiftKey) || (e.key === "z" && e.shiftKey)) &&
-          canRedo
-        ) {
+          onToolChange("pencil");
+          break;
+        case "e":
           e.preventDefault();
-          onRedo();
-        }
+          onToolChange("eraser");
+          break;
+        case "f":
+          e.preventDefault();
+          onToolChange("fill");
+          break;
+        case "i":
+          e.preventDefault();
+          onToolChange("eyedropper");
+          break;
+        case "l":
+          e.preventDefault();
+          onToolChange("line");
+          break;
+        case "c":
+          e.preventDefault();
+          onToolChange("circle");
+          break;
+        case "r":
+          e.preventDefault();
+          onToolChange("square");
+          break;
+        case "m":
+          e.preventDefault();
+          onToolChange("marquee");
+          break;
+        case "h":
+          e.preventDefault();
+          onToolChange("hand");
+          break;
+        case "g":
+          e.preventDefault();
+          onToggleGrid();
+          break;
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [onToolChange, onUndo, onRedo, onToggleGrid, canUndo, canRedo]);
+  }, [onToolChange, onUndo, onRedo, onToggleGrid, onCopy, onCut, onPaste, canUndo, canRedo]);
 };
