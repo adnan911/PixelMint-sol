@@ -115,10 +115,7 @@ export const EnhancedPixelCanvas: React.FC<EnhancedPixelCanvasProps> = ({
     const x = Math.floor((clientX - rect.left) / ps);
     const y = Math.floor((clientY - rect.top) / ps);
 
-    // Use actual canvas grid dimensions instead of hardcoded GRID_SIZE
-    const gridHeight = canvasGrid.length;
-    const gridWidth = gridHeight > 0 ? canvasGrid[0].length : 0;
-
+    // Use actual canvas grid dimensions for boundary check
     if (x >= 0 && x < gridWidth && y >= 0 && y < gridHeight) {
       return { x, y };
     }
