@@ -77,7 +77,9 @@ interface EditorState {
 
 export default function PixelArtEditor() {
   const [searchParams] = useSearchParams();
-  const initialSize = parseInt(searchParams.get("size") || "32", 10);
+  const sizeParam = searchParams.get("size");
+  const parsedSize = parseInt(sizeParam || "32", 10);
+  const initialSize = !isNaN(parsedSize) && parsedSize > 0 && parsedSize <= 256 ? parsedSize : 32;
   
   const [currentTool, setCurrentTool] = useState<Tool>("pencil");
   const [currentColor, setCurrentColor] = useState<Color>("#000000");

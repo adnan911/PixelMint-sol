@@ -474,6 +474,19 @@
   - [x] Imported Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle components
   - [x] Removed unused Card, CardContent, CardDescription, CardHeader, CardTitle imports (kept for future use)
   - [x] All 97 files passed lint checks
+- [x] Step 39: Fix canvas size initialization error (Completed)
+  - [x] Fixed "Cannot read properties of undefined (reading '0')" error in createEmptyCanvas
+  - [x] Added validation for initialSize parsing in PixelArtEditor
+  - [x] Implemented sizeParam extraction and parsedSize validation
+  - [x] Added bounds checking: size must be > 0 and <= 256
+  - [x] Added isNaN check to ensure valid number parsing
+  - [x] Set fallback to 32 if size parameter is invalid or missing
+  - [x] Added safety check in mergeLayers function to validate canvasSize
+  - [x] Added console.error logging for invalid canvas size debugging
+  - [x] Implemented fallback to default size (32) in mergeLayers if size is invalid
+  - [x] Added Number.isFinite check to prevent Infinity or NaN values
+  - [x] Fixed error that occurred when navigating directly to /editor without size parameter
+  - [x] All 97 files passed lint checks
 
 ## Features Implemented
 

@@ -53,6 +53,12 @@ export function duplicateLayer(layer: Layer): Layer {
  * Merge all visible layers into a single canvas
  */
 export function mergeLayers(layers: Layer[], canvasSize: number): CanvasGrid {
+  // Validate canvas size
+  if (!canvasSize || canvasSize <= 0 || !Number.isFinite(canvasSize)) {
+    console.error("Invalid canvas size:", canvasSize);
+    return createEmptyCanvas(32); // Fallback to default size
+  }
+  
   const result = createEmptyCanvas(canvasSize);
   
   // Process layers from bottom to top
