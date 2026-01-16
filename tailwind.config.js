@@ -23,6 +23,10 @@ export default {
             }
         },
         extend: {
+            fontFamily: {
+                'pixel': ['"Press Start 2P"', 'monospace'],
+                'retro': ['VT323', 'monospace'],
+            },
             colors: {
                 border: 'hsl(var(--border))',
                 borderColor: {
@@ -84,6 +88,11 @@ export default {
                     '3': 'hsl(var(--chart-3))',
                     '4': 'hsl(var(--chart-4))',
                     '5': 'hsl(var(--chart-5))'
+                },
+                pixel: {
+                    green: 'hsl(var(--pixel-green))',
+                    cyan: 'hsl(var(--pixel-cyan))',
+                    orange: 'hsl(var(--pixel-orange))'
                 }
             },
             borderRadius: {
@@ -98,7 +107,11 @@ export default {
             },
             boxShadow: {
                 card: 'var(--shadow-card)',
-                hover: 'var(--shadow-hover)'
+                hover: 'var(--shadow-hover)',
+                'pixel': '4px 4px 0 0 hsl(var(--border))',
+                'pixel-sm': '2px 2px 0 0 hsl(var(--border))',
+                'pixel-lg': '6px 6px 0 0 hsl(var(--border))',
+                'pixel-primary': '4px 4px 0 0 hsl(var(--primary))',
             },
             keyframes: {
                 'accordion-down': {
@@ -136,13 +149,27 @@ export default {
                         opacity: '1',
                         transform: 'translateX(0)'
                     }
+                },
+                'pixel-blink': {
+                    '0%, 100%': { opacity: '1' },
+                    '50%': { opacity: '0.3' }
+                },
+                'pixel-pulse': {
+                    '0%, 100%': { 
+                        boxShadow: '0 0 10px hsl(var(--primary) / 0.5)' 
+                    },
+                    '50%': { 
+                        boxShadow: '0 0 20px hsl(var(--primary) / 0.8)' 
+                    }
                 }
             },
             animation: {
                 'accordion-down': 'accordion-down 0.2s ease-out',
                 'accordion-up': 'accordion-up 0.2s ease-out',
                 'fade-in': 'fade-in 0.5s ease-out',
-                'slide-in': 'slide-in 0.5s ease-out'
+                'slide-in': 'slide-in 0.5s ease-out',
+                'pixel-blink': 'pixel-blink 1s ease-in-out infinite',
+                'pixel-pulse': 'pixel-pulse 2s ease-in-out infinite'
             }
         }
     },

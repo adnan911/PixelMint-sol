@@ -453,16 +453,16 @@ export default function PixelArtEditor() {
   };
 
   return (
-    <div className="fixed inset-0 flex flex-col bg-background overflow-hidden">
+    <div className="fixed inset-0 flex flex-col bg-background overflow-hidden pixel-grid">
       {/* Header with Title */}
-      <header className="flex-shrink-0 border-b border-border bg-card px-2 sm:px-4 py-2">
+      <header className="flex-shrink-0 border-b-4 border-border bg-card px-2 sm:px-4 py-2 pixel-card shadow-pixel">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-primary text-primary-foreground">
+            <div className="flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 bg-primary text-primary-foreground pixel-border-primary">
               <Palette className="h-4 w-4 sm:h-5 sm:w-5" />
             </div>
-            <h1 className="text-base sm:text-lg font-bold text-foreground">
-              Pixel Art Pro
+            <h1 className="text-sm sm:text-base font-pixel pixel-heading text-primary">
+              PIXEL ART PRO
             </h1>
           </div>
           
@@ -472,7 +472,7 @@ export default function PixelArtEditor() {
               variant="outline"
               size="sm"
               onClick={() => setCanvasSizeOpen(true)}
-              className="gap-1 sm:gap-2 h-8 sm:h-9 px-2 sm:px-3"
+              className="gap-1 sm:gap-2 h-8 sm:h-9 px-2 sm:px-3 pixel-button font-retro"
             >
               <Maximize2 className="h-4 w-4" />
               <span className="hidden sm:inline text-xs sm:text-sm">{canvasWidth}×{canvasHeight}</span>
@@ -481,17 +481,17 @@ export default function PixelArtEditor() {
               variant="default"
               size="sm"
               onClick={handleExport}
-              className="gap-1 sm:gap-2 h-8 sm:h-9 px-2 sm:px-3"
+              className="gap-1 sm:gap-2 h-8 sm:h-9 px-2 sm:px-3 pixel-button font-retro"
             >
               <Download className="h-4 w-4" />
-              <span className="text-xs sm:text-sm">Export</span>
+              <span className="text-xs sm:text-sm">EXPORT</span>
             </Button>
           </div>
         </div>
       </header>
 
       {/* Top Toolbar - Main Controls */}
-      <div className="flex-shrink-0 border-b border-border bg-card">
+      <div className="flex-shrink-0 border-b-4 border-border bg-card pixel-inset">
         <div className="px-2 sm:px-4 py-2 sm:py-3">
           {/* Mobile: Stacked Layout, Desktop: Single Row */}
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
@@ -499,7 +499,7 @@ export default function PixelArtEditor() {
             <div className="flex items-center justify-between sm:justify-start gap-2 sm:gap-3">
               {/* Color Selector */}
               <div
-                className="w-11 h-11 sm:w-12 sm:h-12 border-2 border-border rounded-lg flex-shrink-0 shadow-sm cursor-pointer active:scale-95 sm:hover:scale-105 transition-transform"
+                className="w-11 h-11 sm:w-12 sm:h-12 border-4 border-border flex-shrink-0 shadow-pixel cursor-pointer active:scale-95 sm:hover:scale-105 transition-transform pixel-button pixel-crisp"
                 onClick={() => setColorsOpen(true)}
                 style={{
                   backgroundColor:
@@ -580,7 +580,7 @@ export default function PixelArtEditor() {
                   size="icon"
                   onClick={undo}
                   disabled={!canUndo}
-                  className="h-11 w-11 sm:h-10 sm:w-10"
+                  className="h-11 w-11 sm:h-10 sm:w-10 pixel-button font-retro"
                   title="Undo (Ctrl+Z)"
                 >
                   <Undo2 className="h-5 w-5" />
@@ -590,7 +590,7 @@ export default function PixelArtEditor() {
                   size="icon"
                   onClick={redo}
                   disabled={!canRedo}
-                  className="h-11 w-11 sm:h-10 sm:w-10"
+                  className="h-11 w-11 sm:h-10 sm:w-10 pixel-button font-retro"
                   title="Redo (Ctrl+Y)"
                 >
                   <Redo2 className="h-5 w-5" />
@@ -598,7 +598,7 @@ export default function PixelArtEditor() {
                 
                 <Sheet open={layersOpen} onOpenChange={setLayersOpen}>
                   <SheetTrigger asChild>
-                    <Button variant="outline" size="icon" className="h-11 w-11 sm:h-10 sm:w-10" title="Layers">
+                    <Button variant="outline" size="icon" className="h-11 w-11 sm:h-10 sm:w-10 pixel-button font-retro" title="Layers">
                       <Layers className="h-5 w-5" />
                     </Button>
                   </SheetTrigger>
@@ -618,14 +618,14 @@ export default function PixelArtEditor() {
 
                 <Sheet open={transformOpen} onOpenChange={setTransformOpen}>
                   <SheetTrigger asChild>
-                    <Button variant="outline" size="icon" className="h-11 w-11 sm:h-10 sm:w-10" title="Transform">
+                    <Button variant="outline" size="icon" className="h-11 w-11 sm:h-10 sm:w-10 pixel-button font-retro" title="Transform">
                       <FlipHorizontal2 className="h-5 w-5" />
                     </Button>
                   </SheetTrigger>
-                  <SheetContent side="right" className="w-full sm:w-[300px] overflow-y-auto">
+                  <SheetContent side="right" className="w-full sm:w-[300px] overflow-y-auto pixel-card border-l-4">
                     <SheetHeader>
-                      <SheetTitle>Transform</SheetTitle>
-                      <SheetDescription>
+                      <SheetTitle className="font-pixel text-primary">TRANSFORM</SheetTitle>
+                      <SheetDescription className="font-retro">
                         Rotate, flip, and transform your canvas
                       </SheetDescription>
                     </SheetHeader>
@@ -643,14 +643,14 @@ export default function PixelArtEditor() {
                 
                 <Sheet open={controlsOpen} onOpenChange={setControlsOpen}>
                   <SheetTrigger asChild>
-                    <Button variant="outline" size="icon" className="h-11 w-11 sm:h-10 sm:w-10" title="More Options">
+                    <Button variant="outline" size="icon" className="h-11 w-11 sm:h-10 sm:w-10 pixel-button font-retro" title="More Options">
                       <Settings className="h-5 w-5" />
                     </Button>
                   </SheetTrigger>
-                  <SheetContent side="right" className="w-full sm:w-[300px] overflow-y-auto">
+                  <SheetContent side="right" className="w-full sm:w-[300px] overflow-y-auto pixel-card border-l-4">
                     <SheetHeader>
-                      <SheetTitle>Controls</SheetTitle>
-                      <SheetDescription>
+                      <SheetTitle className="font-pixel text-primary">CONTROLS</SheetTitle>
+                      <SheetDescription className="font-retro">
                         Export and manage your canvas
                       </SheetDescription>
                     </SheetHeader>
