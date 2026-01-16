@@ -2,6 +2,13 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Palette, Sparkles, Grid3x3, Zap } from "lucide-react";
 
 const CANVAS_SIZES = [
@@ -17,9 +24,15 @@ export default function WelcomePage() {
   const navigate = useNavigate();
   const [selectedSize, setSelectedSize] = useState(32);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [showSizeDialog, setShowSizeDialog] = useState(false);
 
   const handleStartDrawing = () => {
+    setShowSizeDialog(true);
+  };
+
+  const handleSizeConfirm = () => {
     setIsAnimating(true);
+    setShowSizeDialog(false);
     setTimeout(() => {
       navigate(`/editor?size=${selectedSize}`);
     }, 300);
@@ -33,118 +46,133 @@ export default function WelcomePage() {
       </div>
       {/* Main Content */}
       <div className="relative flex-1 flex items-center justify-center px-4 sm:px-6 xl:px-8 py-6 sm:py-8">
-        <div className="w-full max-w-4xl space-y-5 sm:space-y-8 animate-fade-in">
+        <div className="w-full max-w-4xl space-y-8 sm:space-y-12 animate-fade-in">
           {/* Hero Section */}
-          <div className="text-center space-y-2.5 sm:space-y-4 animate-slide-down">
-            <div className="flex items-center justify-center gap-3 mb-3 sm:mb-6">
+          <div className="text-center space-y-4 sm:space-y-6 animate-slide-down">
+            <div className="flex items-center justify-center gap-3 mb-6 sm:mb-8">
               <div className="relative">
                 <div className="absolute inset-0 bg-primary/20 blur-xl animate-pulse" />
-                <div className="relative flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 xl:w-20 xl:h-20 bg-primary text-primary-foreground pixel-border-primary shadow-pixel animate-bounce-slow">
-                  <Palette className="h-6 w-6 sm:h-8 sm:w-8 xl:h-10 xl:w-10" />
+                <div className="relative flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 xl:w-24 xl:h-24 bg-primary text-primary-foreground pixel-border-primary shadow-pixel animate-bounce-slow">
+                  <Palette className="h-8 w-8 sm:h-10 sm:w-10 xl:h-12 xl:w-12" />
                 </div>
               </div>
             </div>
             
-            <h1 className="text-2xl sm:text-4xl xl:text-6xl font-pixel pixel-heading text-primary animate-pixel-glow px-2 leading-tight">
+            <h1 className="text-4xl sm:text-6xl xl:text-7xl font-pixel pixel-heading text-primary animate-pixel-glow px-2 leading-tight">
               PIXEL ART PRO
             </h1>
             
-            <p className="text-sm sm:text-base xl:text-lg text-muted-foreground font-retro max-w-2xl mx-auto animate-fade-in-delay px-2 leading-relaxed">
+            <p className="text-base sm:text-lg xl:text-xl text-muted-foreground font-retro max-w-2xl mx-auto animate-fade-in-delay px-2 leading-relaxed">
               Create stunning pixel art with professional tools and effects
             </p>
 
             {/* Feature Pills */}
-            <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 pt-2 sm:pt-4 animate-fade-in-delay-2 px-2">
-              <div className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-1.5 sm:py-2 bg-card border-2 border-border rounded-full pixel-card-sm shadow-sm">
-                <Sparkles className="h-3 w-3 sm:h-4 sm:w-4 text-primary flex-shrink-0" />
-                <span className="text-xs sm:text-sm font-retro whitespace-nowrap">Layers</span>
+            <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 pt-4 sm:pt-6 animate-fade-in-delay-2 px-2">
+              <div className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-card border-2 border-border rounded-full pixel-card-sm shadow-sm">
+                <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0" />
+                <span className="text-sm sm:text-base font-retro whitespace-nowrap">Layers</span>
               </div>
-              <div className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-1.5 sm:py-2 bg-card border-2 border-border rounded-full pixel-card-sm shadow-sm">
-                <Grid3x3 className="h-3 w-3 sm:h-4 sm:w-4 text-primary flex-shrink-0" />
-                <span className="text-xs sm:text-sm font-retro whitespace-nowrap">Blend Modes</span>
+              <div className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-card border-2 border-border rounded-full pixel-card-sm shadow-sm">
+                <Grid3x3 className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0" />
+                <span className="text-sm sm:text-base font-retro whitespace-nowrap">Blend Modes</span>
               </div>
-              <div className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-1.5 sm:py-2 bg-card border-2 border-border rounded-full pixel-card-sm shadow-sm">
-                <Zap className="h-3 w-3 sm:h-4 sm:w-4 text-primary flex-shrink-0" />
-                <span className="text-xs sm:text-sm font-retro whitespace-nowrap">Advanced Tools</span>
+              <div className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-card border-2 border-border rounded-full pixel-card-sm shadow-sm">
+                <Zap className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0" />
+                <span className="text-sm sm:text-base font-retro whitespace-nowrap">Advanced Tools</span>
               </div>
+            </div>
+
+            {/* Start Button */}
+            <div className="flex flex-col items-center gap-4 pt-8 sm:pt-12 animate-fade-in-delay-3">
+              <Button
+                onClick={handleStartDrawing}
+                disabled={isAnimating}
+                size="lg"
+                className={`
+                  w-full max-w-xs sm:w-auto px-8 sm:px-16 py-6 sm:py-8 
+                  text-lg sm:text-xl font-pixel
+                  pixel-button shadow-pixel hover:shadow-pixel-lg
+                  transition-all duration-200
+                  min-h-[60px] sm:min-h-[72px]
+                  active:scale-95 touch-manipulation
+                  ${isAnimating ? "animate-pulse" : "animate-bounce-subtle"}
+                `}
+              >
+                <Palette className="mr-3 h-6 w-6 sm:h-7 sm:w-7 flex-shrink-0" />
+                <span className="whitespace-nowrap">START DRAWING</span>
+              </Button>
             </div>
           </div>
 
-          {/* Canvas Size Selection */}
-          <Card className="pixel-card border-4 border-border shadow-pixel animate-slide-up">
-            <CardHeader className="text-center pb-3 sm:pb-6 px-3 sm:px-6">
-              <CardTitle className="font-pixel text-lg sm:text-xl xl:text-2xl text-primary leading-tight">
-                CHOOSE CANVAS SIZE
-              </CardTitle>
-              <CardDescription className="font-retro text-xs sm:text-sm xl:text-base pt-1">
-                Select your canvas dimensions to get started
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4 sm:space-y-6 px-3 sm:px-6">
-              {/* Size Grid - Mobile Optimized */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-2 sm:gap-3">
-                {CANVAS_SIZES.map((option) => (
-                  <button
-                    key={option.size}
-                    onClick={() => setSelectedSize(option.size)}
-                    className={`
-                      relative group p-2.5 sm:p-4 rounded-lg border-2 transition-all duration-200
-                      min-h-[68px] sm:min-h-[80px]
-                      active:scale-95 touch-manipulation
-                      ${
-                        selectedSize === option.size
-                          ? "border-primary bg-primary/10 shadow-lg scale-105"
-                          : "border-border bg-card hover:border-primary/50 hover:bg-primary/5 active:bg-primary/10"
-                      }
-                    `}
-                  >
-                    <div className="text-center space-y-0.5 sm:space-y-1">
-                      <div className="font-pixel text-sm sm:text-base xl:text-lg text-primary leading-tight">
-                        {option.label}
-                      </div>
-                      <div className="text-xs text-muted-foreground font-retro leading-tight">
-                        {option.description}
-                      </div>
-                    </div>
-                    {selectedSize === option.size && (
-                      <div className="absolute inset-0 border-2 border-primary rounded-lg animate-pulse pointer-events-none" />
-                    )}
-                  </button>
-                ))}
-              </div>
-
-              {/* Start Button - Mobile Optimized */}
-              <div className="flex flex-col items-center gap-2.5 sm:gap-4 pt-2 sm:pt-4">
-                <Button
-                  onClick={handleStartDrawing}
-                  disabled={isAnimating}
-                  size="lg"
-                  className={`
-                    w-full sm:w-auto px-6 sm:px-12 py-4 sm:py-6 
-                    text-sm sm:text-base xl:text-lg font-pixel
-                    pixel-button shadow-pixel hover:shadow-pixel-lg
-                    transition-all duration-200
-                    min-h-[52px] sm:min-h-[64px]
-                    active:scale-95 touch-manipulation
-                    ${isAnimating ? "animate-pulse" : "animate-bounce-subtle"}
-                  `}
-                >
-                  <Palette className="mr-2 h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
-                  <span className="whitespace-nowrap">START DRAWING</span>
-                </Button>
-                <p className="text-xs sm:text-sm text-muted-foreground font-retro">
-                  Selected: <span className="text-primary font-bold">{selectedSize}×{selectedSize}</span> pixels
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Footer Info - Mobile Optimized */}
-          <div className="text-center text-xs sm:text-sm text-muted-foreground font-retro animate-fade-in-delay-3 px-4 pb-6 sm:pb-2">
+          {/* Footer Info */}
+          <div className="text-center text-sm sm:text-base text-muted-foreground font-retro animate-fade-in-delay-3 px-4 pb-6 sm:pb-2">
             <p className="leading-relaxed">✨ Professional pixel art editor with layers, blend modes, and advanced tools</p>
           </div>
         </div>
       </div>
+
+      {/* Canvas Size Selection Dialog */}
+      <Dialog open={showSizeDialog} onOpenChange={setShowSizeDialog}>
+        <DialogContent className="pixel-card border-4 border-border shadow-pixel max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="font-pixel text-2xl sm:text-3xl text-primary text-center leading-tight">
+              CHOOSE CANVAS SIZE
+            </DialogTitle>
+            <DialogDescription className="font-retro text-sm sm:text-base text-center pt-2">
+              Select your canvas dimensions to get started
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-6 pt-4">
+            {/* Size Grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {CANVAS_SIZES.map((option) => (
+                <button
+                  key={option.size}
+                  onClick={() => setSelectedSize(option.size)}
+                  className={`
+                    relative group p-4 sm:p-5 rounded-lg border-2 transition-all duration-200
+                    min-h-[80px] sm:min-h-[90px]
+                    active:scale-95 touch-manipulation
+                    ${
+                      selectedSize === option.size
+                        ? "border-primary bg-primary/10 shadow-lg scale-105"
+                        : "border-border bg-card hover:border-primary/50 hover:bg-primary/5 active:bg-primary/10"
+                    }
+                  `}
+                >
+                  <div className="text-center space-y-1">
+                    <div className="font-pixel text-lg sm:text-xl text-primary leading-tight">
+                      {option.label}
+                    </div>
+                    <div className="text-sm text-muted-foreground font-retro leading-tight">
+                      {option.description}
+                    </div>
+                  </div>
+                  {selectedSize === option.size && (
+                    <div className="absolute inset-0 border-2 border-primary rounded-lg animate-pulse pointer-events-none" />
+                  )}
+                </button>
+              ))}
+            </div>
+
+            {/* Confirm Button */}
+            <div className="flex flex-col items-center gap-3 pt-2">
+              <Button
+                onClick={handleSizeConfirm}
+                size="lg"
+                className="w-full sm:w-auto px-12 py-6 text-lg font-pixel pixel-button shadow-pixel hover:shadow-pixel-lg min-h-[56px] active:scale-95 touch-manipulation"
+              >
+                <Palette className="mr-2 h-5 w-5 flex-shrink-0" />
+                <span className="whitespace-nowrap">CONFIRM & START</span>
+              </Button>
+              <p className="text-sm text-muted-foreground font-retro">
+                Selected: <span className="text-primary font-bold">{selectedSize}×{selectedSize}</span> pixels
+              </p>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

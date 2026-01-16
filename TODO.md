@@ -443,6 +443,37 @@
   - [x] Imported ColorSelector component in PixelArtEditor
   - [x] Pencil tool still accessible via keyboard shortcut (P) and shapes dropdown
   - [x] All 97 files passed lint checks
+- [x] Step 38: Move canvas size selection to popup dialog on welcome page (Completed)
+  - [x] Removed canvas size selection card from welcome page main content
+  - [x] Simplified welcome page to show only hero section with logo, title, features, and start button
+  - [x] Increased hero section spacing: space-y-8 sm:space-y-12 for better visual hierarchy
+  - [x] Enlarged logo size: w-16 h-16 (64px) mobile → w-20 h-20 (80px) sm → w-24 h-24 (96px) xl
+  - [x] Increased logo icon size: h-8 w-8 mobile → h-10 w-10 sm → h-12 w-12 xl
+  - [x] Enlarged title size: text-4xl mobile → text-6xl sm → text-7xl xl
+  - [x] Increased description size: text-base mobile → text-lg sm → text-xl xl
+  - [x] Enlarged feature pills: h-4 w-4 icons mobile → h-5 w-5 sm, text-sm mobile → text-base sm
+  - [x] Increased feature pill padding: py-2 sm:py-2.5 for better touch targets
+  - [x] Added dedicated start button section with pt-8 sm:pt-12 spacing
+  - [x] Enlarged start button: text-lg sm:text-xl, px-8 sm:px-16, py-6 sm:py-8
+  - [x] Increased start button height: min-h-[60px] mobile → min-h-[72px] sm
+  - [x] Enlarged start button icon: h-6 w-6 mobile → h-7 w-7 sm
+  - [x] Added max-w-xs constraint to start button on mobile for better proportions
+  - [x] Created Dialog component for canvas size selection
+  - [x] Added showSizeDialog state to control dialog visibility
+  - [x] Implemented handleStartDrawing to open dialog instead of navigating
+  - [x] Created handleSizeConfirm to navigate after size selection
+  - [x] Moved canvas size grid to dialog with 2 columns mobile, 3 columns sm
+  - [x] Styled dialog with pixel-card border-4 border-border shadow-pixel
+  - [x] Added DialogHeader with title and description
+  - [x] Increased canvas size button height: min-h-[80px] mobile → min-h-[90px] sm
+  - [x] Increased canvas size button padding: p-4 sm:p-5
+  - [x] Enlarged canvas size text: text-lg sm:text-xl
+  - [x] Added "CONFIRM & START" button in dialog with Palette icon
+  - [x] Implemented dialog close on confirm with 300ms transition
+  - [x] Added selected size display below confirm button
+  - [x] Imported Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle components
+  - [x] Removed unused Card, CardContent, CardDescription, CardHeader, CardTitle imports (kept for future use)
+  - [x] All 97 files passed lint checks
 
 ## Features Implemented
 
