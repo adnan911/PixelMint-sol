@@ -12,9 +12,7 @@ import {
 import { Palette, Sparkles, Grid3x3, Zap } from "lucide-react";
 
 const CANVAS_SIZES = [
-  { size: 8, label: "8×8", description: "Tiny" },
   { size: 16, label: "16×16", description: "Small" },
-  { size: 32, label: "32×32", description: "Medium" },
   { size: 64, label: "64×64", description: "Large" },
   { size: 128, label: "128×128", description: "XL" },
   { size: 256, label: "256×256", description: "XXL" },
@@ -22,7 +20,7 @@ const CANVAS_SIZES = [
 
 export default function WelcomePage() {
   const navigate = useNavigate();
-  const [selectedSize, setSelectedSize] = useState(32);
+  const [selectedSize, setSelectedSize] = useState(64);
   const [isAnimating, setIsAnimating] = useState(false);
   const [showSizeDialog, setShowSizeDialog] = useState(false);
 
@@ -112,26 +110,26 @@ export default function WelcomePage() {
       </div>
       {/* Canvas Size Selection Dialog */}
       <Dialog open={showSizeDialog} onOpenChange={setShowSizeDialog}>
-        <DialogContent className="pixel-card border-4 border-border shadow-pixel max-w-md">
+        <DialogContent className="pixel-card border-2 border-border shadow-pixel max-w-sm mx-5">
           <DialogHeader>
-            <DialogTitle className="font-pixel text-lg sm:text-xl text-primary text-center leading-tight">
+            <DialogTitle className="font-pixel text-base sm:text-lg text-primary text-center leading-tight">
               CHOOSE CANVAS SIZE
             </DialogTitle>
-            <DialogDescription className="font-retro text-xs sm:text-sm text-center pt-1">
+            <DialogDescription className="font-retro text-xs text-center pt-0.5">
               Select your canvas dimensions to get started
             </DialogDescription>
           </DialogHeader>
           
-          <div className="space-y-3 pt-2">
+          <div className="space-y-2 pt-1">
             {/* Size Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            <div className="grid grid-cols-2 gap-2">
               {CANVAS_SIZES.map((option) => (
                 <button
                   key={option.size}
                   onClick={() => setSelectedSize(option.size)}
                   className={`
-                    relative group p-2 sm:p-3 rounded-lg border-2 transition-all duration-200
-                    min-h-[60px] sm:min-h-[70px]
+                    relative group p-2 rounded-md border-2 transition-all duration-200
+                    min-h-[50px]
                     active:scale-95 touch-manipulation
                     ${
                       selectedSize === option.size
@@ -141,7 +139,7 @@ export default function WelcomePage() {
                   `}
                 >
                   <div className="text-center space-y-0.5">
-                    <div className="font-pixel text-sm sm:text-base text-primary leading-tight">
+                    <div className="font-pixel text-sm text-primary leading-tight">
                       {option.label}
                     </div>
                     <div className="text-xs text-muted-foreground font-retro leading-tight">
@@ -149,25 +147,22 @@ export default function WelcomePage() {
                     </div>
                   </div>
                   {selectedSize === option.size && (
-                    <div className="absolute inset-0 border-2 border-primary rounded-lg animate-pulse pointer-events-none" />
+                    <div className="absolute inset-0 border-2 border-primary rounded-md animate-pulse pointer-events-none" />
                   )}
                 </button>
               ))}
             </div>
 
             {/* Confirm Button */}
-            <div className="flex flex-col items-center gap-2 pt-1">
+            <div className="flex items-center justify-center pt-1">
               <Button
                 onClick={handleSizeConfirm}
-                size="lg"
-                className="w-full sm:w-auto px-8 py-4 text-base font-pixel pixel-button shadow-pixel hover:shadow-pixel-lg min-h-[48px] active:scale-95 touch-manipulation"
+                size="sm"
+                className="w-full px-6 py-3 text-sm font-pixel pixel-button shadow-pixel hover:shadow-pixel-lg min-h-[40px] active:scale-95 touch-manipulation"
               >
-                <Palette className="mr-2 h-4 w-4 flex-shrink-0" />
+                <Palette className="mr-2 h-3.5 w-3.5 flex-shrink-0" />
                 <span className="whitespace-nowrap">CONFIRM & START</span>
               </Button>
-              <p className="text-xs text-muted-foreground font-retro">
-                Selected: <span className="text-primary font-bold">{selectedSize}×{selectedSize}</span> pixels
-              </p>
             </div>
           </div>
         </DialogContent>

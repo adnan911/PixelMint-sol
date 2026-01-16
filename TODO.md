@@ -511,6 +511,34 @@
   - [x] Reduced selected size text: text-sm → text-xs
   - [x] Overall dialog size reduced by approximately 50% (from 672px to 448px width)
   - [x] All 97 files passed lint checks
+- [x] Step 41: Further reduce dialog size and simplify canvas options (Completed)
+  - [x] Reduced canvas size options from 6 to 4: Small (16×16), Large (64×64), XL (128×128), XXL (256×256)
+  - [x] Removed Tiny (8×8) and Medium (32×32) options for simplified selection
+  - [x] Changed default selected size from 32 to 64 (Large)
+  - [x] Reduced dialog max-width from max-w-md (448px) to max-w-sm (384px)
+  - [x] Added 20px margins on left and right sides with mx-5 class
+  - [x] Removed custom hardcoded margins (ml-[0px] mr-[10px] mt-[30px] mb-[30px])
+  - [x] Reduced border width from border-4 to border-2 for thinner frame
+  - [x] Reduced title size: text-lg sm:text-xl → text-base sm:text-lg
+  - [x] Reduced description size: text-xs sm:text-sm → text-xs (removed sm variant)
+  - [x] Reduced description top padding: pt-1 → pt-0.5
+  - [x] Reduced main content spacing: space-y-3 → space-y-2
+  - [x] Reduced main content top padding: pt-2 → pt-1
+  - [x] Changed grid from 2-3 columns to fixed 2 columns (removed sm:grid-cols-3)
+  - [x] Reduced canvas size button padding: p-2 sm:p-3 → p-2 (removed sm variant)
+  - [x] Reduced canvas size button height: min-h-[60px] sm:min-h-[70px] → min-h-[50px]
+  - [x] Changed border radius from rounded-lg to rounded-md for smaller corners
+  - [x] Reduced canvas size button text: text-sm sm:text-base → text-sm (removed sm variant)
+  - [x] Reduced confirm button size from size="lg" to size="sm"
+  - [x] Reduced confirm button padding: px-8 py-4 → px-6 py-3
+  - [x] Reduced confirm button text size: text-base → text-sm
+  - [x] Reduced confirm button height: min-h-[48px] → min-h-[40px]
+  - [x] Reduced confirm button icon: h-4 w-4 → h-3.5 w-3.5
+  - [x] Changed button container from flex-col to flex with justify-center
+  - [x] Removed "Selected: 256×256 pixels" text below confirm button
+  - [x] Reduced button container spacing: gap-2 → removed (no gap needed)
+  - [x] Overall dialog size reduced by approximately 65% from original (from 672px to 384px width)
+  - [x] All 97 files passed lint checks
 
 ## Features Implemented
 
