@@ -410,13 +410,13 @@ export default function PixelArtEditor() {
   return (
     <div className="fixed inset-0 flex flex-col bg-background overflow-hidden">
       {/* Header with Title */}
-      <header className="flex-shrink-0 border-b border-border bg-card px-4 py-2">
+      <header className="flex-shrink-0 border-b border-border bg-card px-2 sm:px-4 py-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary text-primary-foreground">
-              <Palette className="h-5 w-5" />
+            <div className="flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-primary text-primary-foreground">
+              <Palette className="h-4 w-4 sm:h-5 sm:w-5" />
             </div>
-            <h1 className="text-lg font-bold text-foreground">
+            <h1 className="text-base sm:text-lg font-bold text-foreground">
               Pixel Art Pro
             </h1>
           </div>
@@ -426,23 +426,24 @@ export default function PixelArtEditor() {
             variant="default"
             size="sm"
             onClick={handleExport}
-            className="gap-2"
+            className="gap-1 sm:gap-2 h-8 sm:h-9 px-2 sm:px-3"
           >
             <Download className="h-4 w-4" />
-            <span className="hidden @sm:inline">Export</span>
+            <span className="text-xs sm:text-sm">Export</span>
           </Button>
         </div>
       </header>
 
       {/* Top Toolbar - Main Controls */}
       <div className="flex-shrink-0 border-b border-border bg-card">
-        <div className="px-4 py-3">
-          {/* Single Row: Color, Drawing Tools, Selection Tools, Action Buttons */}
-          <div className="flex items-center justify-between gap-3">
-            {/* Left: Color Selector */}
-            <div className="flex items-center gap-2">
+        <div className="px-2 sm:px-4 py-2 sm:py-3">
+          {/* Mobile: Stacked Layout, Desktop: Single Row */}
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+            {/* Row 1 (Mobile) / Left (Desktop): Color + Drawing Tools */}
+            <div className="flex items-center justify-between sm:justify-start gap-2 sm:gap-3">
+              {/* Color Selector */}
               <div
-                className="w-12 h-12 border-2 border-border rounded-lg flex-shrink-0 shadow-sm cursor-pointer hover:scale-105 transition-transform"
+                className="w-11 h-11 sm:w-12 sm:h-12 border-2 border-border rounded-lg flex-shrink-0 shadow-sm cursor-pointer active:scale-95 sm:hover:scale-105 transition-transform"
                 onClick={() => setColorsOpen(true)}
                 style={{
                   backgroundColor:
@@ -458,7 +459,7 @@ export default function PixelArtEditor() {
               />
               
               <Sheet open={colorsOpen} onOpenChange={setColorsOpen}>
-                <SheetContent side="bottom" className="h-[80vh] overflow-y-auto">
+                <SheetContent side="bottom" className="h-[85vh] overflow-y-auto">
                   <SheetHeader>
                     <SheetTitle>Color & Brush Settings</SheetTitle>
                     <SheetDescription>
@@ -502,108 +503,114 @@ export default function PixelArtEditor() {
                   </Tabs>
                 </SheetContent>
               </Sheet>
+
+              {/* Drawing Tools - Scrollable on mobile */}
+              <div className="flex-1 overflow-x-auto sm:overflow-visible">
+                <DrawingToolbar currentTool={currentTool} onToolChange={setCurrentTool} />
+              </div>
             </div>
 
-            {/* Center: Drawing Tools + Selection Tools */}
-            <div className="flex items-center gap-3">
-              <DrawingToolbar currentTool={currentTool} onToolChange={setCurrentTool} />
-              <div className="w-px h-8 bg-border" />
-              <SelectionToolbar currentTool={currentTool} onToolChange={setCurrentTool} />
-            </div>
+            {/* Row 2 (Mobile) / Center+Right (Desktop): Selection Tools + Actions */}
+            <div className="flex items-center justify-between gap-2 sm:gap-3">
+              {/* Selection Tools */}
+              <div className="flex-1 sm:flex-initial">
+                <SelectionToolbar currentTool={currentTool} onToolChange={setCurrentTool} />
+              </div>
 
-            {/* Right: Action Buttons */}
-            <div className="flex items-center gap-1">
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={undo}
-                disabled={!canUndo}
-                className="h-10 w-10"
-                title="Undo (Ctrl+Z)"
-              >
-                <Undo2 className="h-5 w-5" />
-              </Button>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={redo}
-                disabled={!canRedo}
-                className="h-10 w-10"
-                title="Redo (Ctrl+Y)"
-              >
-                <Redo2 className="h-5 w-5" />
-              </Button>
-              
-              <Sheet open={layersOpen} onOpenChange={setLayersOpen}>
-                <SheetTrigger asChild>
-                  <Button variant="outline" size="icon" className="h-10 w-10" title="Layers">
-                    <Layers className="h-5 w-5" />
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="right" className="w-[320px] p-0">
-                  <LayerPanel
-                    layers={layers}
-                    activeLayerId={activeLayerId}
-                    onLayerSelect={handleLayerSelect}
-                    onLayerCreate={handleLayerCreate}
-                    onLayerDuplicate={handleLayerDuplicate}
-                    onLayerDelete={handleLayerDelete}
-                    onLayerUpdate={handleLayerUpdate}
-                    onLayerReorder={handleLayerReorder}
-                  />
-                </SheetContent>
-              </Sheet>
-              
-              <Sheet open={controlsOpen} onOpenChange={setControlsOpen}>
-                <SheetTrigger asChild>
-                  <Button variant="outline" size="icon" className="h-10 w-10" title="More Options">
-                    <Settings className="h-5 w-5" />
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="right" className="w-[300px] overflow-y-auto">
-                  <SheetHeader>
-                    <SheetTitle>Controls</SheetTitle>
-                    <SheetDescription>
-                      Transform, export, and manage your canvas
-                    </SheetDescription>
-                  </SheetHeader>
-                  <Tabs defaultValue="controls" className="mt-6">
-                    <TabsList className="grid w-full grid-cols-2">
-                      <TabsTrigger value="controls">Controls</TabsTrigger>
-                      <TabsTrigger value="transform">Transform</TabsTrigger>
-                    </TabsList>
-                    <TabsContent value="controls" className="mt-4">
-                      <Controls
-                        canvasGrid={canvasGrid}
-                        canvasSize={CANVAS_SIZE}
-                        showGrid={showGrid}
-                        canUndo={canUndo}
-                        canRedo={canRedo}
-                        onUndo={undo}
-                        onRedo={redo}
-                        onClear={handleClear}
-                        onToggleGrid={handleToggleGrid}
-                      />
-                    </TabsContent>
-                    <TabsContent value="transform" className="mt-4">
-                      <TransformControls
-                        fillMode={fillMode}
-                        onFillModeChange={setFillMode}
-                        onRotate={handleRotate}
-                        onFlipHorizontal={handleFlipHorizontal}
-                        onFlipVertical={handleFlipVertical}
-                      />
-                    </TabsContent>
-                  </Tabs>
-                </SheetContent>
-              </Sheet>
+              {/* Action Buttons */}
+              <div className="flex items-center gap-1">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={undo}
+                  disabled={!canUndo}
+                  className="h-11 w-11 sm:h-10 sm:w-10"
+                  title="Undo (Ctrl+Z)"
+                >
+                  <Undo2 className="h-5 w-5" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={redo}
+                  disabled={!canRedo}
+                  className="h-11 w-11 sm:h-10 sm:w-10"
+                  title="Redo (Ctrl+Y)"
+                >
+                  <Redo2 className="h-5 w-5" />
+                </Button>
+                
+                <Sheet open={layersOpen} onOpenChange={setLayersOpen}>
+                  <SheetTrigger asChild>
+                    <Button variant="outline" size="icon" className="h-11 w-11 sm:h-10 sm:w-10" title="Layers">
+                      <Layers className="h-5 w-5" />
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="right" className="w-full sm:w-[320px] p-0">
+                    <LayerPanel
+                      layers={layers}
+                      activeLayerId={activeLayerId}
+                      onLayerSelect={handleLayerSelect}
+                      onLayerCreate={handleLayerCreate}
+                      onLayerDuplicate={handleLayerDuplicate}
+                      onLayerDelete={handleLayerDelete}
+                      onLayerUpdate={handleLayerUpdate}
+                      onLayerReorder={handleLayerReorder}
+                    />
+                  </SheetContent>
+                </Sheet>
+                
+                <Sheet open={controlsOpen} onOpenChange={setControlsOpen}>
+                  <SheetTrigger asChild>
+                    <Button variant="outline" size="icon" className="h-11 w-11 sm:h-10 sm:w-10" title="More Options">
+                      <Settings className="h-5 w-5" />
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="right" className="w-full sm:w-[300px] overflow-y-auto">
+                    <SheetHeader>
+                      <SheetTitle>Controls</SheetTitle>
+                      <SheetDescription>
+                        Transform, export, and manage your canvas
+                      </SheetDescription>
+                    </SheetHeader>
+                    <Tabs defaultValue="controls" className="mt-6">
+                      <TabsList className="grid w-full grid-cols-2">
+                        <TabsTrigger value="controls">Controls</TabsTrigger>
+                        <TabsTrigger value="transform">Transform</TabsTrigger>
+                      </TabsList>
+                      <TabsContent value="controls" className="mt-4">
+                        <Controls
+                          canvasGrid={canvasGrid}
+                          canvasSize={CANVAS_SIZE}
+                          showGrid={showGrid}
+                          canUndo={canUndo}
+                          canRedo={canRedo}
+                          onUndo={undo}
+                          onRedo={redo}
+                          onClear={handleClear}
+                          onToggleGrid={handleToggleGrid}
+                        />
+                      </TabsContent>
+                      <TabsContent value="transform" className="mt-4">
+                        <TransformControls
+                          fillMode={fillMode}
+                          onFillModeChange={setFillMode}
+                          onRotate={handleRotate}
+                          onFlipHorizontal={handleFlipHorizontal}
+                          onFlipVertical={handleFlipVertical}
+                        />
+                      </TabsContent>
+                    </Tabs>
+                  </SheetContent>
+                </Sheet>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Canvas Area */}
-      <div className="flex-1 flex items-center justify-center overflow-hidden p-4 @container">
+      <div className="flex-1 flex items-center justify-center overflow-hidden p-2 sm:p-4 @container">
         <div className="w-full h-full flex items-center justify-center">
           <EnhancedPixelCanvas
             canvasGrid={canvasGrid}
@@ -623,14 +630,14 @@ export default function PixelArtEditor() {
       </div>
 
       {/* Bottom Status Bar */}
-      <div className="flex-shrink-0 border-t border-border bg-card px-4 py-2">
-        <div className="text-center text-xs text-muted-foreground">
+      <div className="flex-shrink-0 border-t border-border bg-card px-2 sm:px-4 py-2">
+        <div className="text-center text-xs sm:text-sm text-muted-foreground">
           <span className="font-medium text-foreground capitalize">{currentTool}</span>
-          {brushMode !== "normal" && ` | ${brushMode.charAt(0).toUpperCase() + brushMode.slice(1)} Mode`}
-          {activeLayer && ` | ${activeLayer.name}`}
-          {activeLayer?.locked && " (Locked)"}
-          {activeLayer?.alphaLock && " (Alpha Lock)"}
-          {selection.active && " | Selection Active"}
+          {brushMode !== "normal" && ` | ${brushMode.charAt(0).toUpperCase() + brushMode.slice(1)}`}
+          {activeLayer && <span className="hidden sm:inline"> | {activeLayer.name}</span>}
+          {activeLayer?.locked && <span className="hidden sm:inline"> (Locked)</span>}
+          {activeLayer?.alphaLock && <span className="hidden sm:inline"> (Alpha Lock)</span>}
+          {selection.active && " | Selection"}
         </div>
       </div>
     </div>
