@@ -1,4 +1,4 @@
-# Task: Build Advanced Pixel Art Drawing Web Application with Layer System
+# Task: Build Advanced Pixel Art Drawing Web Application with Layer System and Color Management
 
 ## Plan
 - [x] Step 1: Create type definitions and data models (Completed)
@@ -67,7 +67,23 @@
   - [x] Alpha lock
   - [x] Blend modes (12 modes)
   - [x] Layer merging for display
-- [x] Step 10: Run lint and fix any issues (Completed)
+- [x] Step 10: Color and palette management (Completed)
+  - [x] Enhanced color picker with RGB/HSV sliders
+  - [x] Hex code input with validation
+  - [x] Palette manager with create/save/delete
+  - [x] Import/export palettes (JSON and GPL formats)
+  - [x] Drag-and-drop color sorting in palettes
+  - [x] Default palettes (Default, Grayscale, PICO-8)
+  - [x] Add/remove colors from palettes
+  - [x] Color conversion utilities (RGB/HSV/Hex)
+- [x] Step 11: Dynamic brush modes (Completed)
+  - [x] Normal mode (standard drawing)
+  - [x] Rainbow mode (cycles hue per stroke)
+  - [x] Random mode (random palette color per pixel)
+  - [x] Dither mode (Bayer matrix patterns)
+  - [x] Dither pattern selector (2x2, 4x4, 8x8)
+  - [x] Brush mode selector component
+- [x] Step 12: Run lint and fix any issues (Completed)
 
 ## Features Implemented
 
@@ -127,6 +143,42 @@
 - **Layer Naming**: Double-click to rename layers
 - **Active Layer**: Highlighted with border, shown in status bar
 
+### Color & Palette Management
+- **Enhanced Color Picker**:
+  - Hex code input with validation
+  - RGB sliders (0-255 for R, G, B)
+  - HSV sliders (H: 0-360°, S: 0-100%, V: 0-100%)
+  - HTML5 color picker integration
+  - Real-time color preview
+  - Quick palette (16 preset colors)
+- **Palette Manager**:
+  - Create custom palettes with names
+  - Save/load palettes
+  - Import palettes (JSON, GPL/GIMP format)
+  - Export palettes (JSON, GPL format)
+  - Drag-and-drop color reordering
+  - Add colors to palette
+  - Remove colors from palette
+  - Default palettes: Default (16 colors), Grayscale (12 shades), PICO-8 (16 colors)
+  - Multiple palette support with switcher
+  - Delete custom palettes (keep at least one)
+- **Color Utilities**:
+  - RGB ↔ Hex conversion
+  - RGB ↔ HSV conversion
+  - Hue shifting for rainbow mode
+  - Color validation
+
+### Dynamic Brush Modes
+- **Normal Mode**: Standard pixel-by-pixel drawing
+- **Rainbow Mode**: Automatically cycles hue with each stroke for gradient effects
+- **Random Mode**: Picks random color from active palette for each pixel
+- **Dither Mode**: Applies Bayer matrix dithering patterns for texturing
+  - Bayer 2×2 (fine pattern)
+  - Bayer 4×4 (medium pattern)
+  - Bayer 8×8 (coarse pattern)
+- **Brush Mode Selector**: Visual buttons with icons and descriptions
+- **Status Display**: Shows active brush mode in bottom toolbar
+
 ### Navigation
 - **Pan**: Hand tool for canvas navigation
 - **Zoom**: Zoom support (1x default, extensible)
@@ -159,20 +211,25 @@
 - Touch and mouse event support
 - Responsive canvas sizing
 - Mobile-optimized drawer interface
-- 20-step undo/redo history with full layer state
+- 20-step undo/redo history with full layer and palette state
 - Clipboard system for copy/cut/paste operations
 - Real-time shape preview during drawing
 - Layer compositing with blend modes and opacity
 - Drag-and-drop layer reordering
 - Alpha lock for precise pixel editing
 - Layer merging for final display
+- Color space conversions (RGB, HSV, Hex)
+- Palette import/export (JSON, GPL formats)
+- Bayer matrix dithering algorithms (2x2, 4x4, 8x8)
+- Dynamic brush mode system
+- Palette state management with undo/redo support
 
 ## Notes
-- MVP focuses on 32×32 canvas with comprehensive toolset and layer system
+- MVP focuses on 32×32 canvas with comprehensive toolset, layer system, and color management
 - No backend/database needed - fully client-side
 - Export as PNG with transparent background support (merges all visible layers)
 - Custom vibrant color scheme with purple primary and orange secondary
-- All lint checks passed successfully
+- All lint checks passed successfully (94 files)
 - Mobile-optimized with fixed window layout
 - Touch-friendly interface with drawer controls
 - Canvas automatically resizes to fit viewport
@@ -185,3 +242,11 @@
 - Alpha lock restricts painting to existing pixels only
 - Blend modes use proper color compositing algorithms
 - Layer opacity applies during final compositing
+- Color picker with tabbed interface (Color, Palette, Brush)
+- Palettes support drag-and-drop color reordering
+- GPL format compatible with GIMP and other tools
+- Brush modes shown in status bar
+- Rainbow mode uses HSV color space for smooth hue transitions
+- Random mode respects active palette colors
+- Dither mode uses industry-standard Bayer matrices
+- All palette operations integrated with undo/redo system

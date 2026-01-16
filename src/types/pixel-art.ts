@@ -21,6 +21,10 @@ export type Tool =
 
 export type FillMode = "contiguous" | "global";
 
+export type BrushMode = "normal" | "rainbow" | "random" | "dither";
+
+export type DitherPattern = "bayer2x2" | "bayer4x4" | "bayer8x8";
+
 export type BlendMode =
   | "normal"
   | "multiply"
@@ -79,4 +83,22 @@ export interface Layer {
   locked: boolean;
   blendMode: BlendMode;
   alphaLock: boolean;
+}
+
+export interface Palette {
+  id: string;
+  name: string;
+  colors: Color[];
+}
+
+export interface RGB {
+  r: number; // 0-255
+  g: number; // 0-255
+  b: number; // 0-255
+}
+
+export interface HSV {
+  h: number; // 0-360
+  s: number; // 0-100
+  v: number; // 0-100
 }
