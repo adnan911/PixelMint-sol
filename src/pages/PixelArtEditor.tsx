@@ -479,24 +479,21 @@ export default function PixelArtEditor() {
   };
 
   return (
-    <div className="fixed inset-0 flex flex-col bg-background overflow-hidden pixel-grid">
+    <div className="fixed inset-0 flex flex-col overflow-hidden pixel-grid mt-[0px] ml-[5px] mr-[5px] bg-inherit bg-cover bg-center bg-no-repeat bg-[url(https://miaoda-edit-image.s3cdn.medo.dev/8ydy3wce8yrl/IMG-8z4s43qyofsw.jpg)]">
       {/* Header with Title */}
-      <header className="flex-shrink-0 border-b-4 border-border bg-card px-2 sm:px-4 py-2 pixel-card shadow-pixel">
+      <header className="flex-shrink-0 border-b-4 border-border bg-card px-2 sm:px-4 py-2 pixel-card shadow-pixel mt-[50px] ml-[10px] mr-[10px]">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 bg-primary text-primary-foreground pixel-border-primary">
               <Palette className="h-4 w-4 sm:h-5 sm:w-5" />
             </div>
-            <h1 className="text-sm sm:text-base font-pixel pixel-heading text-primary">
-              PIXEL ART PRO
-            </h1>
+            <h1 className="text-sm sm:text-base font-pixel pixel-heading text-primary">{"PIXEL ART PRO"}</h1>
           </div>
         </div>
       </header>
-
       {/* Top Toolbar - Main Controls */}
-      <div className="flex-shrink-0 border-b-4 border-border bg-card pixel-inset">
-        <div className="px-2 sm:px-4 py-2 sm:py-3">
+      <div className="flex-shrink-0 border-b-4 border-border bg-card pixel-inset mt-[0px] ml-[5px] mr-[5px]">
+        <div className="px-2 sm:px-4 py-2 sm:py-3 ml-[5px] mr-[10px] mt-[0px]">
           {/* Mobile: Stacked Layout, Desktop: Single Row */}
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
             {/* Row 1 (Mobile) / Left (Desktop): Color + Drawing Tools */}
@@ -713,14 +710,14 @@ export default function PixelArtEditor() {
                   <DropdownMenuContent align="end" className="w-56 pixel-card border-4 font-retro">
                     <DropdownMenuLabel className="font-pixel text-xs text-primary">OPTIONS</DropdownMenuLabel>
                     <DropdownMenuSeparator className="bg-border h-[2px]" />
-                    <DropdownMenuItem onClick={handleToggleGrid} className="cursor-pointer font-retro text-base py-3">
+                    <DropdownMenuItem onClick={handleToggleGrid} className="cursor-pointer font-retro text-base py-3 bg-[#8867eb03] bg-none">
                       <Grid3x3 className="mr-2 h-5 w-5" />
                       <span>{showGrid ? "Hide Grid" : "Show Grid"}</span>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator className="bg-border h-[2px]" />
                     <DropdownMenuItem 
                       onClick={handleClear} 
-                      className="cursor-pointer font-retro text-base py-3 text-destructive focus:text-destructive"
+                      className="cursor-pointer font-retro text-base py-3 text-destructive focus:text-destructive bg-[#ffffff] bg-none"
                     >
                       <Trash2 className="mr-2 h-5 w-5" />
                       <span>Clear Canvas</span>
@@ -732,7 +729,6 @@ export default function PixelArtEditor() {
           </div>
         </div>
       </div>
-
       {/* Canvas Area */}
       <div className="flex-1 flex items-center justify-center overflow-hidden p-2 sm:p-4 @container">
         <div className="w-full h-full flex items-center justify-center">
@@ -752,7 +748,6 @@ export default function PixelArtEditor() {
           />
         </div>
       </div>
-
       {/* Bottom Status Bar */}
       <div className="flex-shrink-0 border-t border-border bg-card px-2 sm:px-4 py-2">
         <div className="text-center text-xs sm:text-sm text-muted-foreground">
@@ -764,7 +759,6 @@ export default function PixelArtEditor() {
           {selection.active && " | Selection"}
         </div>
       </div>
-
       {/* Canvas Size Settings Dialog */}
       <CanvasSizeSettings
         currentWidth={canvasWidth}
