@@ -347,6 +347,35 @@
   - [x] Implemented navigation from welcome page to editor with selected canvas size
   - [x] Added 300ms transition animation before navigation
   - [x] All 96 files passed lint checks
+- [x] Step 35: Optimize welcome page for mobile web view (Completed)
+  - [x] Changed main container from overflow-hidden to overflow-auto for mobile scrolling
+  - [x] Reduced padding on mobile: p-3 (12px) on mobile vs p-6 (24px) on sm and p-8 (32px) on xl
+  - [x] Added vertical padding py-6 sm:py-8 to ensure content doesn't touch screen edges
+  - [x] Optimized hero logo size: w-14 h-14 (56px) on mobile, w-16 h-16 (64px) on sm, w-20 h-20 (80px) on xl
+  - [x] Reduced hero title size: text-2xl on mobile (max-sm), text-3xl default, text-5xl on sm, text-7xl on xl
+  - [x] Added horizontal padding px-2 to title to prevent text cutoff on small screens
+  - [x] Reduced description text: text-sm on mobile (max-sm), text-base default, text-lg on sm, text-xl on xl
+  - [x] Added px-4 padding to description for better mobile readability
+  - [x] Optimized feature pills: smaller icons (h-3.5 w-3.5) and text (text-xs) on mobile
+  - [x] Reduced feature pill padding: px-3 py-1.5 on mobile vs px-4 py-2 on sm
+  - [x] Reduced feature pill gaps: gap-2 on mobile vs gap-3 on sm
+  - [x] Optimized card header: reduced title size to text-lg on mobile (max-sm), text-xl default, text-2xl on sm
+  - [x] Reduced card header padding: pb-4 on mobile vs pb-6 on sm
+  - [x] Changed canvas size grid: 2 columns on mobile, 3 on sm, 6 on xl (removed md breakpoint)
+  - [x] Reduced grid gap: gap-2.5 on mobile vs gap-3 on sm
+  - [x] Added min-h-[72px] on mobile and min-h-[80px] on sm for consistent touch targets
+  - [x] Added active:scale-95 for touch feedback on canvas size buttons
+  - [x] Added active:bg-primary/10 for visual feedback on unselected buttons
+  - [x] Reduced button padding: p-3 on mobile vs p-4 on sm
+  - [x] Optimized START DRAWING button: w-full on mobile, w-auto on sm for better mobile UX
+  - [x] Added min-h-[56px] on mobile and min-h-[64px] on sm for touch-friendly button size
+  - [x] Added active:scale-95 for touch feedback on start button
+  - [x] Reduced button padding: px-8 py-5 on mobile vs px-12 py-6 on sm
+  - [x] Reduced selected size text: text-xs on mobile vs text-sm on sm
+  - [x] Added max-sm:leading-relaxed to footer text for better mobile readability
+  - [x] Added px-4 pb-4 to footer on mobile to prevent text cutoff
+  - [x] Reduced all spacing values: space-y-6 on mobile vs space-y-8 on sm
+  - [x] All 96 files passed lint checks
 
 ## Features Implemented
 
