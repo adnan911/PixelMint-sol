@@ -479,7 +479,7 @@ export default function PixelArtEditor() {
   };
 
   return (
-    <div className="fixed inset-0 flex flex-col overflow-hidden pixel-grid mt-[0px] ml-[5px] mr-[5px] bg-inherit bg-cover bg-center bg-no-repeat bg-[url(https://miaoda-edit-image.s3cdn.medo.dev/8ydy3wce8yrl/IMG-8z4s43qyofsw.jpg)]">
+    <div className="fixed inset-0 flex flex-col overflow-hidden pixel-grid mt-[0px] ml-[5px] mr-[5px] bg-inherit bg-cover bg-center bg-no-repeat bg-[url(https://miaoda-edit-image.s3cdn.medo.dev/8ydy3wce8yrl/IMG-8z4wrlhevlds.jpg)]">
       {/* Header with Title */}
       <header className="flex-shrink-0 border-b-4 border-border bg-card px-2 sm:px-4 py-2 pixel-card shadow-pixel mt-[50px] ml-[10px] mr-[10px]">
         <div className="flex items-center justify-between">
