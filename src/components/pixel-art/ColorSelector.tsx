@@ -81,7 +81,6 @@ export const ColorSelector: React.FC<ColorSelectorProps> = ({
           </div>
         </PopoverContent>
       </Popover>
-
       {/* Quick Color Slots */}
       {quickColors.map((color, index) => (
         <Popover
@@ -94,11 +93,12 @@ export const ColorSelector: React.FC<ColorSelectorProps> = ({
           <PopoverTrigger asChild>
             <Button
               variant="outline"
-              className="h-10 w-10 p-0 border-2 border-border hover:border-primary transition-colors"
+              className="h-10 w-10 p-0 border-2 border-border cursor-pointer hover:scale-110 active:scale-95 transition-transform"
               style={{ backgroundColor: color }}
               onClick={() => handleQuickColorClick(color, index)}
               onContextMenu={(e) => handleQuickColorRightClick(e, index)}
               aria-label={`Quick Color ${index + 1}`}
+              title="Click to use | Right-click to edit"
             />
           </PopoverTrigger>
           <PopoverContent className="w-64 pixel-card border-4">

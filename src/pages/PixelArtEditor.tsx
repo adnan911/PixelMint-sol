@@ -127,8 +127,6 @@ export default function PixelArtEditor() {
     "#FF0000", // Red
     "#00FF00", // Green
     "#0000FF", // Blue
-    "#FFFF00", // Yellow
-    "#FF00FF", // Magenta
   ]);
 
   // Initialize with one default layer and default palettes (memoized to prevent recreation)
@@ -834,34 +832,7 @@ export default function PixelArtEditor() {
           <div className="flex items-center gap-1 sm:gap-2">
             {footerColors.map((color, index) => (
               <div key={index} className="relative">
-                <div
-                  className="w-8 h-8 sm:w-10 sm:h-10 border-2 border-border cursor-pointer active:scale-95 sm:hover:scale-110 transition-transform pixel-crisp shadow-sm"
-                  onClick={() => handleFooterColorClick(color)}
-                  onContextMenu={(e) => {
-                    e.preventDefault();
-                    handleFooterColorEdit(index);
-                  }}
-                  onTouchStart={(e) => {
-                    const timer = setTimeout(() => {
-                      handleFooterColorEdit(index);
-                    }, 500);
-                    e.currentTarget.dataset.timer = timer.toString();
-                  }}
-                  onTouchEnd={(e) => {
-                    const timer = e.currentTarget.dataset.timer;
-                    if (timer) clearTimeout(parseInt(timer));
-                  }}
-                  style={{
-                    backgroundColor: color === "transparent" ? "#fff" : color,
-                    backgroundImage:
-                      color === "transparent"
-                        ? "linear-gradient(45deg, hsl(var(--muted)) 25%, transparent 25%, transparent 75%, hsl(var(--muted)) 75%, hsl(var(--muted))), linear-gradient(45deg, hsl(var(--muted)) 25%, transparent 25%, transparent 75%, hsl(var(--muted)) 75%, hsl(var(--muted)))"
-                        : "none",
-                    backgroundSize: "4px 4px",
-                    backgroundPosition: "0 0, 2px 2px",
-                  }}
-                  title={`Click to use color | Right-click to edit`}
-                />
+
                 {currentColor === color && (
                   <div className="absolute inset-0 border-2 border-primary pointer-events-none" />
                 )}
@@ -871,13 +842,7 @@ export default function PixelArtEditor() {
           
           {/* Status Info on Right */}
           <div className="flex-1 text-right text-xs sm:text-sm text-muted-foreground">
-            <span className="hidden sm:inline">
-              {brushMode !== "normal" && `${brushMode.charAt(0).toUpperCase() + brushMode.slice(1)}`}
-              {activeLayer && ` | ${activeLayer.name}`}
-              {activeLayer?.locked && " (Locked)"}
-              {activeLayer?.alphaLock && " (Alpha Lock)"}
-              {selection.active && " | Selection"}
-            </span>
+
           </div>
           
           {/* Color Preview Box on Right */}
@@ -908,7 +873,6 @@ export default function PixelArtEditor() {
         open={canvasSizeOpen}
         onOpenChange={setCanvasSizeOpen}
       />
-
       {/* Export Preview Dialog */}
       <Dialog open={exportPreviewOpen} onOpenChange={setExportPreviewOpen}>
         <DialogContent className="max-w-3xl pixel-card border-4 border-border">
@@ -956,7 +920,6 @@ export default function PixelArtEditor() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
       {/* Footer Color Edit Dialog */}
       <Dialog open={editingFooterColorIndex !== null} onOpenChange={(open) => !open && handleFooterColorEditCancel()}>
         <DialogContent className="max-w-sm pixel-card border-4 border-border">
