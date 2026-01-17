@@ -50,25 +50,25 @@ export default function WelcomePage() {
             <div className="flex items-center justify-center gap-3 mb-6 sm:mb-8">
               <div className="relative">
                 <div className="absolute inset-0 bg-primary/20 blur-xl animate-pulse" />
-                <div className="relative flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 xl:w-24 xl:h-24 animate-bounce-slow">
-                  <img 
-                    src="/images/logo/logo-icon.svg" 
-                    alt="Pixel Mint Logo" 
+                <div className="relative flex items-center justify-center w-auto h-16 sm:h-20 xl:h-24 animate-bounce-slow">
+                  <img
+                    src="/images/logo/pixel-mint-logo.png"
+                    alt="Pixel Mint Logo"
                     className="w-full h-full object-contain"
                   />
                 </div>
               </div>
             </div>
-            
-            <h1 
-              className="sm:text-6xl xl:text-7xl font-pixel pixel-heading text-primary animate-pixel-glow px-2 text-[32px]"
+
+            <h1
+              className="sm:text-6xl xl:text-7xl font-pixel pixel-heading text-primary px-2 text-[32px]"
               style={{
-                textShadow: "2px 2px 0px #000000, 4px 4px 0px rgba(0,0,0,0.3)"
+                textShadow: "4px 4px 0px #000000"
               }}
             >
               PIXEL MINT
             </h1>
-            
+
             <p className="sm:text-lg xl:text-xl text-muted-foreground font-retro max-w-2xl mx-auto animate-fade-in-delay px-2 bg-[#8db9d800] bg-none text-[20px] border-solid border-[rgb(20,20,82)] border-[0px] border-[rgb(20,20,82)]">
               Create stunning pixel art with professional tools and effects
             </p>
@@ -126,7 +126,7 @@ export default function WelcomePage() {
             </DialogTitle>
 
           </DialogHeader>
-          
+
           <div className="space-y-2 pt-1">
             {/* Size Grid */}
             <div className="grid grid-cols-2 gap-2">
@@ -138,10 +138,9 @@ export default function WelcomePage() {
                     relative group p-2 rounded-md border-2 transition-all duration-200
                     min-h-[50px]
                     active:scale-95 touch-manipulation
-                    ${
-                      selectedSize === option.size
-                        ? "border-primary bg-primary/10 shadow-lg scale-105"
-                        : "border-border bg-card hover:border-primary/50 hover:bg-primary/5 active:bg-primary/10"
+                    ${selectedSize === option.size
+                      ? "border-primary bg-primary/10 shadow-lg scale-105"
+                      : "border-border bg-card hover:border-primary/50 hover:bg-primary/5 active:bg-primary/10"
                     }
                   `}
                 >

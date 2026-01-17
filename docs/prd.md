@@ -109,7 +109,7 @@
 #### Welcome Page
 - **FR-1**: Display welcoming front page on app launch
 - **FR-2**: Show animated pixel art logo with smooth entrance animation
-- **FR-3**: Display app name Pixel Art Pro with fade-in animation
+- **FR-3**: Display app name PIXEL MINT with fade-in animation
 - **FR-4**: Show brief feature highlights with sequential animations
 - **FR-5**: Provide Start Creating button (120×56px) with hover/tap animation
 - **FR-6**: Include subtle background animations (floating pixels or grid effects)
@@ -503,7 +503,7 @@ interface QuickAccessColorState {
    - Pixel art logo with entrance animation
    - Fade-in and scale effects
 \n2. **App Title** (10% viewport height)
-   - Pixel Art Pro text with fade-in animation
+   - PIXEL MINT text with fade-in animation
    - Subtitle with feature tagline
 
 3. **Feature Highlights** (30% viewport height)

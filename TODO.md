@@ -178,7 +178,7 @@
   - [x] Added pixel animations: pixel-blink, pixel-pulse
   - [x] Extended Tailwind with pixel shadow utilities (shadow-pixel, shadow-pixel-sm, shadow-pixel-lg)
   - [x] Added font-pixel and font-retro font families to Tailwind config
-  - [x] Updated header with "PIXEL ART PRO" title using pixel font and text shadow
+  - [x] Updated header with "PIXEL MINT" title using pixel font and text shadow
   - [x] Applied pixel-grid background to main container
   - [x] Added pixel-card and shadow-pixel effects to header
   - [x] Updated color selector with pixel-button and border-4 styling
@@ -328,7 +328,7 @@
   - [x] All 95 files passed lint checks
 - [x] Step 34: Create welcoming front page with animations and canvas size selection (Completed)
   - [x] Created new WelcomePage component at src/pages/WelcomePage.tsx
-  - [x] Added animated hero section with Pixel Art Pro branding
+  - [x] Added animated hero section with PIXEL MINT branding
   - [x] Implemented bouncing logo animation with glow effect
   - [x] Added animated gradient background with pixel grid overlay
   - [x] Created canvas size selection grid with 6 options: 8×8, 16×16, 32×32, 64×64, 128×128, 256×256

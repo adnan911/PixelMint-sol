@@ -12,7 +12,7 @@ import { BrushModeSelector } from "@/components/pixel-art/BrushModeSelector";
 import { CanvasSizeSettings } from "@/components/pixel-art/CanvasSizeSettings";
 import { useHistory } from "@/hooks/use-history";
 import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts";
-import { 
+import {
   createEmptyCanvas,
   rotateClockwise,
   flipHorizontal,
@@ -32,13 +32,13 @@ import {
   applyAlphaLock,
 } from "@/utils/layer-utils";
 import { DEFAULT_PALETTES, createPalette, getDefaultPalettes } from "@/utils/palette-utils";
-import type { 
-  Tool, 
-  Color, 
-  CanvasGrid, 
-  Selection, 
-  FillMode, 
-  Clipboard, 
+import type {
+  Tool,
+  Color,
+  CanvasGrid,
+  Selection,
+  FillMode,
+  Clipboard,
   Layer,
   Palette as PaletteType,
   BrushMode,
@@ -89,7 +89,7 @@ export default function PixelArtEditor() {
   const sizeParam = searchParams.get("size");
   const parsedSize = parseInt(sizeParam || "32", 10);
   const initialSize = !isNaN(parsedSize) && parsedSize > 0 && parsedSize <= 256 ? parsedSize : 32;
-  
+
   const [currentTool, setCurrentTool] = useState<Tool>("pencil");
   const [currentColor, setCurrentColor] = useState<Color>("#000000");
   const [showGrid, setShowGrid] = useState(true);
@@ -108,7 +108,7 @@ export default function PixelArtEditor() {
   const [canvasSizeOpen, setCanvasSizeOpen] = useState(false);
   const [exportPreviewOpen, setExportPreviewOpen] = useState(false);
   const [exportPreviewUrl, setExportPreviewUrl] = useState<string | null>(null);
-  
+
   // Footer quick colors - independent from palette system
   const [footerColors, setFooterColors] = useState<Color[]>(() => {
     const saved = localStorage.getItem('pixelart-footer-colors');
@@ -122,7 +122,7 @@ export default function PixelArtEditor() {
     ];
   });
   const [editingFooterColorIndex, setEditingFooterColorIndex] = useState<number | null>(null);
-  
+
   const [quickColors, setQuickColors] = useState<Color[]>([
     "#FF0000", // Red
     "#00FF00", // Green
@@ -232,7 +232,7 @@ export default function PixelArtEditor() {
 
   const handleClear = () => {
     if (!activeLayer) return;
-    
+
     setEditorState({
       ...editorState,
       layers: layers.map((layer) =>
@@ -249,7 +249,7 @@ export default function PixelArtEditor() {
 
   const handleRotate = () => {
     if (!activeLayer || activeLayer.locked) return;
-    
+
     setEditorState({
       ...editorState,
       layers: layers.map((layer) =>
@@ -262,7 +262,7 @@ export default function PixelArtEditor() {
 
   const handleFlipHorizontal = () => {
     if (!activeLayer || activeLayer.locked) return;
-    
+
     setEditorState({
       ...editorState,
       layers: layers.map((layer) =>
@@ -275,7 +275,7 @@ export default function PixelArtEditor() {
 
   const handleFlipVertical = () => {
     if (!activeLayer || activeLayer.locked) return;
-    
+
     setEditorState({
       ...editorState,
       layers: layers.map((layer) =>
@@ -300,7 +300,7 @@ export default function PixelArtEditor() {
       const pixels = extractSelection(activeLayer.pixels, x, y, width, height);
       setClipboard({ pixels, width, height });
       const newGrid = clearSelection(activeLayer.pixels, x, y, width, height);
-      
+
       setEditorState({
         ...editorState,
         layers: layers.map((layer) =>
@@ -316,7 +316,7 @@ export default function PixelArtEditor() {
       const x = selection.bounds?.x || Math.floor((CANVAS_SIZE - clipboard.width) / 2);
       const y = selection.bounds?.y || Math.floor((CANVAS_SIZE - clipboard.height) / 2);
       const newGrid = pastePixels(activeLayer.pixels, clipboard.pixels, x, y);
-      
+
       setEditorState({
         ...editorState,
         layers: layers.map((layer) =>
@@ -339,12 +339,12 @@ export default function PixelArtEditor() {
   const handleLayerDuplicate = (layerId: string) => {
     const layer = getLayerById(layers, layerId);
     if (!layer) return;
-    
+
     const duplicated = duplicateLayer(layer);
     const layerIndex = layers.findIndex((l) => l.id === layerId);
     const newLayers = [...layers];
     newLayers.splice(layerIndex, 0, duplicated);
-    
+
     setEditorState({
       ...editorState,
       layers: newLayers,
@@ -354,10 +354,10 @@ export default function PixelArtEditor() {
 
   const handleLayerDelete = (layerId: string) => {
     if (layers.length === 1) return; // Keep at least one layer
-    
+
     const newLayers = deleteLayer(layers, layerId);
     const newActiveId = activeLayerId === layerId ? newLayers[0].id : activeLayerId;
-    
+
     setEditorState({
       ...editorState,
       layers: newLayers,
@@ -411,10 +411,10 @@ export default function PixelArtEditor() {
 
   const handlePaletteDelete = (paletteId: string) => {
     if (palettes.length === 1) return; // Keep at least one palette
-    
+
     const newPalettes = palettes.filter((p) => p.id !== paletteId);
     const newActiveId = activePaletteId === paletteId ? newPalettes[0].id : activePaletteId;
-    
+
     setEditorState({
       ...editorState,
       palettes: newPalettes,
@@ -466,7 +466,7 @@ export default function PixelArtEditor() {
     document.body.style.position = "fixed";
     document.body.style.width = "100%";
     document.body.style.height = "100%";
-    
+
     return () => {
       document.body.style.overflow = "";
       document.body.style.position = "";
@@ -492,32 +492,32 @@ export default function PixelArtEditor() {
   const handleExport = () => {
     // Merge all visible layers
     const mergedCanvas = mergeLayers(layers, Math.max(canvasWidth, canvasHeight));
-    
+
     // Calculate optimal scale factor to ensure file size >= 100KB
     // Target: ~500,000 pixels for reliable 100KB+ PNG files
     const currentPixels = canvasWidth * canvasHeight;
     const targetPixels = 500000; // Aim for 500K pixels to ensure 100KB+ file size
     const calculatedScale = Math.sqrt(targetPixels / currentPixels);
-    
+
     // Use minimum scale of 16x, maximum of 32x, rounded to nearest integer
     const EXPORT_SCALE = Math.max(16, Math.min(32, Math.round(calculatedScale)));
-    
+
     const exportWidth = canvasWidth * EXPORT_SCALE;
     const exportHeight = canvasHeight * EXPORT_SCALE;
-    
+
     console.log(`Exporting ${canvasWidth}x${canvasHeight} canvas at ${EXPORT_SCALE}x scale (${exportWidth}x${exportHeight})`);
-    
+
     // Create a temporary canvas for export
     const exportCanvas = document.createElement("canvas");
     exportCanvas.width = exportWidth;
     exportCanvas.height = exportHeight;
     const ctx = exportCanvas.getContext("2d", { alpha: true });
-    
+
     if (!ctx) return;
-    
+
     // Disable image smoothing for crisp pixel art
     ctx.imageSmoothingEnabled = false;
-    
+
     // Draw merged pixels with scaling
     for (let y = 0; y < canvasHeight; y++) {
       for (let x = 0; x < canvasWidth; x++) {
@@ -530,7 +530,7 @@ export default function PixelArtEditor() {
         }
       }
     }
-    
+
     // Generate preview URL and show dialog
     const dataUrl = exportCanvas.toDataURL("image/png", 1.0);
     setExportPreviewUrl(dataUrl);
@@ -567,7 +567,7 @@ export default function PixelArtEditor() {
             <div className="flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 bg-primary text-primary-foreground pixel-border-primary">
               <Palette className="h-4 w-4 sm:h-5 sm:w-5" />
             </div>
-            <h1 className="text-sm sm:text-base font-pixel pixel-heading text-primary">{"PIXEL ART PRO"}</h1>
+            <h1 className="text-sm sm:text-base font-pixel pixel-heading text-primary">{"PIXEL MINT"}</h1>
           </div>
         </div>
       </header>
@@ -580,8 +580,8 @@ export default function PixelArtEditor() {
             <div className="flex items-center justify-between sm:justify-start gap-2 sm:gap-3">
               {/* Drawing Tools - Scrollable on mobile */}
               <div className="flex-1 overflow-x-auto sm:overflow-visible">
-                <DrawingToolbar 
-                  currentTool={currentTool} 
+                <DrawingToolbar
+                  currentTool={currentTool}
                   onToolChange={setCurrentTool}
                   brushMode={brushMode}
                   onBrushModeChange={setBrushMode}
@@ -615,7 +615,7 @@ export default function PixelArtEditor() {
                 >
                   <Maximize2 className="h-5 w-5" />
                 </Button>
-                
+
                 {/* Zoom Dropdown */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -682,7 +682,7 @@ export default function PixelArtEditor() {
                 >
                   <Redo2 className="h-5 w-5" />
                 </Button>
-                
+
                 <Sheet open={layersOpen} onOpenChange={setLayersOpen}>
                   <SheetTrigger asChild>
                     <Button variant="outline" size="icon" className="h-11 w-11 sm:h-10 sm:w-10 pixel-button font-retro" title="Layers">
@@ -726,7 +726,7 @@ export default function PixelArtEditor() {
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-                
+
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" size="icon" className="h-11 w-11 sm:h-10 sm:w-10 pixel-button font-retro" title="More Options">
@@ -741,8 +741,8 @@ export default function PixelArtEditor() {
                       <span>{showGrid ? "Hide Grid" : "Show Grid"}</span>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator className="bg-border h-[2px]" />
-                    <DropdownMenuItem 
-                      onClick={handleClear} 
+                    <DropdownMenuItem
+                      onClick={handleClear}
                       className="cursor-pointer font-retro text-base py-3 text-destructive focus:text-destructive bg-[#ffffff] bg-none"
                     >
                       <Trash2 className="mr-2 h-5 w-5" />
@@ -776,7 +776,7 @@ export default function PixelArtEditor() {
             onPanChange={setPan}
           />
         </div>
-        
+
         {/* Color & Palette Settings Sheet - Opens from Bottom */}
         <Sheet open={colorsOpen} onOpenChange={setColorsOpen}>
           <SheetContent side="bottom" className="h-[85vh] overflow-y-auto">
@@ -827,7 +827,7 @@ export default function PixelArtEditor() {
               onQuickColorChange={handleQuickColorChange}
             />
           </div>
-          
+
           {/* Footer Quick Colors - Independent from Palette System */}
           <div className="flex items-center gap-1 sm:gap-2">
             {footerColors.map((color, index) => (
@@ -839,12 +839,12 @@ export default function PixelArtEditor() {
               </div>
             ))}
           </div>
-          
+
           {/* Status Info on Right */}
           <div className="flex-1 text-right text-xs sm:text-sm text-muted-foreground">
 
           </div>
-          
+
           {/* Color Preview Box on Right */}
           <div className="flex-shrink-0">
             <div
@@ -884,7 +884,7 @@ export default function PixelArtEditor() {
               Preview your pixel art before downloading
             </DialogDescription>
           </DialogHeader>
-          
+
           {/* Preview Image */}
           <div className="flex items-center justify-center p-4 bg-muted/20 border-2 border-border rounded-md min-h-[300px] max-h-[500px] overflow-auto">
             {exportPreviewUrl && (
@@ -931,7 +931,7 @@ export default function PixelArtEditor() {
               Choose a new color for this quick access slot
             </DialogDescription>
           </DialogHeader>
-          
+
           {/* Color Picker */}
           <div className="py-4">
             {editingFooterColorIndex !== null && (
