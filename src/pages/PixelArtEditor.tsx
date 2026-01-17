@@ -520,7 +520,12 @@ export default function PixelArtEditor() {
             <div className="flex items-center justify-between sm:justify-start gap-2 sm:gap-3">
               {/* Drawing Tools - Scrollable on mobile */}
               <div className="flex-1 overflow-x-auto sm:overflow-visible">
-                <DrawingToolbar currentTool={currentTool} onToolChange={setCurrentTool} />
+                <DrawingToolbar 
+                  currentTool={currentTool} 
+                  onToolChange={setCurrentTool}
+                  brushMode={brushMode}
+                  onBrushModeChange={setBrushMode}
+                />
               </div>
 
               {/* Zoom Dropdown */}
@@ -705,20 +710,19 @@ export default function PixelArtEditor() {
           />
         </div>
         
-        {/* Color & Brush Settings Sheet - Opens from Bottom */}
+        {/* Color & Palette Settings Sheet - Opens from Bottom */}
         <Sheet open={colorsOpen} onOpenChange={setColorsOpen}>
           <SheetContent side="bottom" className="h-[85vh] overflow-y-auto">
             <SheetHeader>
-              <SheetTitle>Color & Brush Settings</SheetTitle>
+              <SheetTitle>Color & Palette Settings</SheetTitle>
               <SheetDescription>
-                Customize colors, palettes, and brush modes
+                Customize colors and palettes
               </SheetDescription>
             </SheetHeader>
             <Tabs defaultValue="color" className="mt-6">
-              <TabsList className="grid w-full grid-cols-3">
+              <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="color">Color</TabsTrigger>
                 <TabsTrigger value="palette">Palette</TabsTrigger>
-                <TabsTrigger value="brush">Brush</TabsTrigger>
               </TabsList>
               <TabsContent value="color" className="mt-4">
                 <ColorPicker
@@ -738,14 +742,6 @@ export default function PixelArtEditor() {
                     setCurrentColor(color);
                     setColorsOpen(false);
                   }}
-                />
-              </TabsContent>
-              <TabsContent value="brush" className="mt-4">
-                <BrushModeSelector
-                  brushMode={brushMode}
-                  ditherPattern={ditherPattern}
-                  onBrushModeChange={setBrushMode}
-                  onDitherPatternChange={setDitherPattern}
                 />
               </TabsContent>
             </Tabs>

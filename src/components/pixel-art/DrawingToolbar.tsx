@@ -17,12 +17,15 @@ import {
   Square,
   Shapes,
   ChevronDown,
+  Paintbrush,
 } from "lucide-react";
-import type { Tool } from "@/types/pixel-art";
+import type { Tool, BrushMode } from "@/types/pixel-art";
 
 interface DrawingToolbarProps {
   currentTool: Tool;
   onToolChange: (tool: Tool) => void;
+  brushMode?: BrushMode;
+  onBrushModeChange?: (mode: BrushMode) => void;
 }
 
 const drawingTools: Array<{
@@ -83,13 +86,45 @@ const shapeTools: Array<{
   },
 ];
 
+const brushModes: Array<{
+  id: BrushMode;
+  label: string;
+  description: string;
+}> = [
+  {
+    id: "normal",
+    label: "Normal",
+    description: "Standard brush",
+  },
+  {
+    id: "rainbow",
+    label: "Rainbow",
+    description: "Cycle through colors",
+  },
+  {
+    id: "random",
+    label: "Random",
+    description: "Random colors",
+  },
+  {
+    id: "dither",
+    label: "Dither",
+    description: "Dithering pattern",
+  },
+];
+
 export const DrawingToolbar: React.FC<DrawingToolbarProps> = ({
   currentTool,
   onToolChange,
+  brushMode = "normal",
+  onBrushModeChange,
 }) => {
   // Get current shape tool info
   const currentShapeTool = shapeTools.find((tool) => tool.id === currentTool);
   const isShapeTool = !!currentShapeTool;
+  
+  // Get current brush mode info
+  const currentBrushMode = brushModes.find((mode) => mode.id === brushMode);
 
   return (
     <TooltipProvider>
@@ -149,6 +184,42 @@ export const DrawingToolbar: React.FC<DrawingToolbarProps> = ({
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
+        
+        {/* Brush Mode Dropdown */}
+        {onBrushModeChange && (
+          <DropdownMenu>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant={brushMode !== "normal" ? "default" : "outline"}
+                    size="icon"
+                    className="h-11 w-11 relative"
+                    aria-label="Brush Mode"
+                  >
+                    <Paintbrush className="h-5 w-5" />
+                    <ChevronDown className="h-3 w-3 absolute bottom-1 right-1" />
+                  </Button>
+                </DropdownMenuTrigger>
+              </TooltipTrigger>
+              <TooltipContent side="top">
+                <p>Brush Mode ({currentBrushMode?.label})</p>
+              </TooltipContent>
+            </Tooltip>
+            <DropdownMenuContent align="center">
+              {brushModes.map((mode) => (
+                <DropdownMenuItem
+                  key={mode.id}
+                  onClick={() => onBrushModeChange(mode.id)}
+                  className="flex flex-col items-start gap-0.5 cursor-pointer"
+                >
+                  <span className="font-medium">{mode.label}</span>
+                  <span className="text-xs text-muted-foreground">{mode.description}</span>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
       </div>
     </TooltipProvider>
   );

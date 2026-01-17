@@ -611,6 +611,26 @@
   - [x] Added flex-1 to status info for proper spacing between elements
   - [x] Updated Sheet comment to "Opens from Bottom" (no longer bottom right specific)
   - [x] All 97 files passed lint checks
+- [x] Step 49: Detach brush mode from Color & Brush Settings and add to toolbar (Completed)
+  - [x] Added Paintbrush icon import to DrawingToolbar component
+  - [x] Added BrushMode type import to DrawingToolbar component
+  - [x] Updated DrawingToolbarProps to include brushMode and onBrushModeChange props
+  - [x] Created brushModes array with 4 modes: Normal, Rainbow, Random, Dither
+  - [x] Added brush mode dropdown button in toolbar after shapes dropdown
+  - [x] Implemented Paintbrush icon with ChevronDown indicator
+  - [x] Button highlights (variant="default") when brush mode is not "normal"
+  - [x] Added tooltip showing current brush mode label
+  - [x] Created dropdown menu with all 4 brush modes
+  - [x] Each menu item shows mode label and description
+  - [x] Passed brushMode and onBrushModeChange props from PixelArtEditor to DrawingToolbar
+  - [x] Removed Brush tab from Color & Brush Settings sheet
+  - [x] Updated TabsList from grid-cols-3 to grid-cols-2 (Color and Palette only)
+  - [x] Removed TabsContent for brush mode (BrushModeSelector component)
+  - [x] Updated Sheet title from "Color & Brush Settings" to "Color & Palette Settings"
+  - [x] Updated Sheet description from "Customize colors, palettes, and brush modes" to "Customize colors and palettes"
+  - [x] Updated Sheet comment to "Color & Palette Settings Sheet"
+  - [x] Brush mode now accessible directly from toolbar near pencil/shapes icons
+  - [x] All 97 files passed lint checks
 
 ## Features Implemented
 
