@@ -689,6 +689,19 @@
   - [x] ZOOM dropdown now positioned in Row 2 next to Canvas Size button
   - [x] Maintained all button styling and functionality
   - [x] All 97 files passed lint checks
+- [x] Step 53: Make EXPORT button rectangular and slightly bigger (Completed)
+  - [x] Removed size="icon" prop to allow rectangular shape
+  - [x] Changed from square (w-11 h-11) to rectangular with padding (px-4 sm:px-3)
+  - [x] Added gap-2 class for spacing between icon and text
+  - [x] Added "EXPORT" text label visible on desktop (hidden sm:inline)
+  - [x] Text uses text-sm for appropriate size
+  - [x] Button now rectangular: icon + text on desktop, icon only on mobile
+  - [x] Maintained h-11 sm:h-10 height to match other toolbar buttons
+  - [x] Removed custom background color classes (bg-[#f008c9fa] bg-none)
+  - [x] Uses default variant="default" styling for consistent primary button appearance
+  - [x] Updated comment to "Export Button - Rectangular and Prominent"
+  - [x] Button is more prominent and easier to identify as primary export action
+  - [x] All 97 files passed lint checks
 
 ## Features Implemented
 

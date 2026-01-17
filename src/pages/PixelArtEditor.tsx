@@ -532,15 +532,15 @@ export default function PixelArtEditor() {
                 />
               </div>
 
-              {/* Export Button */}
+              {/* Export Button - Rectangular and Prominent */}
               <Button
                 variant="default"
-                size="icon"
                 onClick={handleExport}
-                className="h-11 w-11 sm:h-10 sm:w-10 pixel-button font-retro flex-shrink-0"
+                className="h-11 sm:h-10 px-4 sm:px-3 pixel-button font-retro flex-shrink-0 gap-2"
                 title="Export PNG"
               >
                 <Download className="h-5 w-5" />
+                <span className="hidden sm:inline text-sm">EXPORT</span>
               </Button>
             </div>
 
