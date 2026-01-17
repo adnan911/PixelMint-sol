@@ -678,6 +678,17 @@
   - [x] Brush mode effects (rainbow, random, dither) work with all pencil sizes
   - [x] All 97 files passed lint checks
   - [x] Pencil sizes fully functional: 1px, 2px, 3px, 4px, and 5px all working correctly
+- [x] Step 52: Swap ZOOM and EXPORT button positions (Completed)
+  - [x] Moved EXPORT button from Row 2 (Canvas Size & Export section) to Row 1 (after Drawing Tools)
+  - [x] Moved ZOOM dropdown from Row 1 (after Drawing Tools) to Row 2 (Canvas Size & Zoom section)
+  - [x] Updated EXPORT button to use flex-shrink-0 class for consistent sizing
+  - [x] Updated ZOOM dropdown to be inside Canvas Size & Zoom buttons group
+  - [x] Updated comment from "Canvas Size, Export + Actions" to "Canvas Size, Zoom + Actions"
+  - [x] Updated comment from "Canvas Size & Export Buttons" to "Canvas Size & Zoom Buttons"
+  - [x] EXPORT button now positioned at end of Row 1 (right side on desktop, after drawing tools)
+  - [x] ZOOM dropdown now positioned in Row 2 next to Canvas Size button
+  - [x] Maintained all button styling and functionality
+  - [x] All 97 files passed lint checks
 
 ## Features Implemented
 

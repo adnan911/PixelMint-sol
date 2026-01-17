@@ -143,7 +143,7 @@ export const DrawingToolbar: React.FC<DrawingToolbarProps> = ({
 
   return (
     <TooltipProvider>
-      <div className="flex gap-1.5 justify-center items-center">
+      <div className="flex gap-1.5 justify-center items-center border-[2px] border-solid border-[rgb(20,20,82)]">
         {drawingTools.map((tool) => (
           <Tooltip key={tool.id}>
             <TooltipTrigger asChild>

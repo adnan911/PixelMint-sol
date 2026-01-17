@@ -515,7 +515,7 @@ export default function PixelArtEditor() {
       </header>
       {/* Top Toolbar - Main Controls */}
       <div className="flex-shrink-0 border-b-4 border-border bg-card pixel-inset mt-[0px] ml-[5px] mr-[5px]">
-        <div className="px-2 sm:px-4 py-2 sm:py-3 ml-[5px] mr-[10px] mt-[0px]">
+        <div className="px-2 sm:px-4 py-2 sm:py-3 ml-[5px] mt-[0px] border-solid mr-[15px] border-[rgb(20,20,82)] border-[0px] border-[rgb(20,20,82)]">
           {/* Mobile: Stacked Layout, Desktop: Single Row */}
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
             {/* Row 1 (Mobile) / Left (Desktop): Drawing Tools */}
@@ -532,53 +532,21 @@ export default function PixelArtEditor() {
                 />
               </div>
 
-              {/* Zoom Dropdown */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="h-11 w-11 sm:h-10 sm:w-10 pixel-button font-retro flex-shrink-0"
-                    title="Zoom"
-                  >
-                    <ZoomIn className="h-5 w-5" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48 pixel-card border-4 border-border">
-                  <DropdownMenuLabel className="font-pixel text-primary text-xs">
-                    ZOOM ({Math.round(zoom * 100)}%)
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator className="bg-border h-1" />
-                  <DropdownMenuItem
-                    onClick={handleZoomIn}
-                    disabled={zoom >= 4}
-                    className="font-retro text-base cursor-pointer hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground"
-                  >
-                    <ZoomIn className="mr-2 h-4 w-4" />
-                    Zoom In
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={handleZoomOut}
-                    disabled={zoom <= 0.5}
-                    className="font-retro text-base cursor-pointer hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground"
-                  >
-                    <ZoomOut className="mr-2 h-4 w-4" />
-                    Zoom Out
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={handleZoomFit}
-                    className="font-retro text-base cursor-pointer hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground"
-                  >
-                    <Maximize className="mr-2 h-4 w-4" />
-                    Fit
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              {/* Export Button */}
+              <Button
+                variant="default"
+                size="icon"
+                onClick={handleExport}
+                className="h-11 w-11 sm:h-10 sm:w-10 pixel-button font-retro flex-shrink-0"
+                title="Export PNG"
+              >
+                <Download className="h-5 w-5" />
+              </Button>
             </div>
 
-            {/* Row 2 (Mobile) / Center+Right (Desktop): Canvas Size, Export + Actions */}
+            {/* Row 2 (Mobile) / Center+Right (Desktop): Canvas Size, Zoom + Actions */}
             <div className="flex items-center justify-between gap-2 sm:gap-3">
-              {/* Canvas Size & Export Buttons */}
+              {/* Canvas Size & Zoom Buttons */}
               <div className="flex items-center gap-1">
                 <Button
                   variant="outline"
@@ -589,15 +557,49 @@ export default function PixelArtEditor() {
                 >
                   <Maximize2 className="h-5 w-5" />
                 </Button>
-                <Button
-                  variant="default"
-                  size="icon"
-                  onClick={handleExport}
-                  className="h-11 w-11 sm:h-10 sm:w-10 pixel-button font-retro"
-                  title="Export PNG"
-                >
-                  <Download className="h-5 w-5" />
-                </Button>
+                
+                {/* Zoom Dropdown */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="h-11 w-11 sm:h-10 sm:w-10 pixel-button font-retro"
+                      title="Zoom"
+                    >
+                      <ZoomIn className="h-5 w-5" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48 pixel-card border-4 border-border">
+                    <DropdownMenuLabel className="font-pixel text-primary text-xs">
+                      ZOOM ({Math.round(zoom * 100)}%)
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator className="bg-border h-1" />
+                    <DropdownMenuItem
+                      onClick={handleZoomIn}
+                      disabled={zoom >= 4}
+                      className="font-retro text-base cursor-pointer hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground"
+                    >
+                      <ZoomIn className="mr-2 h-4 w-4" />
+                      Zoom In
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={handleZoomOut}
+                      disabled={zoom <= 0.5}
+                      className="font-retro text-base cursor-pointer hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground"
+                    >
+                      <ZoomOut className="mr-2 h-4 w-4" />
+                      Zoom Out
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={handleZoomFit}
+                      className="font-retro text-base cursor-pointer hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground"
+                    >
+                      <Maximize className="mr-2 h-4 w-4" />
+                      Fit
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
 
               {/* Action Buttons */}
@@ -757,7 +759,7 @@ export default function PixelArtEditor() {
       </div>
       {/* Bottom Status Bar with Color Selector */}
       <div className="flex-shrink-0 border-t border-border bg-card px-2 sm:px-4 py-2">
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center justify-between gap-4 mr-[50px]">
           {/* Color Selector on Left */}
           <div className="flex-shrink-0">
             <ColorSelector
@@ -782,7 +784,7 @@ export default function PixelArtEditor() {
           {/* Color Preview Box on Right */}
           <div className="flex-shrink-0">
             <div
-              className="w-11 h-11 sm:w-12 sm:h-12 border-4 border-border flex-shrink-0 shadow-pixel cursor-pointer active:scale-95 sm:hover:scale-105 transition-transform pixel-button pixel-crisp"
+              className="w-11 h-11 sm:w-12 sm:h-12 border-4 border-border flex-shrink-0 shadow-pixel cursor-pointer active:scale-95 sm:hover:scale-105 transition-transform pixel-button pixel-crisp mr-[1px]"
               onClick={() => setColorsOpen(true)}
               style={{
                 backgroundColor:
