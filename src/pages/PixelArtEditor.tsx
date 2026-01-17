@@ -108,6 +108,21 @@ export default function PixelArtEditor() {
   const [canvasSizeOpen, setCanvasSizeOpen] = useState(false);
   const [exportPreviewOpen, setExportPreviewOpen] = useState(false);
   const [exportPreviewUrl, setExportPreviewUrl] = useState<string | null>(null);
+  
+  // Footer quick colors - independent from palette system
+  const [footerColors, setFooterColors] = useState<Color[]>(() => {
+    const saved = localStorage.getItem('pixelart-footer-colors');
+    return saved ? JSON.parse(saved) : [
+      "#FF0000", // Red
+      "#00FF00", // Green
+      "#0000FF", // Blue
+      "#FFFF00", // Yellow
+      "#FF00FF", // Magenta
+      "#00FFFF", // Cyan
+    ];
+  });
+  const [editingFooterColorIndex, setEditingFooterColorIndex] = useState<number | null>(null);
+  
   const [quickColors, setQuickColors] = useState<Color[]>([
     "#FF0000", // Red
     "#00FF00", // Green
@@ -194,6 +209,27 @@ export default function PixelArtEditor() {
     const newQuickColors = [...quickColors];
     newQuickColors[index] = color;
     setQuickColors(newQuickColors);
+  };
+
+  // Footer color handlers - independent from palette system
+  const handleFooterColorClick = (color: Color) => {
+    setCurrentColor(color);
+  };
+
+  const handleFooterColorEdit = (index: number) => {
+    setEditingFooterColorIndex(index);
+  };
+
+  const handleFooterColorChange = (index: number, color: Color) => {
+    const newColors = [...footerColors];
+    newColors[index] = color;
+    setFooterColors(newColors);
+    localStorage.setItem('pixelart-footer-colors', JSON.stringify(newColors));
+    setEditingFooterColorIndex(null);
+  };
+
+  const handleFooterColorEditCancel = () => {
+    setEditingFooterColorIndex(null);
   };
 
   const handleClear = () => {
@@ -794,6 +830,45 @@ export default function PixelArtEditor() {
             />
           </div>
           
+          {/* Footer Quick Colors - Independent from Palette System */}
+          <div className="flex items-center gap-1 sm:gap-2">
+            {footerColors.map((color, index) => (
+              <div key={index} className="relative">
+                <div
+                  className="w-8 h-8 sm:w-10 sm:h-10 border-2 border-border cursor-pointer active:scale-95 sm:hover:scale-110 transition-transform pixel-crisp shadow-sm"
+                  onClick={() => handleFooterColorClick(color)}
+                  onContextMenu={(e) => {
+                    e.preventDefault();
+                    handleFooterColorEdit(index);
+                  }}
+                  onTouchStart={(e) => {
+                    const timer = setTimeout(() => {
+                      handleFooterColorEdit(index);
+                    }, 500);
+                    e.currentTarget.dataset.timer = timer.toString();
+                  }}
+                  onTouchEnd={(e) => {
+                    const timer = e.currentTarget.dataset.timer;
+                    if (timer) clearTimeout(parseInt(timer));
+                  }}
+                  style={{
+                    backgroundColor: color === "transparent" ? "#fff" : color,
+                    backgroundImage:
+                      color === "transparent"
+                        ? "linear-gradient(45deg, hsl(var(--muted)) 25%, transparent 25%, transparent 75%, hsl(var(--muted)) 75%, hsl(var(--muted))), linear-gradient(45deg, hsl(var(--muted)) 25%, transparent 25%, transparent 75%, hsl(var(--muted)) 75%, hsl(var(--muted)))"
+                        : "none",
+                    backgroundSize: "4px 4px",
+                    backgroundPosition: "0 0, 2px 2px",
+                  }}
+                  title={`Click to use color | Right-click to edit`}
+                />
+                {currentColor === color && (
+                  <div className="absolute inset-0 border-2 border-primary pointer-events-none" />
+                )}
+              </div>
+            ))}
+          </div>
+          
           {/* Status Info on Right */}
           <div className="flex-1 text-right text-xs sm:text-sm text-muted-foreground">
             <span className="hidden sm:inline">
@@ -877,6 +952,42 @@ export default function PixelArtEditor() {
             >
               <Download className="mr-2 h-4 w-4" />
               Download PNG
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Footer Color Edit Dialog */}
+      <Dialog open={editingFooterColorIndex !== null} onOpenChange={(open) => !open && handleFooterColorEditCancel()}>
+        <DialogContent className="max-w-sm pixel-card border-4 border-border">
+          <DialogHeader>
+            <DialogTitle className="font-pixel text-primary text-lg">
+              Edit Footer Color {editingFooterColorIndex !== null ? editingFooterColorIndex + 1 : ''}
+            </DialogTitle>
+            <DialogDescription className="font-retro text-muted-foreground">
+              Choose a new color for this quick access slot
+            </DialogDescription>
+          </DialogHeader>
+          
+          {/* Color Picker */}
+          <div className="py-4">
+            {editingFooterColorIndex !== null && (
+              <ColorPicker
+                currentColor={footerColors[editingFooterColorIndex]}
+                onColorChange={(color) => handleFooterColorChange(editingFooterColorIndex, color)}
+              />
+            )}
+          </div>
+
+          {/* Footer with Cancel button */}
+          <DialogFooter className="flex flex-row gap-2 sm:gap-3">
+            <Button
+              variant="outline"
+              onClick={handleFooterColorEditCancel}
+              className="flex-1 sm:flex-none pixel-button font-retro"
+            >
+              <X className="mr-2 h-4 w-4" />
+              Cancel
             </Button>
           </DialogFooter>
         </DialogContent>
