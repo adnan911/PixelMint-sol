@@ -586,6 +586,18 @@
   - [x] Maintained transparent color checkerboard pattern display
   - [x] Added "Floating Color Selector - Bottom Right" comment for clarity
   - [x] All 97 files passed lint checks
+- [x] Step 47: Move Color & Brush Settings sheet to bottom right beside floating color box (Completed)
+  - [x] Removed Sheet component from toolbar area (lines 522-566)
+  - [x] Moved Sheet component to canvas area next to floating color box (after line 725)
+  - [x] Updated comment to "Color & Brush Settings Sheet - Opens from Bottom Right"
+  - [x] Maintained Sheet side="bottom" for bottom slide-up animation
+  - [x] Preserved all Sheet content: Color, Palette, and Brush tabs
+  - [x] Kept h-[85vh] height for optimal viewing area
+  - [x] Maintained ColorPicker, PaletteManager, and BrushModeSelector components
+  - [x] Preserved all handlers: onColorChange, onPaletteChange, onBrushModeChange, etc.
+  - [x] Sheet now opens from floating color box click in bottom right corner
+  - [x] Cleaned up toolbar: removed empty space where Sheet was located
+  - [x] All 97 files passed lint checks
 
 ## Features Implemented
 

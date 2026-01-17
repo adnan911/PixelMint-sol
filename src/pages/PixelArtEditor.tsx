@@ -518,53 +518,6 @@ export default function PixelArtEditor() {
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
             {/* Row 1 (Mobile) / Left (Desktop): Drawing Tools */}
             <div className="flex items-center justify-between sm:justify-start gap-2 sm:gap-3">
-              
-              <Sheet open={colorsOpen} onOpenChange={setColorsOpen}>
-                <SheetContent side="bottom" className="h-[85vh] overflow-y-auto">
-                  <SheetHeader>
-                    <SheetTitle>Color & Brush Settings</SheetTitle>
-                    <SheetDescription>
-                      Customize colors, palettes, and brush modes
-                    </SheetDescription>
-                  </SheetHeader>
-                  <Tabs defaultValue="color" className="mt-6">
-                    <TabsList className="grid w-full grid-cols-3">
-                      <TabsTrigger value="color">Color</TabsTrigger>
-                      <TabsTrigger value="palette">Palette</TabsTrigger>
-                      <TabsTrigger value="brush">Brush</TabsTrigger>
-                    </TabsList>
-                    <TabsContent value="color" className="mt-4">
-                      <ColorPicker
-                        currentColor={currentColor}
-                        onColorChange={setCurrentColor}
-                      />
-                    </TabsContent>
-                    <TabsContent value="palette" className="mt-4">
-                      <PaletteManager
-                        palettes={palettes}
-                        activePaletteId={activePaletteId}
-                        onPaletteChange={handlePaletteChange}
-                        onPaletteCreate={handlePaletteCreate}
-                        onPaletteUpdate={handlePaletteUpdate}
-                        onPaletteDelete={handlePaletteDelete}
-                        onColorSelect={(color) => {
-                          setCurrentColor(color);
-                          setColorsOpen(false);
-                        }}
-                      />
-                    </TabsContent>
-                    <TabsContent value="brush" className="mt-4">
-                      <BrushModeSelector
-                        brushMode={brushMode}
-                        ditherPattern={ditherPattern}
-                        onBrushModeChange={setBrushMode}
-                        onDitherPatternChange={setDitherPattern}
-                      />
-                    </TabsContent>
-                  </Tabs>
-                </SheetContent>
-              </Sheet>
-
               {/* Drawing Tools - Scrollable on mobile */}
               <div className="flex-1 overflow-x-auto sm:overflow-visible">
                 <DrawingToolbar currentTool={currentTool} onToolChange={setCurrentTool} />
@@ -755,7 +708,7 @@ export default function PixelArtEditor() {
         {/* Floating Color Selector - Bottom Right */}
         <div className="absolute bottom-4 right-4 z-10">
           <div
-            className="w-11 h-11 sm:w-12 sm:h-12 border-4 border-border flex-shrink-0 shadow-pixel cursor-pointer active:scale-95 sm:hover:scale-105 transition-transform pixel-button pixel-crisp"
+            className="w-11 h-11 sm:w-12 sm:h-12 border-4 border-border flex-shrink-0 shadow-pixel cursor-pointer active:scale-95 sm:hover:scale-105 transition-transform pixel-button pixel-crisp mt-[0px]"
             onClick={() => setColorsOpen(true)}
             style={{
               backgroundColor:
@@ -770,6 +723,53 @@ export default function PixelArtEditor() {
             title="Click to change color"
           />
         </div>
+        
+        {/* Color & Brush Settings Sheet - Opens from Bottom Right */}
+        <Sheet open={colorsOpen} onOpenChange={setColorsOpen}>
+          <SheetContent side="bottom" className="h-[85vh] overflow-y-auto">
+            <SheetHeader>
+              <SheetTitle>Color & Brush Settings</SheetTitle>
+              <SheetDescription>
+                Customize colors, palettes, and brush modes
+              </SheetDescription>
+            </SheetHeader>
+            <Tabs defaultValue="color" className="mt-6">
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="color">Color</TabsTrigger>
+                <TabsTrigger value="palette">Palette</TabsTrigger>
+                <TabsTrigger value="brush">Brush</TabsTrigger>
+              </TabsList>
+              <TabsContent value="color" className="mt-4">
+                <ColorPicker
+                  currentColor={currentColor}
+                  onColorChange={setCurrentColor}
+                />
+              </TabsContent>
+              <TabsContent value="palette" className="mt-4">
+                <PaletteManager
+                  palettes={palettes}
+                  activePaletteId={activePaletteId}
+                  onPaletteChange={handlePaletteChange}
+                  onPaletteCreate={handlePaletteCreate}
+                  onPaletteUpdate={handlePaletteUpdate}
+                  onPaletteDelete={handlePaletteDelete}
+                  onColorSelect={(color) => {
+                    setCurrentColor(color);
+                    setColorsOpen(false);
+                  }}
+                />
+              </TabsContent>
+              <TabsContent value="brush" className="mt-4">
+                <BrushModeSelector
+                  brushMode={brushMode}
+                  ditherPattern={ditherPattern}
+                  onBrushModeChange={setBrushMode}
+                  onDitherPatternChange={setDitherPattern}
+                />
+              </TabsContent>
+            </Tabs>
+          </SheetContent>
+        </Sheet>
       </div>
       {/* Bottom Status Bar with Color Selector */}
       <div className="flex-shrink-0 border-t border-border bg-card px-2 sm:px-4 py-2">
