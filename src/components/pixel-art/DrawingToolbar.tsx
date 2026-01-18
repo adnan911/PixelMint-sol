@@ -7,10 +7,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { 
-  Pencil, 
-  Eraser, 
-  PaintBucket, 
+import {
+  Pencil,
+  Eraser,
+  PaintBucket,
   Pipette,
   Minus,
   Circle,
@@ -36,25 +36,25 @@ const drawingTools: Array<{
   label: string;
   shortcut: string;
 }> = [
-  {
-    id: "eraser",
-    icon: <Eraser className="h-5 w-5" />,
-    label: "Eraser",
-    shortcut: "E",
-  },
-  {
-    id: "fill",
-    icon: <PaintBucket className="h-5 w-5" />,
-    label: "Fill",
-    shortcut: "F",
-  },
-  {
-    id: "eyedropper",
-    icon: <Pipette className="h-5 w-5" />,
-    label: "Eyedropper",
-    shortcut: "I",
-  },
-];
+    {
+      id: "eraser",
+      icon: <Eraser className="h-5 w-5" />,
+      label: "Eraser",
+      shortcut: "E",
+    },
+    {
+      id: "fill",
+      icon: <PaintBucket className="h-5 w-5" />,
+      label: "Fill",
+      shortcut: "F",
+    },
+    {
+      id: "eyedropper",
+      icon: <Pipette className="h-5 w-5" />,
+      label: "Eyedropper",
+      shortcut: "I",
+    },
+  ];
 
 const shapeTools: Array<{
   id: Tool;
@@ -62,69 +62,69 @@ const shapeTools: Array<{
   label: string;
   shortcut: string;
 }> = [
-  {
-    id: "pencil",
-    icon: <Pencil className="h-4 w-4" />,
-    label: "Pencil",
-    shortcut: "P",
-  },
-  {
-    id: "line",
-    icon: <Minus className="h-4 w-4" />,
-    label: "Line",
-    shortcut: "L",
-  },
-  {
-    id: "circle",
-    icon: <Circle className="h-4 w-4" />,
-    label: "Circle",
-    shortcut: "C",
-  },
-  {
-    id: "square",
-    icon: <Square className="h-4 w-4" />,
-    label: "Rectangle",
-    shortcut: "R",
-  },
-];
+    {
+      id: "pencil",
+      icon: <Pencil className="h-4 w-4" />,
+      label: "Pencil",
+      shortcut: "P",
+    },
+    {
+      id: "line",
+      icon: <Minus className="h-4 w-4" />,
+      label: "Line",
+      shortcut: "L",
+    },
+    {
+      id: "circle",
+      icon: <Circle className="h-4 w-4" />,
+      label: "Circle",
+      shortcut: "C",
+    },
+    {
+      id: "square",
+      icon: <Square className="h-4 w-4" />,
+      label: "Rectangle",
+      shortcut: "R",
+    },
+  ];
 
 const brushModes: Array<{
   id: BrushMode;
   label: string;
   description: string;
 }> = [
-  {
-    id: "normal",
-    label: "Normal",
-    description: "Standard brush",
-  },
-  {
-    id: "rainbow",
-    label: "Rainbow",
-    description: "Cycle through colors",
-  },
-  {
-    id: "random",
-    label: "Random",
-    description: "Random colors",
-  },
-  {
-    id: "dither",
-    label: "Dither",
-    description: "Dithering pattern",
-  },
-];
+    {
+      id: "normal",
+      label: "Normal",
+      description: "Standard brush",
+    },
+    {
+      id: "rainbow",
+      label: "Rainbow",
+      description: "Cycle through colors",
+    },
+    {
+      id: "random",
+      label: "Random",
+      description: "Random colors",
+    },
+    {
+      id: "dither",
+      label: "Dither",
+      description: "Dithering pattern",
+    },
+  ];
 
 const pencilSizes: Array<{
   size: PencilSize;
   label: string;
 }> = [
-  { size: 1, label: "1px" },
-  { size: 2, label: "2px" },
-  { size: 3, label: "3px" },
-  { size: 4, label: "4px" },
-  { size: 5, label: "5px" },
-];
+    { size: 1, label: "1px" },
+    { size: 2, label: "2px" },
+    { size: 3, label: "3px" },
+    { size: 4, label: "4px" },
+    { size: 5, label: "5px" },
+  ];
 
 export const DrawingToolbar: React.FC<DrawingToolbarProps> = ({
   currentTool,
@@ -137,7 +137,7 @@ export const DrawingToolbar: React.FC<DrawingToolbarProps> = ({
   // Get current shape tool info
   const currentShapeTool = shapeTools.find((tool) => tool.id === currentTool);
   const isShapeTool = !!currentShapeTool;
-  
+
   // Get current brush mode info
   const currentBrushMode = brushModes.find((mode) => mode.id === brushMode);
 
@@ -164,7 +164,7 @@ export const DrawingToolbar: React.FC<DrawingToolbarProps> = ({
             </TooltipContent>
           </Tooltip>
         ))}
-        
+
         {/* Shapes Dropdown */}
         <DropdownMenu>
           <Tooltip>
@@ -199,7 +199,7 @@ export const DrawingToolbar: React.FC<DrawingToolbarProps> = ({
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
-        
+
         {/* Brush Mode Dropdown */}
         {onBrushModeChange && (
           <DropdownMenu>
@@ -210,7 +210,7 @@ export const DrawingToolbar: React.FC<DrawingToolbarProps> = ({
                     variant={brushMode !== "normal" || pencilSize !== 1 ? "default" : "outline"}
                     size="icon"
                     className="h-11 w-11 relative"
-                    aria-label="Brush Mode"
+                    aria-label="Pixel Mode"
                   >
                     <Paintbrush className="h-5 w-5" />
                     <ChevronDown className="h-3 w-3 absolute bottom-1 right-1" />
@@ -218,13 +218,13 @@ export const DrawingToolbar: React.FC<DrawingToolbarProps> = ({
                 </DropdownMenuTrigger>
               </TooltipTrigger>
               <TooltipContent side="top">
-                <p>Brush Mode ({currentBrushMode?.label}) | Size: {pencilSize}px</p>
+                <p>Pixel Mode ({currentBrushMode?.label}) | Size: {pencilSize}px</p>
               </TooltipContent>
             </Tooltip>
             <DropdownMenuContent align="center" className="w-48">
               {/* Brush Modes */}
               <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">
-                BRUSH MODE
+                PIXEL MODE
               </div>
               {brushModes.map((mode) => (
                 <DropdownMenuItem
@@ -236,13 +236,13 @@ export const DrawingToolbar: React.FC<DrawingToolbarProps> = ({
 
                 </DropdownMenuItem>
               ))}
-              
+
               {/* Separator */}
               <div className="h-px bg-border my-1" />
-              
+
               {/* Pencil Sizes */}
               <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">
-                PENCIL SIZE
+                PIXEL SIZE
               </div>
               {onPencilSizeChange && pencilSizes.map((item) => (
                 <DropdownMenuItem
@@ -252,7 +252,7 @@ export const DrawingToolbar: React.FC<DrawingToolbarProps> = ({
                 >
                   {/* Mini icon representing size */}
                   <div className="flex items-center justify-center w-5 h-5">
-                    <div 
+                    <div
                       className="bg-foreground"
                       style={{
                         width: `${item.size * 3}px`,

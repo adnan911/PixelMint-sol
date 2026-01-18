@@ -57,7 +57,7 @@ export const Controls: React.FC<ControlsProps> = ({
         onClick={handleExport}
       >
         <Download className="h-5 w-5 mr-2" />
-        Export PNG
+        Export Art
       </Button>
 
       {/* Clear Canvas */}

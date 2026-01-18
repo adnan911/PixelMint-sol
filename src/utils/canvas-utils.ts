@@ -1,11 +1,11 @@
-import type { CanvasGrid, Color, Point, FillMode } from "@/types/pixel-art";
+import type { CanvasGrid, Color, Point } from "@/types/pixel-art";
 
 /**
  * Create an empty canvas grid filled with transparent pixels
  */
-export const createEmptyCanvas = (size: number): CanvasGrid => {
-  return Array.from({ length: size }, () =>
-    Array.from({ length: size }, () => "transparent")
+export const createEmptyCanvas = (width: number, height: number = width): CanvasGrid => {
+  return Array.from({ length: height }, () =>
+    Array.from({ length: width }, () => "transparent")
   );
 };
 
@@ -21,7 +21,7 @@ export const drawLine = (
   color: Color
 ): CanvasGrid => {
   const newGrid = grid.map((row) => [...row]);
-  
+
   const dx = Math.abs(x1 - x0);
   const dy = Math.abs(y1 - y0);
   const sx = x0 < x1 ? 1 : -1;
@@ -64,7 +64,7 @@ export const drawCircle = (
   filled = false
 ): CanvasGrid => {
   const newGrid = grid.map((row) => [...row]);
-  
+
   const setPixel = (x: number, y: number) => {
     if (x >= 0 && x < grid[0].length && y >= 0 && y < grid.length) {
       newGrid[y][x] = color;
@@ -126,7 +126,7 @@ export const drawRectangle = (
   filled = false
 ): CanvasGrid => {
   const newGrid = grid.map((row) => [...row]);
-  
+
   const minX = Math.min(x0, x1);
   const maxX = Math.max(x0, x1);
   const minY = Math.min(y0, y1);
@@ -249,7 +249,7 @@ export const extractSelection = (
   height: number
 ): CanvasGrid => {
   const selection: CanvasGrid = [];
-  
+
   for (let dy = 0; dy < height; dy++) {
     const row: Color[] = [];
     for (let dx = 0; dx < width; dx++) {
@@ -263,7 +263,7 @@ export const extractSelection = (
     }
     selection.push(row);
   }
-  
+
   return selection;
 };
 
@@ -277,7 +277,7 @@ export const pastePixels = (
   y: number
 ): CanvasGrid => {
   const newGrid = grid.map((row) => [...row]);
-  
+
   for (let dy = 0; dy < pixels.length; dy++) {
     for (let dx = 0; dx < pixels[dy].length; dx++) {
       const px = x + dx;
@@ -290,7 +290,7 @@ export const pastePixels = (
       }
     }
   }
-  
+
   return newGrid;
 };
 
@@ -305,7 +305,7 @@ export const clearSelection = (
   height: number
 ): CanvasGrid => {
   const newGrid = grid.map((row) => [...row]);
-  
+
   for (let dy = 0; dy < height; dy++) {
     for (let dx = 0; dx < width; dx++) {
       const px = x + dx;
@@ -315,7 +315,7 @@ export const clearSelection = (
       }
     }
   }
-  
+
   return newGrid;
 };
 

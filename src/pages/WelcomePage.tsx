@@ -23,6 +23,36 @@ export default function WelcomePage() {
   const [selectedSize, setSelectedSize] = useState(64);
   const [isAnimating, setIsAnimating] = useState(false);
   const [showSizeDialog, setShowSizeDialog] = useState(false);
+  const [currentTheme, setCurrentTheme] = useState(() => {
+    return localStorage.getItem("theme") || "default";
+  });
+
+  // Apply theme on mount and change
+  React.useEffect(() => {
+    document.documentElement.setAttribute("data-theme", currentTheme);
+    localStorage.setItem("theme", currentTheme);
+  }, [currentTheme]);
+
+  const toggleTheme = () => {
+    setCurrentTheme((prev) => {
+      if (prev === "default") return "retro";
+      if (prev === "retro") return "candy";
+      return "default";
+    });
+  };
+
+  const getThemeLabel = () => {
+    switch (currentTheme) {
+      case "default":
+        return "Theme: Modern";
+      case "retro":
+        return "Theme: Retro";
+      case "candy":
+        return "Theme: Candy";
+      default:
+        return "Theme: Modern";
+    }
+  };
 
   const handleStartDrawing = () => {
     setShowSizeDialog(true);
@@ -38,6 +68,18 @@ export default function WelcomePage() {
 
   return (
     <div className="fixed inset-0 flex flex-col overflow-auto bg-gradient-to-br from-primary/10 via-background to-secondary/10 animate-gradient">
+      {/* Theme Toggle */}
+      <div className="absolute top-4 right-4 z-50">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={toggleTheme}
+          className="pixel-button font-retro text-xs sm:text-sm bg-card"
+        >
+          {getThemeLabel()}
+        </Button>
+      </div>
+
       {/* Animated Background Grid */}
       <div className="absolute inset-0 opacity-5 pointer-events-none">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#000_1px,transparent_1px),linear-gradient(to_bottom,#000_1px,transparent_1px)] bg-[size:32px_32px] animate-pulse" />

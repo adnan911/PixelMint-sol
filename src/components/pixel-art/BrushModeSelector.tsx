@@ -55,7 +55,7 @@ export const BrushModeSelector: React.FC<BrushModeSelectorProps> = ({
     <div className="space-y-4">
       {/* Brush Mode Buttons */}
       <div className="space-y-2">
-        <Label className="text-sm font-medium">Brush Mode</Label>
+        <Label className="text-sm font-medium">Pixel Mode</Label>
         <div className="grid grid-cols-2 gap-2">
           {brushModes.map((mode) => (
             <Button

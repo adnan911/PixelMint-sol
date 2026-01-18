@@ -12,44 +12,118 @@ Pixel Art Theme: Retro 8-bit/16-bit inspired design
 
 @layer base {
   :root {
-    --radius: 0rem; /* Sharp corners for pixel aesthetic */
-    
-    /* Pixel Art Color Palette - Light Mode */
-    --background: 210 40% 96%; /* Light blue-gray like old CRT screens */
-    --foreground: 240 80% 10%; /* Deep dark blue-black */
-    
+    --radius: 0.25rem;
+    --font-sans: Libre Baskerville, serif;
+    --font-serif: Lora, serif;
+    --font-mono: IBM Plex Mono, monospace;
+
+    --shadow-x: 2px;
+    --shadow-y: 3px;
+    --shadow-blur: 5px;
+    --shadow-spread: 0px;
+    --shadow-opacity: 0.12;
+    --shadow-color: 28 13% 20%;
+
+    --shadow-2xs: 2px 3px 5px 0px hsl(28 13% 20% / 0.06);
+    --shadow-xs: 2px 3px 5px 0px hsl(28 13% 20% / 0.06);
+    --shadow-sm: 2px 3px 5px 0px hsl(28 13% 20% / 0.12), 2px 1px 2px -1px hsl(28 13% 20% / 0.12);
+    --shadow: 2px 3px 5px 0px hsl(28 13% 20% / 0.12), 2px 1px 2px -1px hsl(28 13% 20% / 0.12);
+    --shadow-md: 2px 3px 5px 0px hsl(28 13% 20% / 0.12), 2px 2px 4px -1px hsl(28 13% 20% / 0.12);
+    --shadow-lg: 2px 3px 5px 0px hsl(28 13% 20% / 0.12), 2px 4px 6px -1px hsl(28 13% 20% / 0.12);
+    --shadow-xl: 2px 3px 5px 0px hsl(28 13% 20% / 0.12), 2px 8px 10px -1px hsl(28 13% 20% / 0.12);
+    --shadow-2xl: 2px 3px 5px 0px hsl(28 13% 20% / 0.30);
+
+    --tracking-normal: 0em;
+    --spacing: 0.25rem;
+  }
+
+  /* Default Theme (Warm) - Fallback AND Explicit */
+  :root,
+  :root[data-theme="default"] {
+    --background: 44.0000 42.8571% 93.1373%;
+    --foreground: 28.5714 16.5354% 24.9020%;
+
+    --card: 42.0000 100.0000% 98.0392%;
+    --card-foreground: 28.5714 16.5354% 24.9020%;
+
+    --popover: 42.0000 100.0000% 98.0392%;
+    --popover-foreground: 28.5714 16.5354% 24.9020%;
+
+    --primary: 30.0000 33.8710% 48.6275%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 40.6452 34.8315% 82.5490%;
+    --secondary-foreground: 28.9655 18.7097% 30.3922%;
+
+    --muted: 39 34.4828% 88.6275%;
+    --muted-foreground: 32.3077 18.4834% 41.3725%;
+
+    --accent: 42.8571 32.8125% 74.9020%;
+    --accent-foreground: 28.5714 16.5354% 24.9020%;
+
+    --destructive: 9.8438 54.7009% 45.8824%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 40.0000 31.4286% 79.4118%;
+    --input: 40.0000 31.4286% 79.4118%;
+    --ring: 30.0000 33.8710% 48.6275%;
+
+    --chart-1: 30.0000 33.8710% 48.6275%;
+    --chart-2: 31.3846 29.9539% 42.5490%;
+    --chart-3: 33.6842 32.9480% 33.9216%;
+    --chart-4: 29.1176 30.9091% 56.8627%;
+    --chart-5: 30 33.6842% 62.7451%;
+
+    --sidebar-background: 39 34.4828% 88.6275%;
+    --sidebar-foreground: 28.5714 16.5354% 24.9020%;
+    --sidebar-primary: 30.0000 33.8710% 48.6275%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 42.8571 32.8125% 74.9020%;
+    --sidebar-accent-foreground: 28.5714 16.5354% 24.9020%;
+    --sidebar-border: 40.0000 31.4286% 79.4118%;
+    --sidebar-ring: 30.0000 33.8710% 48.6275%;
+
+    --pixel-green: 120 100% 40%;
+    --pixel-cyan: 180 100% 50%;
+    --pixel-orange: 30 100% 50%;
+  }
+
+  /* Retro Theme (Cool/Blue) */
+  :root[data-theme="retro"] {
+    --background: 210 40% 96%;
+    --foreground: 240 80% 10%;
+
     --card: 0 0% 100%;
     --card-foreground: 240 80% 10%;
-    
+
     --popover: 0 0% 100%;
     --popover-foreground: 240 80% 10%;
-    
-    --primary: 220 100% 50%; /* Bright blue like NES/SNES */
+
+    --primary: 220 100% 50%;
     --primary-foreground: 0 0% 100%;
-    
-    --secondary: 340 100% 50%; /* Hot pink/magenta like retro games */
+
+    --secondary: 340 100% 50%;
     --secondary-foreground: 0 0% 100%;
-    
+
     --muted: 210 30% 90%;
     --muted-foreground: 210 20% 40%;
-    
-    --accent: 50 100% 50%; /* Bright yellow for highlights */
+
+    --accent: 50 100% 50%;
     --accent-foreground: 240 80% 10%;
-    
-    --destructive: 0 100% 50%; /* Pure red */
+
+    --destructive: 0 100% 50%;
     --destructive-foreground: 0 0% 100%;
-    
-    --border: 240 60% 20%; /* Dark blue borders */
+
+    --border: 240 60% 20%;
     --input: 210 30% 90%;
     --ring: 220 100% 50%;
-    
-    /* Pixel game inspired chart colors */
-    --chart-1: 220 100% 50%; /* Blue */
-    --chart-2: 340 100% 50%; /* Magenta */
-    --chart-3: 120 100% 40%; /* Green */
-    --chart-4: 50 100% 50%; /* Yellow */
-    --chart-5: 30 100% 50%; /* Orange */
-    
+
+    --chart-1: 220 100% 50%;
+    --chart-2: 340 100% 50%;
+    --chart-3: 120 100% 40%;
+    --chart-4: 50 100% 50%;
+    --chart-5: 30 100% 50%;
+
     --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 240 80% 10%;
     --sidebar-primary: 220 100% 50%;
@@ -58,61 +132,133 @@ Pixel Art Theme: Retro 8-bit/16-bit inspired design
     --sidebar-accent-foreground: 240 80% 10%;
     --sidebar-border: 240 60% 20%;
     --sidebar-ring: 220 100% 50%;
-    
-    /* Pixel-specific colors */
+
     --pixel-green: 120 100% 40%;
     --pixel-cyan: 180 100% 50%;
     --pixel-orange: 30 100% 50%;
   }
 
+  /* Candy Theme */
+  :root[data-theme="candy"] {
+    --background: 330 47.0588% 93.3333%;
+    --foreground: 0 0% 35.6863%;
+
+    --card: 41.5385 92.8571% 89.0196%;
+    --card-foreground: 0 0% 35.6863%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 35.6863%;
+
+    --primary: 325.5814 57.8475% 56.2745%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 181.6901 43.5583% 68.0392%;
+    --secondary-foreground: 0 0% 20%;
+
+    --muted: 190.5263 58.7629% 80.9804%;
+    --muted-foreground: 0 0% 47.8431%;
+
+    --accent: 42.1429 91.3043% 81.9608%;
+    --accent-foreground: 0 0% 20%;
+
+    --destructive: 359.5652 92.0000% 70.5882%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 325.5814 57.8475% 56.2745%;
+    --input: 0 0% 89.4118%;
+    --ring: 330 70.2381% 67.0588%;
+
+    --chart-1: 330 70.2381% 67.0588%;
+    --chart-2: 190.2128 61.8421% 70.1961%;
+    --chart-3: 42.1429 91.3043% 81.9608%;
+    --chart-4: 329.6386 77.5701% 79.0196%;
+    --chart-5: 330.6294 64.1256% 56.2745%;
+
+    --sidebar-background: 326.2500 69.5652% 90.9804%;
+    --sidebar-foreground: 0 0% 20%;
+    --sidebar-primary: 330.3659 81.1881% 60.3922%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 327.4074 87.0968% 81.7647%;
+    --sidebar-accent-foreground: 0 0% 20%;
+    --sidebar-border: 268.6957 100.0000% 95.4902%;
+    --sidebar-ring: 330.3659 81.1881% 60.3922%;
+
+    --pixel-green: 120 100% 40%;
+    --pixel-cyan: 180 100% 50%;
+    --pixel-orange: 30 100% 50%;
+  }
+
+
+  /* Dark Mode Styles */
   .dark {
-    /* Dark Mode - Classic dark console theme */
-    --background: 240 20% 8%; /* Deep dark blue-black */
-    --foreground: 0 0% 95%; /* Off-white */
-    
+    /* Default Dark Mode (Warm) */
+    --background: 25.0000 15.3846% 15.2941%;
+    --foreground: 39 34.4828% 88.6275%;
+    --card: 25.7143 13.7255% 20%;
+    --card-foreground: 39 34.4828% 88.6275%;
+    --popover: 25.7143 13.7255% 20%;
+    --popover-foreground: 39 34.4828% 88.6275%;
+    --primary: 30 33.6842% 62.7451%;
+    --primary-foreground: 25.0000 15.3846% 15.2941%;
+    --secondary: 24.7059 12.9771% 25.6863%;
+    --secondary-foreground: 39 34.4828% 88.6275%;
+    --muted: 27.2727 12.6437% 17.0588%;
+    --muted-foreground: 38.4000 17.7305% 72.3529%;
+    --accent: 24.4444 17.8808% 29.6078%;
+    --accent-foreground: 39 34.4828% 88.6275%;
+    --destructive: 9.8438 54.7009% 45.8824%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 24.7059 12.9771% 25.6863%;
+    --input: 24.7059 12.9771% 25.6863%;
+    --ring: 30 33.6842% 62.7451%;
+  }
+
+  /* Retro Dark Mode */
+  :root[data-theme="retro"] .dark,
+  :root[data-theme="retro"].dark {
+    --background: 240 20% 8%;
+    --foreground: 0 0% 95%;
     --card: 240 15% 12%;
     --card-foreground: 0 0% 95%;
-    
     --popover: 240 15% 12%;
     --popover-foreground: 0 0% 95%;
-    
-    --primary: 220 100% 60%; /* Brighter blue for dark mode */
+    --primary: 220 100% 60%;
     --primary-foreground: 0 0% 100%;
-    
-    --secondary: 340 100% 60%; /* Brighter magenta */
+    --secondary: 340 100% 60%;
     --secondary-foreground: 0 0% 100%;
-    
     --muted: 240 15% 18%;
     --muted-foreground: 210 20% 60%;
-    
-    --accent: 50 100% 60%; /* Bright yellow */
+    --accent: 50 100% 60%;
     --accent-foreground: 240 80% 10%;
-    
     --destructive: 0 100% 60%;
     --destructive-foreground: 0 0% 100%;
-    
-    --border: 220 80% 40%; /* Bright blue borders */
+    --border: 220 80% 40%;
     --input: 240 15% 18%;
     --ring: 220 100% 60%;
-    
-    --chart-1: 220 100% 60%;
-    --chart-2: 340 100% 60%;
-    --chart-3: 120 100% 50%;
-    --chart-4: 50 100% 60%;
-    --chart-5: 30 100% 60%;
-    
-    --sidebar-background: 240 15% 12%;
-    --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 220 100% 60%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 15% 18%;
-    --sidebar-accent-foreground: 0 0% 95%;
-    --sidebar-border: 220 80% 40%;
-    --sidebar-ring: 220 100% 60%;
-    
-    --pixel-green: 120 100% 50%;
-    --pixel-cyan: 180 100% 60%;
-    --pixel-orange: 30 100% 60%;
+  }
+
+  /* Candy Dark Mode */
+  :root[data-theme="candy"] .dark,
+  :root[data-theme="candy"].dark {
+    --background: 201.4286 43.7500% 12.5490%;
+    --foreground: 333.7500 40.0000% 92.1569%;
+    --card: 201.4286 33.3333% 16.4706%;
+    --card-foreground: 333.7500 40.0000% 92.1569%;
+    --popover: 201.4286 33.3333% 16.4706%;
+    --popover-foreground: 333.7500 40.0000% 92.1569%;
+    --primary: 42.1429 91.3043% 81.9608%;
+    --primary-foreground: 201.4286 43.7500% 12.5490%;
+    --secondary: 346.3636 55.0000% 76.4706%;
+    --secondary-foreground: 201.4286 43.7500% 12.5490%;
+    --muted: 214.2857 8.8608% 15.4902%;
+    --muted-foreground: 346.3636 55.0000% 76.4706%;
+    --accent: 338.4000 39.6825% 62.9412%;
+    --accent-foreground: 333.7500 40.0000% 92.1569%;
+    --destructive: 328.4211 70.3704% 62.9412%;
+    --destructive-foreground: 201.4286 43.7500% 12.5490%;
+    --border: 206.1538 28.0576% 27.2549%;
+    --input: 200.6897 31.1828% 18.2353%;
+    --ring: 184.1176 41.1290% 51.3725%;
   }
 }
 
@@ -128,20 +274,31 @@ Pixel Art Theme: Retro 8-bit/16-bit inspired design
     image-rendering: -moz-crisp-edges;
     image-rendering: crisp-edges;
   }
-  
+
   /* Pixel font sizes - using rem for scalability */
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: 'Press Start 2P', monospace;
     line-height: 1.6;
   }
-  
+
   /* Smaller text uses VT323 for better readability */
-  p, span, label, input, textarea, select, button {
+  p,
+  span,
+  label,
+  input,
+  textarea,
+  select,
+  button {
     font-family: 'VT323', monospace;
     font-size: 1.25rem;
     line-height: 1.4;
   }
-  
+
   /* Press Start 2P for headings and important UI */
   .pixel-heading {
     font-family: 'Press Start 2P', monospace;
@@ -150,232 +307,244 @@ Pixel Art Theme: Retro 8-bit/16-bit inspired design
 }
 
 @layer utilities {
+
   /* Pixel border effect */
   .pixel-border {
     border: 3px solid hsl(var(--border));
-    box-shadow: 
+    box-shadow:
       0 0 0 1px hsl(var(--background)),
       0 0 0 4px hsl(var(--border));
   }
-  
+
   .pixel-border-primary {
     border: 3px solid hsl(var(--primary));
-    box-shadow: 
+    box-shadow:
       0 0 0 1px hsl(var(--background)),
       0 0 0 4px hsl(var(--primary));
   }
-  
+
   /* Pixel button effect */
   .pixel-button {
     border: 3px solid hsl(var(--border));
-    box-shadow: 
+    box-shadow:
       4px 4px 0 0 hsl(var(--border));
     transition: all 0.1s ease;
   }
-  
+
   .pixel-button:hover {
     transform: translate(2px, 2px);
-    box-shadow: 
+    box-shadow:
       2px 2px 0 0 hsl(var(--border));
   }
-  
+
   .pixel-button:active {
     transform: translate(4px, 4px);
     box-shadow: none;
   }
-  
+
   /* Pixel card effect */
   .pixel-card {
     border: 3px solid hsl(var(--border));
-    box-shadow: 
+    box-shadow:
       6px 6px 0 0 hsl(var(--border));
   }
-  
+
   /* Retro scanline effect */
   .pixel-scanlines {
     position: relative;
   }
-  
+
   .pixel-scanlines::before {
     content: '';
     position: absolute;
     inset: 0;
-    background: repeating-linear-gradient(
-      0deg,
-      rgba(0, 0, 0, 0.05) 0px,
-      rgba(0, 0, 0, 0.05) 1px,
-      transparent 1px,
-      transparent 2px
-    );
+    background: repeating-linear-gradient(0deg,
+        rgba(0, 0, 0, 0.05) 0px,
+        rgba(0, 0, 0, 0.05) 1px,
+        transparent 1px,
+        transparent 2px);
     pointer-events: none;
     z-index: 1;
   }
-  
+
   /* Pixel grid background */
   .pixel-grid {
-    background-image: 
+    background-image:
       linear-gradient(hsl(var(--border) / 0.1) 1px, transparent 1px),
       linear-gradient(90deg, hsl(var(--border) / 0.1) 1px, transparent 1px);
     background-size: 8px 8px;
   }
-  
+
   /* Pixel glow effect */
   .pixel-glow {
-    box-shadow: 
+    box-shadow:
       0 0 10px hsl(var(--primary) / 0.5),
       0 0 20px hsl(var(--primary) / 0.3),
       0 0 30px hsl(var(--primary) / 0.1);
   }
-  
+
   /* Retro text shadow */
   .pixel-text-shadow {
-    text-shadow: 
+    text-shadow:
       2px 2px 0 hsl(var(--border)),
       4px 4px 0 hsl(var(--border) / 0.5);
   }
-  
+
   /* 8-bit style inset */
   .pixel-inset {
     border: 3px solid hsl(var(--border));
-    box-shadow: 
+    box-shadow:
       inset 3px 3px 0 0 rgba(0, 0, 0, 0.2),
       inset -3px -3px 0 0 rgba(255, 255, 255, 0.1);
   }
-  
+
   /* Crisp pixel rendering */
   .pixel-crisp {
     image-rendering: pixelated;
     image-rendering: -moz-crisp-edges;
     image-rendering: crisp-edges;
   }
-  
+
   /* Welcome Page Animations */
   @keyframes fade-in {
     from {
       opacity: 0;
     }
+
     to {
       opacity: 1;
     }
   }
-  
+
   @keyframes slide-down {
     from {
       opacity: 0;
       transform: translateY(-20px);
     }
+
     to {
       opacity: 1;
       transform: translateY(0);
     }
   }
-  
+
   @keyframes slide-up {
     from {
       opacity: 0;
       transform: translateY(20px);
     }
+
     to {
       opacity: 1;
       transform: translateY(0);
     }
   }
-  
+
   @keyframes bounce-slow {
-    0%, 100% {
+
+    0%,
+    100% {
       transform: translateY(0);
     }
+
     50% {
       transform: translateY(-10px);
     }
   }
-  
+
   @keyframes bounce-subtle {
-    0%, 100% {
+
+    0%,
+    100% {
       transform: translateY(0);
     }
+
     50% {
       transform: translateY(-2px);
     }
   }
-  
+
   @keyframes pixel-glow {
-    0%, 100% {
-      text-shadow: 
+
+    0%,
+    100% {
+      text-shadow:
         0 0 10px hsl(var(--primary) / 0.5),
         0 0 20px hsl(var(--primary) / 0.3);
     }
+
     50% {
-      text-shadow: 
+      text-shadow:
         0 0 20px hsl(var(--primary) / 0.8),
         0 0 40px hsl(var(--primary) / 0.5);
     }
   }
-  
+
   @keyframes gradient {
     0% {
       background-position: 0% 50%;
     }
+
     50% {
       background-position: 100% 50%;
     }
+
     100% {
       background-position: 0% 50%;
     }
   }
-  
+
   .animate-fade-in {
     animation: fade-in 0.6s ease-out;
   }
-  
+
   .animate-fade-in-delay {
     animation: fade-in 0.6s ease-out 0.2s both;
   }
-  
+
   .animate-fade-in-delay-2 {
     animation: fade-in 0.6s ease-out 0.4s both;
   }
-  
+
   .animate-fade-in-delay-3 {
     animation: fade-in 0.6s ease-out 0.6s both;
   }
-  
+
   .animate-slide-down {
     animation: slide-down 0.6s ease-out;
   }
-  
+
   .animate-slide-up {
     animation: slide-up 0.6s ease-out 0.3s both;
   }
-  
+
   .animate-bounce-slow {
     animation: bounce-slow 2s ease-in-out infinite;
   }
-  
+
   .animate-bounce-subtle {
     animation: bounce-subtle 2s ease-in-out infinite;
   }
-  
+
   .animate-pixel-glow {
     animation: pixel-glow 2s ease-in-out infinite;
   }
-  
+
   .animate-gradient {
     background-size: 200% 200%;
     animation: gradient 15s ease infinite;
   }
-  
+
   /* Small pixel card variant */
   .pixel-card-sm {
-    box-shadow: 
+    box-shadow:
       2px 2px 0 0 hsl(var(--border)),
       4px 4px 0 0 hsl(var(--border) / 0.3);
   }
-  
+
   .pixel-card-sm:hover {
-    box-shadow: 
+    box-shadow:
       3px 3px 0 0 hsl(var(--border)),
       6px 6px 0 0 hsl(var(--border) / 0.3);
   }
 }
-

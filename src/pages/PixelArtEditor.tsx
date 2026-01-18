@@ -3,7 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import { EnhancedPixelCanvas } from "@/components/pixel-art/PixelCanvas";
 import { DrawingToolbar } from "@/components/pixel-art/DrawingToolbar";
 import { ColorPicker } from "@/components/pixel-art/ColorPicker";
-import { ColorSelector } from "@/components/pixel-art/ColorSelector";
+
 import { Controls } from "@/components/pixel-art/Controls";
 import { TransformControls } from "@/components/pixel-art/TransformControls";
 import { LayerPanel } from "@/components/pixel-art/LayerPanel";
@@ -45,7 +45,7 @@ import type {
   DitherPattern,
   PencilSize,
 } from "@/types/pixel-art";
-import { Palette, Settings, Undo2, Redo2, Layers, Download, Maximize2, FlipHorizontal2, RotateCw, FlipVertical2, Grid3x3, Trash2, ZoomIn, ZoomOut, Maximize, X } from "lucide-react";
+import { Palette, Settings, Undo2, Redo2, Layers, Download, Maximize2, FlipHorizontal2, RotateCw, FlipVertical2, Grid3x3, Trash2, ZoomIn, ZoomOut, Maximize, X, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -110,24 +110,26 @@ export default function PixelArtEditor() {
   const [exportPreviewUrl, setExportPreviewUrl] = useState<string | null>(null);
 
   // Footer quick colors - independent from palette system
-  const [footerColors, setFooterColors] = useState<Color[]>(() => {
+  // 4 slots, null means empty
+  const [footerColors, setFooterColors] = useState<(Color | null)[]>(() => {
     const saved = localStorage.getItem('pixelart-footer-colors');
-    return saved ? JSON.parse(saved) : [
-      "#FF0000", // Red
-      "#00FF00", // Green
-      "#0000FF", // Blue
-      "#FFFF00", // Yellow
-      "#FF00FF", // Magenta
-      "#00FFFF", // Cyan
-    ];
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        // Migrate old data if needed (ensure length 4)
+        if (Array.isArray(parsed)) {
+          // If old colors exist (strings), keep first 4 if available
+          return parsed.length === 4 ? parsed : [null, null, null, null];
+        }
+      } catch (e) {
+        // ignore error
+      }
+    }
+    return [null, null, null, null];
   });
   const [editingFooterColorIndex, setEditingFooterColorIndex] = useState<number | null>(null);
 
-  const [quickColors, setQuickColors] = useState<Color[]>([
-    "#FF0000", // Red
-    "#00FF00", // Green
-    "#0000FF", // Blue
-  ]);
+
 
   // Initialize with one default layer and default palettes (memoized to prevent recreation)
   // Using defensive initialization to avoid conflicts with browser extensions
@@ -203,20 +205,14 @@ export default function PixelArtEditor() {
     setCurrentTool("pencil");
   };
 
-  const handleQuickColorChange = (index: number, color: Color) => {
-    const newQuickColors = [...quickColors];
-    newQuickColors[index] = color;
-    setQuickColors(newQuickColors);
-  };
+
 
   // Footer color handlers - independent from palette system
   const handleFooterColorClick = (color: Color) => {
     setCurrentColor(color);
   };
 
-  const handleFooterColorEdit = (index: number) => {
-    setEditingFooterColorIndex(index);
-  };
+
 
   const handleFooterColorChange = (index: number, color: Color) => {
     const newColors = [...footerColors];
@@ -237,7 +233,7 @@ export default function PixelArtEditor() {
       ...editorState,
       layers: layers.map((layer) =>
         layer.id === activeLayerId
-          ? { ...layer, pixels: createEmptyCanvas(CANVAS_SIZE) }
+          ? { ...layer, pixels: createEmptyCanvas(canvasWidth, canvasHeight) }
           : layer
       ),
     });
@@ -594,11 +590,11 @@ export default function PixelArtEditor() {
               <Button
                 variant="default"
                 onClick={handleExport}
-                className="h-11 sm:h-10 px-4 sm:px-3 pixel-button font-retro flex-shrink-0 gap-2"
-                title="Export PNG"
+                className="h-11 sm:h-10 px-4 sm:px-3 pixel-button font-retro flex-shrink-0 gap-2 bg-orange-500 hover:bg-orange-600"
+                title="Export Art"
               >
                 <Download className="h-5 w-5" />
-                <span className="hidden sm:inline text-sm">EXPORT</span>
+                <span className="hidden sm:inline text-sm">EXPORT ART</span>
               </Button>
             </div>
 
@@ -662,26 +658,7 @@ export default function PixelArtEditor() {
 
               {/* Action Buttons */}
               <div className="flex items-center gap-1">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={undo}
-                  disabled={!canUndo}
-                  className="h-11 w-11 sm:h-10 sm:w-10 pixel-button font-retro"
-                  title="Undo (Ctrl+Z)"
-                >
-                  <Undo2 className="h-5 w-5" />
-                </Button>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={redo}
-                  disabled={!canRedo}
-                  className="h-11 w-11 sm:h-10 sm:w-10 pixel-button font-retro"
-                  title="Redo (Ctrl+Y)"
-                >
-                  <Redo2 className="h-5 w-5" />
-                </Button>
+
 
                 <Sheet open={layersOpen} onOpenChange={setLayersOpen}>
                   <SheetTrigger asChild>
@@ -815,54 +792,88 @@ export default function PixelArtEditor() {
           </SheetContent>
         </Sheet>
       </div>
-      {/* Bottom Status Bar with Color Selector */}
+      {/* Bottom Status Bar with Custom Colors */}
       <div className="flex-shrink-0 border-t border-border bg-card px-2 sm:px-4 py-2">
         <div className="flex items-center justify-between gap-4 mr-[50px]">
-          {/* Color Selector on Left */}
-          <div className="flex-shrink-0">
-            <ColorSelector
-              currentColor={currentColor}
-              onColorChange={setCurrentColor}
-              quickColors={quickColors}
-              onQuickColorChange={handleQuickColorChange}
-            />
+
+          <div className="flex items-center gap-4">
+            {/* "Change Color" Button (moved to left) */}
+            <div className="flex-shrink-0">
+              <div
+                className="w-11 h-11 sm:w-12 sm:h-12 border-4 border-border flex-shrink-0 shadow-pixel cursor-pointer active:scale-95 sm:hover:scale-105 transition-transform pixel-button pixel-crisp mr-[1px]"
+                onClick={() => setColorsOpen(true)}
+                style={{
+                  backgroundColor:
+                    currentColor === "transparent" ? "#fff" : currentColor,
+                  backgroundImage:
+                    currentColor === "transparent"
+                      ? "linear-gradient(45deg, hsl(var(--muted)) 25%, transparent 25%, transparent 75%, hsl(var(--muted)) 75%, hsl(var(--muted))), linear-gradient(45deg, hsl(var(--muted)) 25%, transparent 25%, transparent 75%, hsl(var(--muted)) 75%, hsl(var(--muted)))"
+                      : "none",
+                  backgroundSize: "8px 8px",
+                  backgroundPosition: "0 0, 4px 4px",
+                }}
+                title="Change color"
+              />
+            </div>
+
+            {/* 4 Custom Color Options */}
+            <div className="flex items-center gap-1 sm:gap-2">
+              {footerColors.map((color, index) => (
+                <div
+                  key={index}
+                  className="relative w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center"
+                >
+                  {color ? (
+                    <div
+                      className="w-full h-full border-4 border-border shadow-pixel cursor-pointer active:scale-95 transition-transform pixel-button"
+                      style={{ backgroundColor: color }}
+                      onClick={() => handleFooterColorClick(color)}
+                      title="Select color"
+                    >
+                      {currentColor === color && (
+                        <div className="absolute inset-0 border-2 border-primary pointer-events-none" />
+                      )}
+                    </div>
+                  ) : (
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => setEditingFooterColorIndex(index)}
+                      className="w-full h-full border-4 border-dashed border-muted-foreground/50 hover:border-primary hover:text-primary bg-transparent"
+                      title="Set color"
+                    >
+                      <Plus className="h-5 w-5" />
+                    </Button>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
 
-          {/* Footer Quick Colors - Independent from Palette System */}
+          {/* Undo/Redo Buttons */}
           <div className="flex items-center gap-1 sm:gap-2">
-            {footerColors.map((color, index) => (
-              <div key={index} className="relative">
-
-                {currentColor === color && (
-                  <div className="absolute inset-0 border-2 border-primary pointer-events-none" />
-                )}
-              </div>
-            ))}
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={undo}
+              disabled={!canUndo}
+              className="h-11 w-11 sm:h-10 sm:w-10 pixel-button font-retro"
+              title="Undo (Ctrl+Z)"
+            >
+              <Undo2 className="h-5 w-5" />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={redo}
+              disabled={!canRedo}
+              className="h-11 w-11 sm:h-10 sm:w-10 pixel-button font-retro"
+              title="Redo (Ctrl+Y)"
+            >
+              <Redo2 className="h-5 w-5" />
+            </Button>
           </div>
 
-          {/* Status Info on Right */}
-          <div className="flex-1 text-right text-xs sm:text-sm text-muted-foreground">
-
-          </div>
-
-          {/* Color Preview Box on Right */}
-          <div className="flex-shrink-0">
-            <div
-              className="w-11 h-11 sm:w-12 sm:h-12 border-4 border-border flex-shrink-0 shadow-pixel cursor-pointer active:scale-95 sm:hover:scale-105 transition-transform pixel-button pixel-crisp mr-[1px]"
-              onClick={() => setColorsOpen(true)}
-              style={{
-                backgroundColor:
-                  currentColor === "transparent" ? "#fff" : currentColor,
-                backgroundImage:
-                  currentColor === "transparent"
-                    ? "linear-gradient(45deg, hsl(var(--muted)) 25%, transparent 25%, transparent 75%, hsl(var(--muted)) 75%, hsl(var(--muted))), linear-gradient(45deg, hsl(var(--muted)) 25%, transparent 25%, transparent 75%, hsl(var(--muted)) 75%, hsl(var(--muted)))"
-                    : "none",
-                backgroundSize: "8px 8px",
-                backgroundPosition: "0 0, 4px 4px",
-              }}
-              title="Click to change color"
-            />
-          </div>
         </div>
       </div>
       {/* Canvas Size Settings Dialog */}
@@ -936,7 +947,7 @@ export default function PixelArtEditor() {
           <div className="py-4">
             {editingFooterColorIndex !== null && (
               <ColorPicker
-                currentColor={footerColors[editingFooterColorIndex]}
+                currentColor={footerColors[editingFooterColorIndex] || "#FFFFFF"}
                 onColorChange={(color) => handleFooterColorChange(editingFooterColorIndex, color)}
               />
             )}
