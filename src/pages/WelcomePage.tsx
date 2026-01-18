@@ -57,6 +57,17 @@ export default function WelcomePage() {
     }
   };
 
+  const getThemeLogo = () => {
+    switch (currentTheme) {
+      case "candy":
+        return "/images/logo/pixel-mint-logo-candy.png";
+      case "default":
+        return "/images/logo/pixel-mint-logo-coffee.png";
+      default:
+        return "/images/logo/pixel-mint-logo.png";
+    }
+  };
+
   const handleStartDrawing = () => {
     setShowSizeDialog(true);
   };
@@ -97,7 +108,7 @@ export default function WelcomePage() {
                 <div className="absolute inset-0 bg-primary/20 blur-xl animate-pulse" />
                 <div className="relative flex items-center justify-center w-auto h-16 sm:h-20 xl:h-24 animate-bounce-slow">
                   <img
-                    src="/images/logo/pixel-mint-logo.png"
+                    src={getThemeLogo()}
                     alt="Pixel Mint Logo"
                     className="w-full h-full object-contain"
                   />
