@@ -24,7 +24,7 @@ export default function WelcomePage() {
   const [isAnimating, setIsAnimating] = useState(false);
   const [showSizeDialog, setShowSizeDialog] = useState(false);
   const [currentTheme, setCurrentTheme] = useState(() => {
-    return localStorage.getItem("theme") || "default";
+    return localStorage.getItem("theme") || "retro";
   });
 
   // Apply theme on mount and change
