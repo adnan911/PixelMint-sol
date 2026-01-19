@@ -536,6 +536,12 @@ export default function PixelArtEditor() {
     };
   }, []);
 
+  // Apply theme from localStorage on mount (default to 'retro' = Based theme)
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme") || "retro";
+    document.documentElement.setAttribute("data-theme", savedTheme);
+  }, []);
+
   // Zoom controls
   const handleZoomIn = () => {
     setZoom((prev) => Math.min(prev + 0.25, 4)); // Max 4x zoom
