@@ -81,7 +81,7 @@ export const EnhancedPixelCanvas: React.FC<EnhancedPixelCanvasProps> = ({
   const [startPoint, setStartPoint] = useState<Point | null>(null);
   const [hoverPoint, setHoverPoint] = useState<Point | null>(null);
   const [previewGrid, setPreviewGrid] = useState<CanvasGrid | null>(null);
-  const [rainbowHueShift, setRainbowHueShift] = useState(0);
+  const rainbowHueShiftRef = useRef(0);
 
   // Text Tool State
   const [activeText, setActiveText] = useState<{
@@ -170,12 +170,16 @@ export const EnhancedPixelCanvas: React.FC<EnhancedPixelCanvasProps> = ({
   };
 
   // Helper function to get brush color based on mode
-  const getBrushColor = (x: number, y: number, baseColor: Color): Color => {
+  const getBrushColor = (x: number, y: number, baseColor: Color, isRainbow: boolean = false): Color => {
     if (baseColor === "transparent") return baseColor;
 
     switch (brushMode) {
       case "rainbow":
-        return shiftHue(baseColor, rainbowHueShift);
+        // Increment the hue shift and use the new value
+        if (isRainbow) {
+          rainbowHueShiftRef.current = (rainbowHueShiftRef.current + 10) % 360;
+        }
+        return shiftHue(baseColor, rainbowHueShiftRef.current);
       case "random":
         const paletteColors = [
           "#FF0000", "#00FF00", "#0000FF", "#FFFF00",
@@ -367,13 +371,13 @@ export const EnhancedPixelCanvas: React.FC<EnhancedPixelCanvasProps> = ({
           if (isEraser) {
             newGrid[targetY][targetX] = "transparent";
           } else {
-            newGrid[targetY][targetX] = getBrushColor(targetX, targetY, currentColor);
+            // Pass true for rainbow mode to increment hue per pixel
+            newGrid[targetY][targetX] = getBrushColor(targetX, targetY, currentColor, brushMode === "rainbow");
           }
         }
       }
     }
 
-    if (brushMode === "rainbow" && !isEraser) setRainbowHueShift((prev) => (prev + 10) % 360);
     onPixelChange(newGrid);
   };
 

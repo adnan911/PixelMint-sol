@@ -80,12 +80,6 @@ const shapeTools: Array<{
   shortcut: string;
 }> = [
     {
-      id: "pencil",
-      icon: <Pencil className="h-4 w-4" />,
-      label: "Pencil",
-      shortcut: "P",
-    },
-    {
       id: "line",
       icon: <Minus className="h-4 w-4" />,
       label: "Line",
@@ -163,6 +157,24 @@ export const DrawingToolbar: React.FC<DrawingToolbarProps> = ({
   return (
     <TooltipProvider>
       <div className="flex gap-1.5 justify-center items-center border-[2px] border-solid border-[rgb(20,20,82)]">
+        {/* Pencil Tool - Standalone at far left */}
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant={currentTool === "pencil" ? "default" : "outline"}
+              size="icon"
+              onClick={() => onToolChange("pencil")}
+              className="h-11 w-11"
+              aria-label="Pencil"
+            >
+              <Pencil className="h-5 w-5" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="top">
+            <p>Pencil (P)</p>
+          </TooltipContent>
+        </Tooltip>
+
         {/* Font Selector for Text Tool */}
 
         {drawingTools.map((tool) => {

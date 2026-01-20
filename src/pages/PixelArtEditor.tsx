@@ -658,21 +658,21 @@ export default function PixelArtEditor() {
                   onFontChange={setCurrentFont}
                 />
               </div>
+            </div>
 
-              {/* Export Button - Rectangular and Prominent */}
+            {/* Row 2 (Mobile) / Center+Right (Desktop): Canvas Size, Zoom + Actions */}
+            <div className="flex items-center justify-between gap-2 sm:gap-3">
+              {/* Export Button - Rectangular and Prominent (moved to Row 2) */}
               <Button
                 variant="default"
                 onClick={handleExport}
-                className="h-11 sm:h-10 px-4 sm:px-3 pixel-button font-retro flex-shrink-0 gap-2 bg-orange-500 hover:bg-orange-600"
+                className="h-11 sm:h-10 px-6 sm:px-4 pixel-button font-retro flex-shrink-0 gap-2 bg-orange-500 hover:bg-orange-600"
                 title="Export Art"
               >
                 <Download className="h-5 w-5" />
                 <span className="hidden sm:inline text-sm">EXPORT ART</span>
               </Button>
-            </div>
 
-            {/* Row 2 (Mobile) / Center+Right (Desktop): Canvas Size, Zoom + Actions */}
-            <div className="flex items-center justify-between gap-2 sm:gap-3">
               {/* Canvas Size & Zoom Buttons */}
               <div className="flex items-center gap-1">
                 <Button

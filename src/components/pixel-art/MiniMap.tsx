@@ -161,6 +161,29 @@ export const MiniMap: React.FC<MiniMapProps> = ({
         isDragging.current = false;
     };
 
+    // Touch event handlers for mobile support
+    const onTouchStart = (e: React.TouchEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (e.touches.length === 1) {
+            isDragging.current = true;
+            handleInteraction(e.touches[0].clientX, e.touches[0].clientY);
+        }
+    };
+
+    const onTouchMove = (e: React.TouchEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (isDragging.current && e.touches.length === 1) {
+            handleInteraction(e.touches[0].clientX, e.touches[0].clientY);
+        }
+    };
+
+    const onTouchEnd = (e: React.TouchEvent) => {
+        e.preventDefault();
+        isDragging.current = false;
+    };
+
     return (
         <div
             className={`border-2 border-primary bg-card pixel-card shadow-xl relative overflow-hidden ${className}`}
@@ -169,6 +192,11 @@ export const MiniMap: React.FC<MiniMapProps> = ({
             onMouseMove={onMouseMove}
             onMouseUp={onMouseUp}
             onMouseLeave={onMouseUp}
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
+            onTouchCancel={onTouchEnd}
+            style={{ touchAction: "none" }}
         >
             <canvas
                 ref={canvasRef}
