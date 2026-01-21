@@ -391,3 +391,5 @@ export const exportCanvasToPNG = (
     URL.revokeObjectURL(url);
   }, "image/png");
 };
+
+

@@ -44,17 +44,7 @@ export interface Point {
   y: number;
 }
 
-export interface Selection {
-  active: boolean;
-  points: Point[];
-  bounds?: {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-  };
-  pixels?: CanvasGrid;
-}
+
 
 export interface AppState {
   canvas: CanvasGrid;
@@ -63,7 +53,6 @@ export interface AppState {
   showGrid: boolean;
   canvasSize: number;
   fillMode: FillMode;
-  selection: Selection;
   zoom: number;
   pan: Point;
 }

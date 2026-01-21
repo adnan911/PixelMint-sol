@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { usePixelCanvas } from "@/hooks/use-pixel-canvas";
-import type { CanvasGrid, Tool, Color, Point, Selection, FillMode, BrushMode, DitherPattern, PencilSize } from "@/types/pixel-art";
+import type { CanvasGrid, Tool, Color, Point, FillMode, BrushMode, DitherPattern, PencilSize } from "@/types/pixel-art";
 import {
   floodFill,
   globalFill,
@@ -18,7 +18,6 @@ interface EnhancedPixelCanvasProps {
   showGrid: boolean;
   showRuler?: boolean;
   fillMode: FillMode;
-  selection: Selection;
   zoom: number;
   pan: Point;
   brushMode?: BrushMode;
@@ -27,7 +26,6 @@ interface EnhancedPixelCanvasProps {
   currentFont?: string;
   onPixelChange: (newGrid: CanvasGrid) => void;
   onColorPick: (color: Color) => void;
-  onSelectionChange: (selection: Selection) => void;
   onPanChange: (pan: Point) => void;
   currentStamp?: { width: number; height: number; data: CanvasGrid } | null;
   onCanvasInteract?: () => void;
@@ -65,7 +63,6 @@ export const EnhancedPixelCanvas: React.FC<EnhancedPixelCanvasProps> = ({
   showGrid,
   showRuler = false,
   fillMode,
-  selection,
   zoom,
   brushMode = "normal",
   ditherPattern = "bayer4x4",
@@ -223,23 +220,7 @@ export const EnhancedPixelCanvas: React.FC<EnhancedPixelCanvasProps> = ({
     return () => window.removeEventListener("resize", updateSize);
   }, [gridWidth, gridHeight]);
 
-  // Selection Overlay
-  useEffect(() => {
-    const canvas = overlayCanvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    if (selection.active && selection.bounds) {
-      const { x, y, width, height } = selection.bounds;
-      const ps = pixelSize * zoom;
-      ctx.strokeStyle = "rgba(0, 123, 255, 0.8)";
-      ctx.lineWidth = 2;
-      ctx.setLineDash([5, 5]);
-      ctx.strokeRect(x * ps, y * ps, width * ps, height * ps);
-      ctx.setLineDash([]);
-    }
-  }, [selection, pixelSize, zoom]);
+
 
   // If tool changes from text, commit any active text
   useEffect(() => {
@@ -713,6 +694,7 @@ export const EnhancedPixelCanvas: React.FC<EnhancedPixelCanvasProps> = ({
           </div>
         )}
       </div>
+
     </div>
   );
 };

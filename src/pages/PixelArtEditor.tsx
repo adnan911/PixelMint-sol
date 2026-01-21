@@ -7,10 +7,8 @@ import { DrawingToolbar } from "@/components/pixel-art/DrawingToolbar";
 import { ColorPicker } from "@/components/pixel-art/ColorPicker";
 
 import { Controls } from "@/components/pixel-art/Controls";
-import { TransformControls } from "@/components/pixel-art/TransformControls";
 import { LayerPanel } from "@/components/pixel-art/LayerPanel";
 import { PaletteManager } from "@/components/pixel-art/PaletteManager";
-import { BrushModeSelector } from "@/components/pixel-art/BrushModeSelector";
 import { CanvasSizeSettings } from "@/components/pixel-art/CanvasSizeSettings";
 import { StampSelector } from "@/components/pixel-art/StampSelector";
 import { PREMADE_STAMPS, Stamp } from "@/data/stamps";
@@ -21,9 +19,7 @@ import {
   rotateClockwise,
   flipHorizontal,
   flipVertical,
-  extractSelection,
   pastePixels,
-  clearSelection,
 } from "@/utils/canvas-utils";
 import {
   createLayer,
@@ -33,14 +29,12 @@ import {
   reorderLayers,
   getLayerById,
   mergeLayers,
-  applyAlphaLock,
 } from "@/utils/layer-utils";
-import { DEFAULT_PALETTES, createPalette, getDefaultPalettes } from "@/utils/palette-utils";
+import { getDefaultPalettes } from "@/utils/palette-utils";
 import type {
   Tool,
   Color,
   CanvasGrid,
-  Selection,
   FillMode,
   Clipboard,
   Layer,
@@ -49,7 +43,7 @@ import type {
   DitherPattern,
   PencilSize,
 } from "@/types/pixel-art";
-import { Palette, Settings, Undo2, Redo2, Layers, Download, Maximize2, FlipHorizontal2, RotateCw, FlipVertical2, Grid3x3, Trash2, ZoomIn, ZoomOut, Maximize, X, Plus, Ruler, Map } from "lucide-react";
+import { Palette, Settings, Undo2, Redo2, Layers, Download, Maximize2, FlipHorizontal2, RotateCw, FlipVertical2, Grid3x3, Trash2, ZoomIn, ZoomOut, Maximize, X, Plus, Ruler, Map, SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -99,11 +93,10 @@ export default function PixelArtEditor() {
   const [showGrid, setShowGrid] = useState(true);
   const [showRuler, setShowRuler] = useState(false);
   const [showMiniMap, setShowMiniMap] = useState(true);
-  const [fillMode, setFillMode] = useState<FillMode>("contiguous");
+  const [fillMode] = useState<FillMode>("contiguous");
   const [brushMode, setBrushMode] = useState<BrushMode>("normal");
-  const [ditherPattern, setDitherPattern] = useState<DitherPattern>("bayer4x4");
+  const [ditherPattern] = useState<DitherPattern>("bayer4x4");
   const [pencilSize, setPencilSize] = useState<PencilSize>(1);
-  const [selection, setSelection] = useState<Selection>({ active: false, points: [] });
   const [currentFont, setCurrentFont] = useState("jersey-10");
   const [activeStamp, setActiveStamp] = useState<Stamp>(PREMADE_STAMPS[0]);
   const [zoom, setZoom] = useState(1);
@@ -151,11 +144,10 @@ export default function PixelArtEditor() {
     pinch: { scaleBounds: { min: 0.5, max: 8 }, from: () => [zoom, 0] },
     wheel: { eventOptions: { passive: false } } // Prevent default browser zoom
   });
-  const [clipboard, setClipboard] = useState<Clipboard | null>(null);
+  const [clipboard] = useState<Clipboard | null>(null);
   const [colorsOpen, setColorsOpen] = useState(false);
   const [toolsOpen, setToolsOpen] = useState(false);
   const [layersOpen, setLayersOpen] = useState(false);
-  const [palettesOpen, setPalettesOpen] = useState(false);
   const [canvasSizeOpen, setCanvasSizeOpen] = useState(false);
   const [exportPreviewOpen, setExportPreviewOpen] = useState(false);
   const [exportPreviewUrl, setExportPreviewUrl] = useState<string | null>(null);
@@ -219,12 +211,10 @@ export default function PixelArtEditor() {
     redo,
     canUndo,
     canRedo,
-    clearHistory,
   } = useHistory<EditorState>(initialState, 20);
 
   const { layers, activeLayerId, palettes, activePaletteId, canvasWidth, canvasHeight } = editorState;
   const activeLayer = getLayerById(layers, activeLayerId);
-  const activePalette = palettes.find((p) => p.id === activePaletteId) || palettes[0];
 
   // Get merged canvas for display
   const canvasGrid = mergeLayers(layers, canvasWidth, canvasHeight);
@@ -348,34 +338,17 @@ export default function PixelArtEditor() {
   };
 
   const handleCopy = () => {
-    if (selection.active && selection.bounds && activeLayer) {
-      const { x, y, width, height } = selection.bounds;
-      const pixels = extractSelection(activeLayer.pixels, x, y, width, height);
-      setClipboard({ pixels, width, height });
-    }
+    // Clipboard not implemented for full layer yet, or logic specific to selection removed
   };
 
   const handleCut = () => {
-    if (selection.active && selection.bounds && activeLayer && !activeLayer.locked) {
-      const { x, y, width, height } = selection.bounds;
-      const pixels = extractSelection(activeLayer.pixels, x, y, width, height);
-      setClipboard({ pixels, width, height });
-      const newGrid = clearSelection(activeLayer.pixels, x, y, width, height);
-
-      setEditorState({
-        ...editorState,
-        layers: layers.map((layer) =>
-          layer.id === activeLayerId ? { ...layer, pixels: newGrid } : layer
-        ),
-      });
-      setSelection({ active: false, points: [] });
-    }
+    // Cut not implemented without selection
   };
 
   const handlePaste = () => {
     if (clipboard && activeLayer && !activeLayer.locked) {
-      const x = selection.bounds?.x || Math.floor((CANVAS_SIZE - clipboard.width) / 2);
-      const y = selection.bounds?.y || Math.floor((CANVAS_SIZE - clipboard.height) / 2);
+      const x = Math.floor((CANVAS_SIZE - clipboard.width) / 2);
+      const y = Math.floor((CANVAS_SIZE - clipboard.height) / 2);
       const newGrid = pastePixels(activeLayer.pixels, clipboard.pixels, x, y);
 
       setEditorState({
@@ -731,6 +704,33 @@ export default function PixelArtEditor() {
                 {/* Action Buttons */}
 
 
+                <Sheet open={toolsOpen} onOpenChange={setToolsOpen}>
+                  <SheetTrigger asChild>
+                    <Button variant="outline" size="icon" className="h-11 w-11 sm:h-10 sm:w-10 pixel-button font-retro" title="Tools & Settings">
+                      <SlidersHorizontal className="h-5 w-5" />
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="right" className="w-full sm:w-[320px] p-6 overflow-y-auto pixel-card">
+                    <div className="space-y-6">
+                      <div>
+                        <h3 className="font-pixel text-lg mb-4 text-primary">Canvas</h3>
+                        <Controls
+                          canvasGrid={canvasGrid}
+                          canvasWidth={canvasWidth}
+                          canvasHeight={canvasHeight}
+                          showGrid={showGrid}
+                          canUndo={canUndo}
+                          canRedo={canRedo}
+                          onUndo={undo}
+                          onRedo={redo}
+                          onClear={handleClear}
+                          onToggleGrid={handleToggleGrid}
+                        />
+                      </div>
+                    </div>
+                  </SheetContent>
+                </Sheet>
+
                 <Sheet open={layersOpen} onOpenChange={setLayersOpen}>
                   <SheetTrigger asChild>
                     <Button variant="outline" size="icon" className="h-11 w-11 sm:h-10 sm:w-10 pixel-button font-retro" title="Layers">
@@ -838,7 +838,6 @@ export default function PixelArtEditor() {
             showGrid={showGrid}
             showRuler={showRuler}
             fillMode={fillMode}
-            selection={selection}
             zoom={zoom}
             pan={pan}
             brushMode={brushMode}
@@ -847,7 +846,6 @@ export default function PixelArtEditor() {
             currentFont={currentFont}
             onPixelChange={handlePixelChange}
             onColorPick={handleColorPick}
-            onSelectionChange={setSelection}
             onPanChange={setPan}
             currentStamp={activeStamp}
             onCanvasInteract={() => setIsStampSelectorOpen(false)}
