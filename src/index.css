@@ -1,6 +1,6 @@
 /* stylelint-disable */
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Bytesized&family=Jacquarda+Bastarda+9&family=Jersey+10&family=Pixelify+Sans:wght@400..700&family=Tiny5&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Bytesized&family=Jacquarda+Bastarda+9&family=Jersey+10&family=Pixelify+Sans:wght@400..700&family=Tiny5&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -27,69 +27,29 @@ Pixel Art Theme: Retro 8-bit/16-bit inspired design
 
     --shadow-2xs: 2px 3px 5px 0px hsl(28 13% 20% / 0.06);
     --shadow-xs: 2px 3px 5px 0px hsl(28 13% 20% / 0.06);
-    --shadow-sm: 2px 3px 5px 0px hsl(28 13% 20% / 0.12), 2px 1px 2px -1px hsl(28 13% 20% / 0.12);
-    --shadow: 2px 3px 5px 0px hsl(28 13% 20% / 0.12), 2px 1px 2px -1px hsl(28 13% 20% / 0.12);
-    --shadow-md: 2px 3px 5px 0px hsl(28 13% 20% / 0.12), 2px 2px 4px -1px hsl(28 13% 20% / 0.12);
-    --shadow-lg: 2px 3px 5px 0px hsl(28 13% 20% / 0.12), 2px 4px 6px -1px hsl(28 13% 20% / 0.12);
-    --shadow-xl: 2px 3px 5px 0px hsl(28 13% 20% / 0.12), 2px 8px 10px -1px hsl(28 13% 20% / 0.12);
-    --shadow-2xl: 2px 3px 5px 0px hsl(28 13% 20% / 0.30);
+    --shadow-sm:
+      2px 3px 5px 0px hsl(28 13% 20% / 0.12),
+      2px 1px 2px -1px hsl(28 13% 20% / 0.12);
+    --shadow:
+      2px 3px 5px 0px hsl(28 13% 20% / 0.12),
+      2px 1px 2px -1px hsl(28 13% 20% / 0.12);
+    --shadow-md:
+      2px 3px 5px 0px hsl(28 13% 20% / 0.12),
+      2px 2px 4px -1px hsl(28 13% 20% / 0.12);
+    --shadow-lg:
+      2px 3px 5px 0px hsl(28 13% 20% / 0.12),
+      2px 4px 6px -1px hsl(28 13% 20% / 0.12);
+    --shadow-xl:
+      2px 3px 5px 0px hsl(28 13% 20% / 0.12),
+      2px 8px 10px -1px hsl(28 13% 20% / 0.12);
+    --shadow-2xl: 2px 3px 5px 0px hsl(28 13% 20% / 0.3);
 
     --tracking-normal: 0em;
     --spacing: 0.25rem;
   }
 
-  /* Default Theme (Warm) - Fallback AND Explicit */
+  /* Default Theme (Based/Retro) - Fallback AND Explicit */
   :root,
-  :root[data-theme="default"] {
-    --background: 44.0000 42.8571% 93.1373%;
-    --foreground: 28.5714 16.5354% 24.9020%;
-
-    --card: 42.0000 100.0000% 98.0392%;
-    --card-foreground: 28.5714 16.5354% 24.9020%;
-
-    --popover: 42.0000 100.0000% 98.0392%;
-    --popover-foreground: 28.5714 16.5354% 24.9020%;
-
-    --primary: 30.0000 33.8710% 48.6275%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 40.6452 34.8315% 82.5490%;
-    --secondary-foreground: 28.9655 18.7097% 30.3922%;
-
-    --muted: 39 34.4828% 88.6275%;
-    --muted-foreground: 32.3077 18.4834% 41.3725%;
-
-    --accent: 42.8571 32.8125% 74.9020%;
-    --accent-foreground: 28.5714 16.5354% 24.9020%;
-
-    --destructive: 9.8438 54.7009% 45.8824%;
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 40.0000 31.4286% 79.4118%;
-    --input: 40.0000 31.4286% 79.4118%;
-    --ring: 30.0000 33.8710% 48.6275%;
-
-    --chart-1: 30.0000 33.8710% 48.6275%;
-    --chart-2: 31.3846 29.9539% 42.5490%;
-    --chart-3: 33.6842 32.9480% 33.9216%;
-    --chart-4: 29.1176 30.9091% 56.8627%;
-    --chart-5: 30 33.6842% 62.7451%;
-
-    --sidebar-background: 39 34.4828% 88.6275%;
-    --sidebar-foreground: 28.5714 16.5354% 24.9020%;
-    --sidebar-primary: 30.0000 33.8710% 48.6275%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 42.8571 32.8125% 74.9020%;
-    --sidebar-accent-foreground: 28.5714 16.5354% 24.9020%;
-    --sidebar-border: 40.0000 31.4286% 79.4118%;
-    --sidebar-ring: 30.0000 33.8710% 48.6275%;
-
-    --pixel-green: 120 100% 40%;
-    --pixel-cyan: 180 100% 50%;
-    --pixel-orange: 30 100% 50%;
-  }
-
-  /* Retro Theme (Cool/Blue) */
   :root[data-theme="retro"] {
     --background: 210 40% 96%;
     --foreground: 240 80% 10%;
@@ -139,6 +99,56 @@ Pixel Art Theme: Retro 8-bit/16-bit inspired design
     --pixel-orange: 30 100% 50%;
   }
 
+  /* Coffee Theme (Previously Default) */
+  :root[data-theme="default"] {
+    --background: 44 42.8571% 93.1373%;
+    --foreground: 28.5714 16.5354% 24.902%;
+
+    --card: 42 100% 98.0392%;
+    --card-foreground: 28.5714 16.5354% 24.902%;
+
+    --popover: 42 100% 98.0392%;
+    --popover-foreground: 28.5714 16.5354% 24.902%;
+
+    --primary: 30 33.871% 48.6275%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 40.6452 34.8315% 82.549%;
+    --secondary-foreground: 28.9655 18.7097% 30.3922%;
+
+    --muted: 39 34.4828% 88.6275%;
+    --muted-foreground: 32.3077 18.4834% 41.3725%;
+
+    --accent: 42.8571 32.8125% 74.902%;
+    --accent-foreground: 28.5714 16.5354% 24.902%;
+
+    --destructive: 9.8438 54.7009% 45.8824%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 40 31.4286% 79.4118%;
+    --input: 40 31.4286% 79.4118%;
+    --ring: 30 33.871% 48.6275%;
+
+    --chart-1: 30 33.871% 48.6275%;
+    --chart-2: 31.3846 29.9539% 42.549%;
+    --chart-3: 33.6842 32.948% 33.9216%;
+    --chart-4: 29.1176 30.9091% 56.8627%;
+    --chart-5: 30 33.6842% 62.7451%;
+
+    --sidebar-background: 39 34.4828% 88.6275%;
+    --sidebar-foreground: 28.5714 16.5354% 24.902%;
+    --sidebar-primary: 30 33.871% 48.6275%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 42.8571 32.8125% 74.902%;
+    --sidebar-accent-foreground: 28.5714 16.5354% 24.902%;
+    --sidebar-border: 40 31.4286% 79.4118%;
+    --sidebar-ring: 30 33.871% 48.6275%;
+
+    --pixel-green: 120 100% 40%;
+    --pixel-cyan: 180 100% 50%;
+    --pixel-orange: 30 100% 50%;
+  }
+
   /* Candy Theme */
   :root[data-theme="candy"] {
     --background: 330 47.0588% 93.3333%;
@@ -162,7 +172,7 @@ Pixel Art Theme: Retro 8-bit/16-bit inspired design
     --accent: 42.1429 91.3043% 81.9608%;
     --accent-foreground: 0 0% 20%;
 
-    --destructive: 359.5652 92.0000% 70.5882%;
+    --destructive: 359.5652 92% 70.5882%;
     --destructive-foreground: 0 0% 100%;
 
     --border: 325.5814 57.8475% 56.2745%;
@@ -175,13 +185,13 @@ Pixel Art Theme: Retro 8-bit/16-bit inspired design
     --chart-4: 329.6386 77.5701% 79.0196%;
     --chart-5: 330.6294 64.1256% 56.2745%;
 
-    --sidebar-background: 326.2500 69.5652% 90.9804%;
+    --sidebar-background: 326.25 69.5652% 90.9804%;
     --sidebar-foreground: 0 0% 20%;
     --sidebar-primary: 330.3659 81.1881% 60.3922%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 327.4074 87.0968% 81.7647%;
     --sidebar-accent-foreground: 0 0% 20%;
-    --sidebar-border: 268.6957 100.0000% 95.4902%;
+    --sidebar-border: 268.6957 100% 95.4902%;
     --sidebar-ring: 330.3659 81.1881% 60.3922%;
 
     --pixel-green: 120 100% 40%;
@@ -191,18 +201,18 @@ Pixel Art Theme: Retro 8-bit/16-bit inspired design
 
   /* Dark Theme (Dedicated) */
   :root[data-theme="dark"] {
-    --background: 25.0000 15.3846% 15.2941%;
+    --background: 25 15.3846% 15.2941%;
     --foreground: 39 34.4828% 88.6275%;
     --card: 25.7143 13.7255% 20%;
     --card-foreground: 39 34.4828% 88.6275%;
     --popover: 25.7143 13.7255% 20%;
     --popover-foreground: 39 34.4828% 88.6275%;
     --primary: 30 33.6842% 62.7451%;
-    --primary-foreground: 25.0000 15.3846% 15.2941%;
+    --primary-foreground: 25 15.3846% 15.2941%;
     --secondary: 24.7059 12.9771% 25.6863%;
     --secondary-foreground: 39 34.4828% 88.6275%;
     --muted: 27.2727 12.6437% 17.0588%;
-    --muted-foreground: 38.4000 17.7305% 72.3529%;
+    --muted-foreground: 38.4 17.7305% 72.3529%;
     --accent: 24.4444 17.8808% 29.6078%;
     --accent-foreground: 39 34.4828% 88.6275%;
     --destructive: 9.8438 54.7009% 45.8824%;
@@ -216,22 +226,21 @@ Pixel Art Theme: Retro 8-bit/16-bit inspired design
     --pixel-orange: 30 100% 50%;
   }
 
-
   /* Dark Mode Styles */
   .dark {
     /* Default Dark Mode (Warm) */
-    --background: 25.0000 15.3846% 15.2941%;
+    --background: 25 15.3846% 15.2941%;
     --foreground: 39 34.4828% 88.6275%;
     --card: 25.7143 13.7255% 20%;
     --card-foreground: 39 34.4828% 88.6275%;
     --popover: 25.7143 13.7255% 20%;
     --popover-foreground: 39 34.4828% 88.6275%;
     --primary: 30 33.6842% 62.7451%;
-    --primary-foreground: 25.0000 15.3846% 15.2941%;
+    --primary-foreground: 25 15.3846% 15.2941%;
     --secondary: 24.7059 12.9771% 25.6863%;
     --secondary-foreground: 39 34.4828% 88.6275%;
     --muted: 27.2727 12.6437% 17.0588%;
-    --muted-foreground: 38.4000 17.7305% 72.3529%;
+    --muted-foreground: 38.4 17.7305% 72.3529%;
     --accent: 24.4444 17.8808% 29.6078%;
     --accent-foreground: 39 34.4828% 88.6275%;
     --destructive: 9.8438 54.7009% 45.8824%;
@@ -268,25 +277,25 @@ Pixel Art Theme: Retro 8-bit/16-bit inspired design
   /* Candy Dark Mode */
   :root[data-theme="candy"] .dark,
   :root[data-theme="candy"].dark {
-    --background: 201.4286 43.7500% 12.5490%;
-    --foreground: 333.7500 40.0000% 92.1569%;
+    --background: 201.4286 43.75% 12.549%;
+    --foreground: 333.75 40% 92.1569%;
     --card: 201.4286 33.3333% 16.4706%;
-    --card-foreground: 333.7500 40.0000% 92.1569%;
+    --card-foreground: 333.75 40% 92.1569%;
     --popover: 201.4286 33.3333% 16.4706%;
-    --popover-foreground: 333.7500 40.0000% 92.1569%;
+    --popover-foreground: 333.75 40% 92.1569%;
     --primary: 42.1429 91.3043% 81.9608%;
-    --primary-foreground: 201.4286 43.7500% 12.5490%;
-    --secondary: 346.3636 55.0000% 76.4706%;
-    --secondary-foreground: 201.4286 43.7500% 12.5490%;
+    --primary-foreground: 201.4286 43.75% 12.549%;
+    --secondary: 346.3636 55% 76.4706%;
+    --secondary-foreground: 201.4286 43.75% 12.549%;
     --muted: 214.2857 8.8608% 15.4902%;
-    --muted-foreground: 346.3636 55.0000% 76.4706%;
-    --accent: 338.4000 39.6825% 62.9412%;
-    --accent-foreground: 333.7500 40.0000% 92.1569%;
+    --muted-foreground: 346.3636 55% 76.4706%;
+    --accent: 338.4 39.6825% 62.9412%;
+    --accent-foreground: 333.75 40% 92.1569%;
     --destructive: 328.4211 70.3704% 62.9412%;
-    --destructive-foreground: 201.4286 43.7500% 12.5490%;
+    --destructive-foreground: 201.4286 43.75% 12.549%;
     --border: 206.1538 28.0576% 27.2549%;
     --input: 200.6897 31.1828% 18.2353%;
-    --ring: 184.1176 41.1290% 51.3725%;
+    --ring: 184.1176 41.129% 51.3725%;
   }
 }
 
@@ -297,7 +306,7 @@ Pixel Art Theme: Retro 8-bit/16-bit inspired design
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Press Start 2P', 'VT323', monospace;
+    font-family: "Press Start 2P", "VT323", monospace;
     image-rendering: pixelated;
     image-rendering: -moz-crisp-edges;
     image-rendering: crisp-edges;
@@ -310,7 +319,7 @@ Pixel Art Theme: Retro 8-bit/16-bit inspired design
   h4,
   h5,
   h6 {
-    font-family: 'Press Start 2P', monospace;
+    font-family: "Press Start 2P", monospace;
     line-height: 1.6;
   }
 
@@ -322,20 +331,19 @@ Pixel Art Theme: Retro 8-bit/16-bit inspired design
   textarea,
   select,
   button {
-    font-family: 'VT323', monospace;
+    font-family: "VT323", monospace;
     font-size: 1.25rem;
     line-height: 1.4;
   }
 
   /* Press Start 2P for headings and important UI */
   .pixel-heading {
-    font-family: 'Press Start 2P', monospace;
+    font-family: "Press Start 2P", monospace;
     line-height: 1.6;
   }
 }
 
 @layer utilities {
-
   /* Pixel border effect */
   .pixel-border {
     border: 3px solid hsl(var(--border));
@@ -354,15 +362,13 @@ Pixel Art Theme: Retro 8-bit/16-bit inspired design
   /* Pixel button effect */
   .pixel-button {
     border: 3px solid hsl(var(--border));
-    box-shadow:
-      4px 4px 0 0 hsl(var(--border));
+    box-shadow: 4px 4px 0 0 hsl(var(--border));
     transition: all 0.1s ease;
   }
 
   .pixel-button:hover {
     transform: translate(2px, 2px);
-    box-shadow:
-      2px 2px 0 0 hsl(var(--border));
+    box-shadow: 2px 2px 0 0 hsl(var(--border));
   }
 
   .pixel-button:active {
@@ -373,8 +379,7 @@ Pixel Art Theme: Retro 8-bit/16-bit inspired design
   /* Pixel card effect */
   .pixel-card {
     border: 3px solid hsl(var(--border));
-    box-shadow:
-      6px 6px 0 0 hsl(var(--border));
+    box-shadow: 6px 6px 0 0 hsl(var(--border));
   }
 
   /* Retro scanline effect */
@@ -383,14 +388,16 @@ Pixel Art Theme: Retro 8-bit/16-bit inspired design
   }
 
   .pixel-scanlines::before {
-    content: '';
+    content: "";
     position: absolute;
     inset: 0;
-    background: repeating-linear-gradient(0deg,
-        rgba(0, 0, 0, 0.05) 0px,
-        rgba(0, 0, 0, 0.05) 1px,
-        transparent 1px,
-        transparent 2px);
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.05) 0px,
+      rgba(0, 0, 0, 0.05) 1px,
+      transparent 1px,
+      transparent 2px
+    );
     pointer-events: none;
     z-index: 1;
   }
@@ -469,7 +476,6 @@ Pixel Art Theme: Retro 8-bit/16-bit inspired design
   }
 
   @keyframes bounce-slow {
-
     0%,
     100% {
       transform: translateY(0);
@@ -481,7 +487,6 @@ Pixel Art Theme: Retro 8-bit/16-bit inspired design
   }
 
   @keyframes bounce-subtle {
-
     0%,
     100% {
       transform: translateY(0);
@@ -493,7 +498,6 @@ Pixel Art Theme: Retro 8-bit/16-bit inspired design
   }
 
   @keyframes pixel-glow {
-
     0%,
     100% {
       text-shadow:

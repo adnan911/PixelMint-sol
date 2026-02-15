@@ -107,7 +107,7 @@ export default function WelcomePage() {
             <div className="flex items-center justify-center gap-3 mb-6 sm:mb-8">
               <div className="relative">
                 <div className="absolute inset-0 bg-primary/20 blur-xl animate-pulse" />
-                <div className="relative flex items-center justify-center w-auto h-16 sm:h-20 xl:h-24 animate-bounce-slow">
+                <div className="relative flex items-center justify-center w-auto h-40 sm:h-60 xl:h-80 animate-bounce-slow">
                   <img
                     src={getThemeLogo()}
                     alt="Pixel Mint Logo"

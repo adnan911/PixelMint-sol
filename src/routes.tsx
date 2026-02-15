@@ -1,3 +1,4 @@
+import SplashPage from './pages/SplashPage';
 import WelcomePage from './pages/WelcomePage';
 import PixelArtEditor from './pages/PixelArtEditor';
 import type { ReactNode } from 'react';
@@ -11,8 +12,14 @@ interface RouteConfig {
 
 const routes: RouteConfig[] = [
   {
-    name: 'Welcome',
+    name: 'Splash Logic',
     path: '/',
+    element: <SplashPage />,
+    visible: false
+  },
+  {
+    name: 'Welcome',
+    path: '/welcome',
     element: <WelcomePage />
   },
   {
