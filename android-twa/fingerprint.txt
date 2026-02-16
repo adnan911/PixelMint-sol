@@ -1,0 +1,26 @@
+Alias name: android
+Creation date: Feb 16, 2026
+Entry type: PrivateKeyEntry
+Certificate chain length: 1
+Certificate[1]:
+Owner: CN=PixelMint, OU=PixelMint, O=PixelMint, L=Unknown, ST=Unknown, C=US
+Issuer: CN=PixelMint, OU=PixelMint, O=PixelMint, L=Unknown, ST=Unknown, C=US
+Serial number: e1480d50a9e370f3
+Valid from: Mon Feb 16 21:59:44 BDT 2026 until: Fri Jul 04 21:59:44 BDT 2053
+Certificate fingerprints:
+	 SHA1: C4:38:55:56:5A:B9:41:C6:CF:A9:67:ED:BB:45:BB:27:A4:FD:72:B9
+	 SHA256: AD:71:30:F8:F0:56:57:8A:E1:D5:B8:B1:4C:E6:59:1D:35:34:32:58:89:07:1E:2F:7D:D2:F0:36:44:0D:EB:62
+Signature algorithm name: SHA256withRSA
+Subject Public Key Algorithm: 2048-bit RSA key
+Version: 3
+
+Extensions: 
+
+#1: ObjectId: 2.5.29.14 Criticality=false
+SubjectKeyIdentifier [
+KeyIdentifier [
+0000: FE 51 98 36 CB EE 22 E4   F3 0C 75 40 27 74 18 EC  .Q.6.."...u@'t..
+0010: 11 88 B7 10                                        ....
+]
+]
+

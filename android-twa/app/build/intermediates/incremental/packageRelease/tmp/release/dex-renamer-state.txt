@@ -1,0 +1,4 @@
+#Mon Feb 16 23:02:19 BDT 2026
+base.0=D\:\\DarkDEV\\PIXELMINT\\pixel mint - sol\\android-twa\\app\\build\\intermediates\\dex\\release\\minifyReleaseWithR8\\classes.dex
+renamed.0=classes.dex
+path.0=classes.dex
