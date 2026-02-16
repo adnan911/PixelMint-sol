@@ -17,7 +17,7 @@ const App: React.FC = () => {
       {/*<RouteGuard>*/}
       <IntersectObserver />
       <div className="flex flex-col min-h-screen">
-        <header style={{ display: "flex", justifyContent: "space-between", padding: 12 }}>
+        <header style={{ display: "flex", justifyContent: "space-between", padding: 12 }} className="relative z-50" >
           <div className="text-xl font-bold">Pixel Mint</div>
           <WalletBar />
         </header>
