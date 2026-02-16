@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App.tsx";
 import { AppWrapper } from "./components/common/PageMeta.tsx";
+import { AppProviders } from "./providers/AppProviders.tsx";
 import { ErrorBoundary } from "./components/common/ErrorBoundary.tsx";
 
 // Global error handler to suppress Chrome extension errors
@@ -28,7 +29,9 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ErrorBoundary>
       <AppWrapper>
-        <App />
+        <AppProviders>
+          <App />
+        </AppProviders>
       </AppWrapper>
     </ErrorBoundary>
   </StrictMode>

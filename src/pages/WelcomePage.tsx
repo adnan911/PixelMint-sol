@@ -85,17 +85,7 @@ export default function WelcomePage() {
 
   return (
     <div className="fixed inset-0 flex flex-col overflow-auto bg-gradient-to-br from-primary/10 via-background to-secondary/10 animate-gradient">
-      {/* Theme Toggle */}
-      <div className="absolute top-4 right-4 z-50">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={toggleTheme}
-          className="pixel-button font-retro text-xs sm:text-sm bg-card"
-        >
-          {getThemeLabel()}
-        </Button>
-      </div>
+
 
       {/* Animated Background Grid */}
       <div className="absolute inset-0 opacity-5 pointer-events-none">
@@ -166,6 +156,18 @@ export default function WelcomePage() {
               >
                 <Palette className="mr-3 h-6 w-6 sm:h-7 sm:w-7 flex-shrink-0" />
                 <span className="whitespace-nowrap">START DRAWING</span>
+              </Button>
+            </div>
+
+            {/* Theme Toggle (Moved) */}
+            <div className="flex flex-col items-center gap-4 pt-4 animate-fade-in-delay-3">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={toggleTheme}
+                className="pixel-button font-retro text-xs sm:text-sm bg-card"
+              >
+                {getThemeLabel()}
               </Button>
             </div>
           </div>

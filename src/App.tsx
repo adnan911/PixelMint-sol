@@ -6,6 +6,8 @@ import routes from './routes';
 
 // import { AuthProvider } from '@/contexts/AuthContext';
 // import { RouteGuard } from '@/components/common/RouteGuard';
+import { WalletBar } from '@/components/WalletBar';
+import { WalletActions } from '@/components/WalletActions';
 import { Toaster } from '@/components/ui/toaster';
 
 const App: React.FC = () => {
@@ -15,8 +17,13 @@ const App: React.FC = () => {
       {/*<RouteGuard>*/}
       <IntersectObserver />
       <div className="flex flex-col min-h-screen">
+        <header style={{ display: "flex", justifyContent: "space-between", padding: 12 }}>
+          <div className="text-xl font-bold">Pixel Mint</div>
+          <WalletBar />
+        </header>
         {/*<Header />*/}
-        <main className="flex-grow">
+        <main className="flex-grow p-3">
+          <WalletActions />
           <Routes>
           {routes.map((route, index) => (
             <Route
