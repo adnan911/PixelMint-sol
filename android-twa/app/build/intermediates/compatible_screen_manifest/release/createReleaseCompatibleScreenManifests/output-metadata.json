@@ -4,7 +4,7 @@
     "type": "COMPATIBLE_SCREEN_MANIFEST",
     "kind": "Directory"
   },
-  "applicationId": "com.pixelmint.sol",
+  "applicationId": "com.onchainerslab.pixelmint",
   "variantName": "release",
   "elements": []
 }

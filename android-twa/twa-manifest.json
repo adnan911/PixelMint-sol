@@ -1,5 +1,5 @@
 {
-  "packageId": "com.pixelmint.sol",
+  "packageId": "com.onchainerslab.pixelmint",
   "host": "pixel-mint-sol.vercel.app",
   "name": "Pixel Mint",
   "launcherName": "Pixel Mint",
@@ -21,7 +21,7 @@
     "alias": "android"
   },
   "appVersionName": "1.0.0",
-  "appVersionCode": 2,
+  "appVersionCode": 3,
   "shortcuts": [],
   "generatorApp": "bubblewrap-cli",
   "webManifestUrl": "https://pixel-mint-sol.vercel.app/manifest.webmanifest",

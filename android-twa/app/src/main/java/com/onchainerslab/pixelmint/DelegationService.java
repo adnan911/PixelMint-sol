@@ -1,4 +1,4 @@
-package com.pixelmint.sol;
+package com.onchainerslab.pixelmint;
 
 
 

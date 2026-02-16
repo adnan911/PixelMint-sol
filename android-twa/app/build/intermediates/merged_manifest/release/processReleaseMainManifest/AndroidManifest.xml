@@ -22,8 +22,8 @@
      the abbreviated format.
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.pixelmint.sol"
-    android:versionCode="2"
+    package="com.onchainerslab.pixelmint"
+    android:versionCode="3"
     android:versionName="1.0.0" >
 
     <uses-sdk
@@ -43,13 +43,13 @@
     </queries>
 
     <permission
-        android:name="com.pixelmint.sol.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+        android:name="com.onchainerslab.pixelmint.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
         android:protectionLevel="signature" />
 
-    <uses-permission android:name="com.pixelmint.sol.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+    <uses-permission android:name="com.onchainerslab.pixelmint.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
 
     <application
-        android:name="com.pixelmint.sol.Application"
+        android:name="com.onchainerslab.pixelmint.Application"
         android:allowBackup="true"
         android:appComponentFactory="androidx.core.app.CoreComponentFactory"
         android:extractNativeLibs="true"
@@ -84,7 +84,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.pixelmint.sol.LauncherActivity"
+            android:name="com.onchainerslab.pixelmint.LauncherActivity"
             android:alwaysRetainTaskState="true"
             android:exported="true"
             android:label="@string/launcherName" >
@@ -163,7 +163,7 @@
         </provider>
 
         <service
-            android:name="com.pixelmint.sol.DelegationService"
+            android:name="com.onchainerslab.pixelmint.DelegationService"
             android:enabled="@bool/enableNotification"
             android:exported="@bool/enableNotification" >
             <meta-data
@@ -181,7 +181,7 @@
 
         <provider
             android:name="androidx.startup.InitializationProvider"
-            android:authorities="com.pixelmint.sol.androidx-startup"
+            android:authorities="com.onchainerslab.pixelmint.androidx-startup"
             android:exported="false" >
             <meta-data
                 android:name="androidx.emoji2.text.EmojiCompatInitializer"

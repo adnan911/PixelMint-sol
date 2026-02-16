@@ -29,6 +29,6 @@
     <string name="launchUrl" translatable="false">https://pixel-mint-sol.vercel.app/</string>
     <string name="launcherName" translatable="false">Pixel Mint</string>
     <string name="orientation" translatable="false">any</string>
-    <string name="providerAuthority" translatable="false">com.pixelmint.sol.fileprovider</string>
+    <string name="providerAuthority" translatable="false">com.onchainerslab.pixelmint.fileprovider</string>
     <string name="webManifestUrl" translatable="false">https://pixel-mint-sol.vercel.app/manifest.webmanifest</string>
 </resources>

@@ -21,7 +21,7 @@ plugins {
 }
 
 def twaManifest = [
-    applicationId: 'com.pixelmint.sol',
+    applicationId: 'com.onchainerslab.pixelmint',
     hostName: 'pixel-mint-sol.vercel.app', // The domain being opened in the TWA.
     launchUrl: '/', // The start path for the TWA. Must be relative to the domain.
     name: 'Pixel Mint', // The application name.
@@ -52,12 +52,12 @@ def twaManifest = [
 
 android {
     compileSdkVersion 36
-    namespace "com.pixelmint.sol"
+    namespace "com.onchainerslab.pixelmint"
     defaultConfig {
-        applicationId "com.pixelmint.sol"
+        applicationId "com.onchainerslab.pixelmint"
         minSdkVersion 21
         targetSdkVersion 35
-        versionCode 2
+        versionCode 3
         versionName "1.0.0"
 
         // The name for the application
