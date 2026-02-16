@@ -49,6 +49,19 @@ export interface Point {
   y: number;
 }
 
+export interface TextObject {
+  id: string;
+  x: number;
+  y: number;
+  text: string;
+  fontFamily: string;
+  fontSize: number;
+  color: Color;
+  width?: number;
+  height?: number;
+  previewUrl?: string; // Cache for performance
+}
+
 
 
 export interface AppState {

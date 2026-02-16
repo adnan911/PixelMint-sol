@@ -42,6 +42,7 @@ import type {
   BrushMode,
   DitherPattern,
   PencilSize,
+  TextObject,
 } from "@/types/pixel-art";
 import { Settings, Undo2, Redo2, Layers, Download, FlipHorizontal2, RotateCw, FlipVertical2, Grid3x3, Trash2, ZoomIn, ZoomOut, Maximize, X, Plus, Ruler, Map, Diamond } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -80,6 +81,8 @@ interface EditorState {
   activePaletteId: string;
   canvasWidth: number;
   canvasHeight: number;
+  textObjects: TextObject[];
+  activeTextId: string | null;
 }
 
 export default function PixelArtEditor() {
@@ -192,6 +195,8 @@ export default function PixelArtEditor() {
         activePaletteId: "default",
         canvasWidth: initialSize,
         canvasHeight: initialSize,
+        textObjects: [],
+        activeTextId: null,
       };
       state.activeLayerId = state.layers[0].id;
       return state;
@@ -206,6 +211,8 @@ export default function PixelArtEditor() {
         activePaletteId: "default",
         canvasWidth: initialSize,
         canvasHeight: initialSize,
+        textObjects: [],
+        activeTextId: null,
       };
     }
   }, [initialSize]);
@@ -219,7 +226,7 @@ export default function PixelArtEditor() {
     canRedo,
   } = useHistory<EditorState>(initialState, 20);
 
-  const { layers, activeLayerId, palettes, activePaletteId, canvasWidth, canvasHeight } = editorState;
+  const { layers, activeLayerId, palettes, activePaletteId, canvasWidth, canvasHeight, textObjects, activeTextId } = editorState;
   const activeLayer = getLayerById(layers, activeLayerId);
 
   // Get merged canvas for display
@@ -297,6 +304,8 @@ export default function PixelArtEditor() {
           ? { ...layer, pixels: createEmptyCanvas(canvasWidth, canvasHeight) }
           : layer
       ),
+      textObjects: [],
+      activeTextId: null,
     });
   };
 
@@ -462,6 +471,39 @@ export default function PixelArtEditor() {
     });
   };
 
+  // Text Object Handlers
+  const handleTextObjectCreate = (textObject: TextObject) => {
+    setEditorState({
+      ...editorState,
+      textObjects: [...textObjects, textObject],
+      activeTextId: textObject.id,
+    });
+    // Switch to select tool or keep text tool but select the new object
+    // setCurrentTool("select"); 
+  };
+
+  const handleTextObjectUpdate = (id: string, updates: Partial<TextObject>) => {
+    setEditorState({
+      ...editorState,
+      textObjects: textObjects.map(obj => obj.id === id ? { ...obj, ...updates } : obj),
+    });
+  };
+
+  const handleTextObjectDelete = (id: string) => {
+    setEditorState({
+      ...editorState,
+      textObjects: textObjects.filter(obj => obj.id !== id),
+      activeTextId: activeTextId === id ? null : activeTextId,
+    });
+  };
+
+  const handleTextObjectSelect = (id: string | null) => {
+    setEditorState({
+      ...editorState,
+      activeTextId: id,
+    });
+  };
+
   const handleCanvasSizeChange = (newWidth: number, newHeight: number) => {
     // Resize all layers
     const resizedLayers = layers.map((layer) => {
@@ -575,6 +617,18 @@ export default function PixelArtEditor() {
           }
         }
       }
+    }
+
+    // Draw Text Objects
+    if (textObjects && textObjects.length > 0) {
+      ctx.textBaseline = "top";
+      textObjects.forEach((obj) => {
+        // Font size needs to be scaled
+        // obj.fontFamily is like '"Jersey 10", sans-serif'
+        ctx.font = `${obj.fontSize * EXPORT_SCALE}px ${obj.fontFamily}`;
+        ctx.fillStyle = obj.color;
+        ctx.fillText(obj.text, obj.x * EXPORT_SCALE, obj.y * EXPORT_SCALE);
+      });
     }
 
     // Generate preview URL and show dialog
@@ -865,33 +919,56 @@ export default function PixelArtEditor() {
           </div>
         )}
 
-        <div
-          className="w-full h-full flex items-center justify-center"
-          style={{ transform: `translate(${pan.x}px, ${pan.y}px)` }}
+        {/* Middle: Canvas */}
+        <div className="flex-1 flex items-center justify-center relative overflow-hidden bg-muted/20"
+             style={{
+               height: "calc(100vh - 140px)", // Adjust based on header/footer
+               display: "flex",
+               alignItems: "center",
+               justifyContent: "center"
+             }}
         >
-          <EnhancedPixelCanvas
-            canvasGrid={canvasGrid}
-            currentTool={currentTool}
-            currentColor={currentColor}
-            showGrid={showGrid}
-            showRuler={showRuler}
-            fillMode={fillMode}
-            zoom={zoom}
-            pan={pan}
-            brushMode={brushMode}
-            ditherPattern={ditherPattern}
-            pencilSize={pencilSize}
-            currentFont={currentFont}
-            fontSize={fontSize}
-            onFontSizeChange={setFontSize}
-            shapeStyle={shapeStyle}
-            symmetryMode={symmetryMode}
-            onPixelChange={handlePixelChange}
-            onColorPick={handleColorPick}
-            onPanChange={setPan}
-            currentStamp={activeStamp}
-            onCanvasInteract={() => setIsStampSelectorOpen(false)}
-          />
+          <div
+            className="relative shadow-2xl overflow-hidden bg-card"
+            style={{
+               width: containerDimensions.width > 0 ? containerDimensions.width : '100%',
+               height: containerDimensions.height > 0 ? containerDimensions.height : '100%',
+               display: 'flex',
+               alignItems: 'center',
+               justifyContent: 'center'
+            }}
+          >
+            <EnhancedPixelCanvas
+              canvasGrid={canvasGrid}
+              currentTool={currentTool}
+              currentColor={currentColor}
+              showGrid={showGrid}
+              showRuler={showRuler}
+              fillMode={fillMode}
+              zoom={zoom}
+              pan={pan}
+              brushMode={brushMode}
+              ditherPattern={ditherPattern}
+              pencilSize={pencilSize}
+              currentFont={currentFont}
+              onFontChange={setCurrentFont}
+              fontSize={fontSize}
+              onFontSizeChange={setFontSize}
+              shapeStyle={shapeStyle}
+              symmetryMode={symmetryMode}
+              currentStamp={isStampSelectorOpen ? activeStamp : null}
+              onPixelChange={handlePixelChange}
+              onColorPick={handleColorPick}
+              onPanChange={setPan}
+              textObjects={textObjects}
+              activeTextId={activeTextId}
+              onTextObjectCreate={handleTextObjectCreate}
+              onTextObjectUpdate={handleTextObjectUpdate}
+              onTextObjectDelete={handleTextObjectDelete}
+              onTextObjectSelect={handleTextObjectSelect}
+              onCanvasInteract={() => setIsStampSelectorOpen(false)}
+            />
+          </div>
         </div>
 
 

@@ -308,23 +308,69 @@ export const DrawingToolbar: React.FC<DrawingToolbarProps> = ({
 
 
 
-        {/* 4.5 Selection Tool */}
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant={currentTool === "select" ? "default" : "outline"}
-              size="icon"
-              onClick={() => onToolChange("select")}
-              className="h-11 w-11"
-              aria-label="Select"
-            >
-              <BoxSelect className="h-5 w-5" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="top">
-            <p>Select (S)</p>
-          </TooltipContent>
-        </Tooltip>
+
+        {/* 4.5 Symmetry Dropdown */}
+        {onSymmetryModeChange && (
+          <DropdownMenu>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant={!symmetryMode || symmetryMode === "none" ? "outline" : "default"}
+                    size="icon"
+                    className="h-11 w-11 relative"
+                    aria-label="Symmetry"
+                  >
+                    <BoxSelect className="h-5 w-5 rotate-45" /> {/* Reusing BoxSelect as a generic 'transform/symmetry' icon for now, or just import a new one like 'Scaling' */}
+                    <ChevronDown className="h-3 w-3 absolute bottom-1 right-1" />
+                  </Button>
+                </DropdownMenuTrigger>
+              </TooltipTrigger>
+              <TooltipContent side="top">
+                <p>Symmetry Mode</p>
+              </TooltipContent>
+            </Tooltip>
+            <DropdownMenuContent align="center" className="w-48 pixel-card border-4 border-border font-retro">
+              <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground font-pixel">
+                SYMMETRY
+              </div>
+              <div className="grid grid-cols-2 gap-1.5 p-2">
+                <Button
+                  variant={!symmetryMode || symmetryMode === "none" ? "default" : "outline"}
+                  size="sm"
+                  className="h-7 text-[10px]"
+                  onClick={() => onSymmetryModeChange("none")}
+                >
+                  None
+                </Button>
+                <Button
+                  variant={symmetryMode === "horizontal" ? "default" : "outline"}
+                  size="sm"
+                  className="h-7 text-[10px]"
+                  onClick={() => onSymmetryModeChange("horizontal")}
+                >
+                  Horiz
+                </Button>
+                <Button
+                  variant={symmetryMode === "vertical" ? "default" : "outline"}
+                  size="sm"
+                  className="h-7 text-[10px]"
+                  onClick={() => onSymmetryModeChange("vertical")}
+                >
+                  Vert
+                </Button>
+                <Button
+                  variant={symmetryMode === "both" ? "default" : "outline"}
+                  size="sm"
+                  className="h-7 text-[10px]"
+                  onClick={() => onSymmetryModeChange("both")}
+                >
+                  Both
+                </Button>
+              </div>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
 
         {/* 5. Fill Tool */}
         <Tooltip>
@@ -432,47 +478,6 @@ export const DrawingToolbar: React.FC<DrawingToolbarProps> = ({
                     />
                     <span className="text-xs text-muted-foreground">px</span>
                   </div>
-                </div>
-              </div>
-            )}
-
-            {/* Symmetry Toggle */}
-            {onSymmetryModeChange && (
-              <div className="p-2 border-t border-border">
-                <div className="text-xs font-semibold text-muted-foreground font-pixel mb-1">SYMMETRY</div>
-                <div className="grid grid-cols-2 gap-1.5">
-                  <Button
-                    variant={!symmetryMode || symmetryMode === "none" ? "default" : "outline"}
-                    size="sm"
-                    className="h-7 text-[10px]"
-                    onClick={() => onSymmetryModeChange("none")}
-                  >
-                    None
-                  </Button>
-                  <Button
-                    variant={symmetryMode === "horizontal" ? "default" : "outline"}
-                    size="sm"
-                    className="h-7 text-[10px]"
-                    onClick={() => onSymmetryModeChange("horizontal")}
-                  >
-                    Horiz
-                  </Button>
-                  <Button
-                    variant={symmetryMode === "vertical" ? "default" : "outline"}
-                    size="sm"
-                    className="h-7 text-[10px]"
-                    onClick={() => onSymmetryModeChange("vertical")}
-                  >
-                    Vert
-                  </Button>
-                  <Button
-                    variant={symmetryMode === "both" ? "default" : "outline"}
-                    size="sm"
-                    className="h-7 text-[10px]"
-                    onClick={() => onSymmetryModeChange("both")}
-                  >
-                    Both
-                  </Button>
                 </div>
               </div>
             )}

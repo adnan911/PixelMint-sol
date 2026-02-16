@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { usePixelCanvas } from "@/hooks/use-pixel-canvas";
-import type { CanvasGrid, Tool, Color, Point, FillMode, BrushMode, DitherPattern, PencilSize, SymmetryMode } from "@/types/pixel-art";
+import type { CanvasGrid, Tool, Color, Point, FillMode, BrushMode, DitherPattern, PencilSize, SymmetryMode, TextObject } from "@/types/pixel-art";
 import {
   floodFill,
   globalFill,
@@ -24,6 +24,7 @@ interface EnhancedPixelCanvasProps {
   ditherPattern?: DitherPattern;
   pencilSize?: PencilSize;
   currentFont?: string;
+  onFontChange?: (fontId: string) => void;
   fontSize?: number;
   onFontSizeChange?: (size: number) => void;
   shapeStyle?: "stroke" | "fill";
@@ -33,6 +34,12 @@ interface EnhancedPixelCanvasProps {
   onPanChange: (pan: Point) => void;
   currentStamp?: { width: number; height: number; data: CanvasGrid } | null;
   onCanvasInteract?: () => void;
+  textObjects?: TextObject[];
+  activeTextId?: string | null;
+  onTextObjectCreate?: (textObject: TextObject) => void;
+  onTextObjectUpdate?: (id: string, updates: Partial<TextObject>) => void;
+  onTextObjectDelete?: (id: string) => void;
+  onTextObjectSelect?: (id: string | null) => void;
 }
 
 
@@ -72,6 +79,7 @@ export const EnhancedPixelCanvas: React.FC<EnhancedPixelCanvasProps> = ({
   ditherPattern = "bayer4x4",
   pencilSize = 1,
   currentFont = "jersey-10",
+  onFontChange,
   fontSize = 16,
   onFontSizeChange,
   shapeStyle,
@@ -80,6 +88,12 @@ export const EnhancedPixelCanvas: React.FC<EnhancedPixelCanvasProps> = ({
   onColorPick,
   currentStamp,
   onCanvasInteract,
+  textObjects = [],
+  activeTextId = null,
+  onTextObjectCreate,
+  onTextObjectUpdate,
+  onTextObjectDelete,
+  onTextObjectSelect,
 }) => {
   const [isDrawing, setIsDrawing] = useState(false);
   const [pixelSize, setPixelSize] = useState(16);
@@ -101,6 +115,7 @@ export const EnhancedPixelCanvas: React.FC<EnhancedPixelCanvasProps> = ({
     previewUrl?: string;
     width?: number;
     height?: number;
+    id?: string; // If editing existing object
   } | null>(null);
 
   // Selection Tool State
@@ -188,6 +203,35 @@ export const EnhancedPixelCanvas: React.FC<EnhancedPixelCanvasProps> = ({
       return;
     }
 
+    // If we have the handler, create or update a text object
+    if (onTextObjectCreate) {
+      const fontInfo = PIXEL_FONTS.find(f => f.id === currentFont) || PIXEL_FONTS[0];
+      // const fontName = fontInfo.family.replace(/"/g, "").split(",")[0].trim(); // Unused
+      
+      if (activeText.id && onTextObjectUpdate) {
+        onTextObjectUpdate(activeText.id, {
+          x: activeText.x,
+          y: activeText.y,
+          text: activeText.text,
+          fontSize: fontSize,
+          color: currentColor,
+          fontFamily: fontInfo.family,
+        });
+      } else {
+        onTextObjectCreate({
+          id: crypto.randomUUID(),
+          x: activeText.x,
+          y: activeText.y,
+          text: activeText.text,
+          fontFamily: fontInfo.family,
+          fontSize: fontSize,
+          color: currentColor,
+        });
+      }
+      setActiveText(null);
+      return;
+    }
+
     const fontInfo = PIXEL_FONTS.find(f => f.id === currentFont) || PIXEL_FONTS[0];
     // Use the passed fontSize prop instead of internal state
     // const fontSize = activeText.fontSize; 
@@ -202,7 +246,7 @@ export const EnhancedPixelCanvas: React.FC<EnhancedPixelCanvasProps> = ({
       console.warn("Font loading failed, using fallback");
     }
 
-    // Rasterize text
+    // Rasterize text (Legacy fallback)
     const tempCanvas = document.createElement("canvas");
     const ctx = tempCanvas.getContext("2d");
     if (!ctx) return;
@@ -615,7 +659,129 @@ export const EnhancedPixelCanvas: React.FC<EnhancedPixelCanvasProps> = ({
           </div>
         )}
 
-        {/* Interactive Text Overlay */}
+        {/* Persistent Text Objects */}
+        {textObjects.map((obj) => (
+          <div
+            key={obj.id}
+            className={`absolute select-none cursor-move ${activeTextId === obj.id ? "ring-2 ring-primary ring-offset-1" : "" }`}
+            style={{
+              left: obj.x * actualPixelSize,
+              top: obj.y * actualPixelSize,
+              fontFamily: obj.fontFamily,
+              fontSize: `${obj.fontSize * actualPixelSize}px`,
+              color: obj.color,
+              lineHeight: 1,
+              whiteSpace: "pre",
+              zIndex: 10,
+              pointerEvents: currentTool === "text" || currentTool === "select" ? "auto" : "none",
+              display: activeText?.id === obj.id ? "none" : "block", // Hide if being edited
+            }}
+            onDoubleClick={(e) => {
+              if (currentTool === "text" || currentTool === "select") {
+                e.stopPropagation();
+                setActiveText({
+                  x: obj.x,
+                  y: obj.y,
+                  text: obj.text,
+                  phase: 'input',
+                  id: obj.id,
+                  width: obj.width,
+                  height: obj.height
+                });
+                onTextObjectSelect?.(obj.id);
+                
+                // Sync global state to match the object being edited
+                onFontSizeChange?.(obj.fontSize);
+                onColorPick?.(obj.color);
+                const font = PIXEL_FONTS.find(f => f.family === obj.fontFamily);
+                if (font) onFontChange?.(font.id);
+              }
+            }}
+            onMouseDown={(e) => {
+              if (currentTool === "text" || currentTool === "select") {
+                e.stopPropagation();
+                onTextObjectSelect?.(obj.id);
+                
+                // Initiate drag
+                const startX = e.clientX;
+                const startY = e.clientY;
+                const startGridX = obj.x;
+                const startGridY = obj.y;
+
+                const onDrag = (moveEvent: MouseEvent) => {
+                  const dx = moveEvent.clientX - startX;
+                  const dy = moveEvent.clientY - startY;
+                  const gridDx = Math.round(dx / actualPixelSize);
+                  const gridDy = Math.round(dy / actualPixelSize);
+
+                  onTextObjectUpdate?.(obj.id, {
+                    x: startGridX + gridDx,
+                    y: startGridY + gridDy,
+                  });
+                };
+
+                const onUp = () => {
+                  window.removeEventListener("mousemove", onDrag);
+                  window.removeEventListener("mouseup", onUp);
+                };
+
+                window.addEventListener("mousemove", onDrag);
+                window.addEventListener("mouseup", onUp);
+              }
+            }}
+          >
+            {obj.text}
+            {/* Resize Handles (only when selected) */}
+            {activeTextId === obj.id && (
+               <>
+                 {/* Delete Button */}
+                 <div 
+                   className="absolute -top-3 -right-3 w-5 h-5 bg-destructive text-white rounded-full flex items-center justify-center text-[10px] cursor-pointer shadow-sm hover:scale-110 transition-transform z-50"
+                   onMouseDown={(e) => {
+                     e.stopPropagation();
+                     onTextObjectDelete?.(obj.id);
+                   }}
+                   title="Delete"
+                 >
+                   ×
+                 </div>
+
+                 {/* Resize Handle (Bottom Right) */}
+                 <div
+                    className="absolute -bottom-1 -right-1 w-3 h-3 bg-primary border border-white cursor-se-resize z-50"
+                    onMouseDown={(e) => {
+                      e.stopPropagation();
+                      const startY = e.clientY;
+                      const startSize = obj.fontSize;
+                      
+                      const onResize = (moveEvent: MouseEvent) => {
+                         const dy = moveEvent.clientY - startY;
+                         // Adjust sensitivity based on zoom level
+                         const sizeChange = Math.round(dy / actualPixelSize); 
+                         const newSize = Math.max(8, startSize + sizeChange);
+                         
+                         if (newSize !== obj.fontSize) {
+                            onTextObjectUpdate?.(obj.id, { fontSize: newSize });
+                            // Also update the global font size state to match
+                            if (onFontSizeChange) onFontSizeChange(newSize);
+                         }
+                      };
+
+                      const onUp = () => {
+                        window.removeEventListener("mousemove", onResize);
+                        window.removeEventListener("mouseup", onUp);
+                      };
+
+                      window.addEventListener("mousemove", onResize);
+                      window.addEventListener("mouseup", onUp);
+                    }}
+                 />
+               </>
+            )}
+          </div>
+        ))}
+
+        {/* Interactive Text Overlay (Creation Phase) */}
         {activeText && (
           <div
             className="absolute"
@@ -757,7 +923,7 @@ export const EnhancedPixelCanvas: React.FC<EnhancedPixelCanvasProps> = ({
                     className="bg-green-500 text-white rounded px-2 py-1 text-xs font-bold hover:bg-green-600 flex items-center gap-1 cursor-pointer"
                     title="Commit to Canvas"
                   >
-                    Place ✓
+                    {activeText.id ? "Update ✓" : "Place ✓"}
                   </button>
                 </>
               )}

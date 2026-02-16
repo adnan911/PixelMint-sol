@@ -1,7 +1,7 @@
 {
   "name": "pixel-mint",
   "version": "1.0.0",
-  "author": "Adnan",
+  "author": "adnan",
   "type": "module",
   "scripts": {
     "dev": "vite",
