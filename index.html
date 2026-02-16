@@ -1,93 +1,123 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#0B0B0F" />
+    <link rel="icon" type="image/png" href="/icons/icon-192.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script>
       // Ultra-early error handler - must be first script
       // Overrides Object.defineProperty to prevent extension conflicts
-      (function() {
-        'use strict';
-        
+      (function () {
+        "use strict";
+
         // Store original methods
         var originalDefineProperty = Object.defineProperty;
         var originalError = console.error;
-        
+
         // Override Object.defineProperty to catch descriptor conflicts
-        Object.defineProperty = function(obj, prop, descriptor) {
+        Object.defineProperty = function (obj, prop, descriptor) {
           try {
             // Check for conflicting descriptor properties
-            if (descriptor && 
-                (descriptor.get || descriptor.set) && 
-                (descriptor.value !== undefined || descriptor.writable !== undefined)) {
-              console.warn('[Property Descriptor Conflict Prevented]:', prop);
+            if (
+              descriptor &&
+              (descriptor.get || descriptor.set) &&
+              (descriptor.value !== undefined ||
+                descriptor.writable !== undefined)
+            ) {
+              console.warn("[Property Descriptor Conflict Prevented]:", prop);
               // Remove conflicting properties - prefer accessors
               delete descriptor.value;
               delete descriptor.writable;
             }
             return originalDefineProperty.call(this, obj, prop, descriptor);
           } catch (e) {
-            console.warn('[Object.defineProperty Error Suppressed]:', e.message);
+            console.warn(
+              "[Object.defineProperty Error Suppressed]:",
+              e.message,
+            );
             return obj;
           }
         };
-        
+
         // Override console.error to suppress extension errors
-        console.error = function() {
+        console.error = function () {
           var args = Array.prototype.slice.call(arguments);
-          var errorMsg = args.join(' ');
-          
-          if (errorMsg.includes('Invalid property descriptor') || 
-              errorMsg.includes('chrome-extension://')) {
-            console.warn('[Extension Error Suppressed]:', errorMsg);
+          var errorMsg = args.join(" ");
+
+          if (
+            errorMsg.includes("Invalid property descriptor") ||
+            errorMsg.includes("chrome-extension://")
+          ) {
+            console.warn("[Extension Error Suppressed]:", errorMsg);
             return;
           }
-          
+
           originalError.apply(console, arguments);
         };
-        
+
         // Global error handler with capture phase
-        window.addEventListener('error', function(event) {
-          if (event.filename && event.filename.includes('chrome-extension://')) {
-            console.warn('[Extension Error Suppressed]:', event.message);
-            event.preventDefault();
-            event.stopPropagation();
-            event.stopImmediatePropagation();
-            return false;
-          }
-          
-          if (event.message && event.message.includes('Invalid property descriptor')) {
-            console.warn('[Property Descriptor Error Suppressed]:', event.message);
-            event.preventDefault();
-            event.stopPropagation();
-            event.stopImmediatePropagation();
-            return false;
-          }
-        }, true);
-        
+        window.addEventListener(
+          "error",
+          function (event) {
+            if (
+              event.filename &&
+              event.filename.includes("chrome-extension://")
+            ) {
+              console.warn("[Extension Error Suppressed]:", event.message);
+              event.preventDefault();
+              event.stopPropagation();
+              event.stopImmediatePropagation();
+              return false;
+            }
+
+            if (
+              event.message &&
+              event.message.includes("Invalid property descriptor")
+            ) {
+              console.warn(
+                "[Property Descriptor Error Suppressed]:",
+                event.message,
+              );
+              event.preventDefault();
+              event.stopPropagation();
+              event.stopImmediatePropagation();
+              return false;
+            }
+          },
+          true,
+        );
+
         // Handle unhandled promise rejections
-        window.addEventListener('unhandledrejection', function(event) {
-          if (event.reason && event.reason.stack && 
-              event.reason.stack.includes('chrome-extension://')) {
-            console.warn('[Extension Promise Rejection Suppressed]:', event.reason);
+        window.addEventListener("unhandledrejection", function (event) {
+          if (
+            event.reason &&
+            event.reason.stack &&
+            event.reason.stack.includes("chrome-extension://")
+          ) {
+            console.warn(
+              "[Extension Promise Rejection Suppressed]:",
+              event.reason,
+            );
             event.preventDefault();
             event.stopPropagation();
           }
         });
-        
+
         // Prevent extension errors from bubbling
-        window.onerror = function(message, source, lineno, colno, error) {
-          if (source && source.includes('chrome-extension://')) {
-            console.warn('[Extension onerror Suppressed]:', message);
+        window.onerror = function (message, source, lineno, colno, error) {
+          if (source && source.includes("chrome-extension://")) {
+            console.warn("[Extension onerror Suppressed]:", message);
             return true; // Prevent default error handling
           }
-          
-          if (message && message.includes('Invalid property descriptor')) {
-            console.warn('[Property Descriptor onerror Suppressed]:', message);
+
+          if (message && message.includes("Invalid property descriptor")) {
+            console.warn("[Property Descriptor onerror Suppressed]:", message);
             return true;
           }
-          
+
           return false;
         };
       })();
