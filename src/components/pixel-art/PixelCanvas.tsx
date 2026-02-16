@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { usePixelCanvas } from "@/hooks/use-pixel-canvas";
-import type { CanvasGrid, Tool, Color, Point, FillMode, BrushMode, DitherPattern, PencilSize } from "@/types/pixel-art";
+import type { CanvasGrid, Tool, Color, Point, FillMode, BrushMode, DitherPattern, PencilSize, SymmetryMode } from "@/types/pixel-art";
 import {
   floodFill,
   globalFill,
@@ -24,6 +24,10 @@ interface EnhancedPixelCanvasProps {
   ditherPattern?: DitherPattern;
   pencilSize?: PencilSize;
   currentFont?: string;
+  fontSize?: number;
+  onFontSizeChange?: (size: number) => void;
+  shapeStyle?: "stroke" | "fill";
+  symmetryMode?: SymmetryMode;
   onPixelChange: (newGrid: CanvasGrid) => void;
   onColorPick: (color: Color) => void;
   onPanChange: (pan: Point) => void;
@@ -68,6 +72,10 @@ export const EnhancedPixelCanvas: React.FC<EnhancedPixelCanvasProps> = ({
   ditherPattern = "bayer4x4",
   pencilSize = 1,
   currentFont = "jersey-10",
+  fontSize = 16,
+  onFontSizeChange,
+  shapeStyle,
+  symmetryMode,
   onPixelChange,
   onColorPick,
   currentStamp,
@@ -80,17 +88,76 @@ export const EnhancedPixelCanvas: React.FC<EnhancedPixelCanvasProps> = ({
   const [previewGrid, setPreviewGrid] = useState<CanvasGrid | null>(null);
   const rainbowHueShiftRef = useRef(0);
 
+  // Get actual grid dimensions
+  const gridHeight = canvasGrid.length;
+  const gridWidth = gridHeight > 0 ? canvasGrid[0].length : 0;
+
   // Text Tool State
   const [activeText, setActiveText] = useState<{
     x: number;
     y: number;
     text: string;
-    fontSize: number;
     phase: 'input' | 'placement';
     previewUrl?: string;
     width?: number;
     height?: number;
   } | null>(null);
+
+  // Selection Tool State
+  const [activeSelection, setActiveSelection] = useState<{
+    start: Point;
+    end: Point;
+  } | null>(null);
+
+  // Keyboard Shortcuts for Selection
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!activeSelection) return;
+
+      // Delete / Backspace
+      if (e.key === "Delete" || e.key === "Backspace") {
+        e.preventDefault();
+        const newGrid = canvasGrid.map(row => [...row]);
+        const startX = Math.min(activeSelection.start.x, activeSelection.end.x);
+        const endX = Math.max(activeSelection.start.x, activeSelection.end.x);
+        const startY = Math.min(activeSelection.start.y, activeSelection.end.y);
+        const endY = Math.max(activeSelection.start.y, activeSelection.end.y);
+
+        for (let y = startY; y <= endY; y++) {
+          for (let x = startX; x <= endX; x++) {
+            if (y >= 0 && y < gridHeight && x >= 0 && x < gridWidth) {
+              newGrid[y][x] = "transparent";
+            }
+          }
+        }
+        onPixelChange(newGrid);
+        setActiveSelection(null);
+      }
+
+      // Ctrl+C / Cmd+C (Copy)
+      if ((e.ctrlKey || e.metaKey) && e.key === "c") {
+        e.preventDefault();
+        // TODO: Implement Copy logic (maybe notify parent or store in clipboard)
+        console.log("Copy selection not fully implemented yet");
+        // For now, let's just flash the selection to indicate copy?
+      }
+
+      // Escape to cancel selection
+      if (e.key === "Escape") {
+        setActiveSelection(null);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [activeSelection, canvasGrid, gridHeight, gridWidth, onPixelChange]);
+
+  // Clear selection when tool changes
+  useEffect(() => {
+    if (currentTool !== "select") {
+      setActiveSelection(null);
+    }
+  }, [currentTool]);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const overlayCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -101,9 +168,18 @@ export const EnhancedPixelCanvas: React.FC<EnhancedPixelCanvasProps> = ({
     showGrid,
   });
 
-  // Get actual grid dimensions
-  const gridHeight = canvasGrid.length;
-  const gridWidth = gridHeight > 0 ? canvasGrid[0].length : 0;
+  // Local state for font size input to allow typing
+  const [localFontSize, setLocalFontSize] = useState(fontSize.toString());
+
+  // Sync local state when prop changes
+  useEffect(() => {
+    setLocalFontSize(fontSize.toString());
+  }, [fontSize]);
+
+  // Sync local state when prop changes
+  useEffect(() => {
+    setLocalFontSize(fontSize.toString());
+  }, [fontSize]);
 
   // Helper function to commit text to canvas
   const commitText = async () => {
@@ -113,7 +189,8 @@ export const EnhancedPixelCanvas: React.FC<EnhancedPixelCanvasProps> = ({
     }
 
     const fontInfo = PIXEL_FONTS.find(f => f.id === currentFont) || PIXEL_FONTS[0];
-    const fontSize = activeText.fontSize; // Use exact fontSize from state
+    // Use the passed fontSize prop instead of internal state
+    // const fontSize = activeText.fontSize; 
 
     // Extract font name without quotes for loading
     const fontName = fontInfo.family.replace(/"/g, "").split(",")[0].trim();
@@ -229,6 +306,12 @@ export const EnhancedPixelCanvas: React.FC<EnhancedPixelCanvasProps> = ({
     }
   }, [currentTool]);
 
+  useEffect(() => {
+    if (currentTool !== "select" && activeSelection) {
+      setActiveSelection(null);
+    }
+  }, [currentTool]);
+
   const getPixelCoords = (clientX: number, clientY: number): Point | null => {
     const canvas = canvasRef.current;
     if (!canvas) return null;
@@ -248,6 +331,11 @@ export const EnhancedPixelCanvas: React.FC<EnhancedPixelCanvasProps> = ({
     if (activeText && currentTool === "text") {
       commitText();
       return;
+    }
+
+    // Clear selection if clicking outside or starting new selection
+    if (currentTool !== "select" && activeSelection) {
+      setActiveSelection(null);
     }
 
 
@@ -278,9 +366,18 @@ export const EnhancedPixelCanvas: React.FC<EnhancedPixelCanvasProps> = ({
         x: coords.x,
         y: coords.y,
         text: "Text",
-        fontSize: 16,
         phase: 'input'
       });
+      return;
+    }
+
+    if (currentTool === "select") {
+      setActiveSelection({
+        start: coords,
+        end: coords
+      });
+      setIsDrawing(true);
+      setStartPoint(coords);
       return;
     }
 
@@ -327,11 +424,19 @@ export const EnhancedPixelCanvas: React.FC<EnhancedPixelCanvasProps> = ({
         setPreviewGrid(drawLine(canvasGrid, startPoint.x, startPoint.y, coords.x, coords.y, currentColor));
         break;
       case "circle":
-        const radius = Math.round(Math.sqrt(Math.pow(coords.x - startPoint.x, 2) + Math.pow(coords.y - startPoint.y, 2)));
-        setPreviewGrid(drawCircle(canvasGrid, startPoint.x, startPoint.y, radius, currentColor, false));
+        const radius = Math.floor(Math.sqrt(Math.pow(coords.x - startPoint.x, 2) + Math.pow(coords.y - startPoint.y, 2)));
+        setPreviewGrid(drawCircle(canvasGrid, startPoint.x, startPoint.y, radius, currentColor, shapeStyle === "fill"));
         break;
       case "square":
-        setPreviewGrid(drawRectangle(canvasGrid, startPoint.x, startPoint.y, coords.x, coords.y, currentColor, false));
+        setPreviewGrid(drawRectangle(canvasGrid, startPoint.x, startPoint.y, coords.x, coords.y, currentColor, shapeStyle === "fill"));
+        break;
+      case "select":
+        if (activeSelection) {
+          setActiveSelection({
+            ...activeSelection,
+            end: coords
+          });
+        }
         break;
     }
   };
@@ -355,13 +460,37 @@ export const EnhancedPixelCanvas: React.FC<EnhancedPixelCanvasProps> = ({
       for (let dx = -halfSize; dx <= halfSize; dx++) {
         const targetX = coords.x + dx;
         const targetY = coords.y + dy;
-        if (targetX >= 0 && targetX < gridWidth && targetY >= 0 && targetY < gridHeight) {
-          if (isEraser) {
-            newGrid[targetY][targetX] = "transparent";
-          } else {
-            // Pass true for rainbow mode to increment hue per pixel
-            newGrid[targetY][targetX] = getBrushColor(targetX, targetY, currentColor, brushMode === "rainbow");
+        
+        const plot = (x: number, y: number) => {
+          if (x >= 0 && x < gridWidth && y >= 0 && y < gridHeight) {
+            if (isEraser) {
+              newGrid[y][x] = "transparent";
+            } else {
+               // Pass true for rainbow mode to increment hue per pixel
+               // Note: This might increment rainbow hue multiple times for symmetry, which is fine
+               newGrid[y][x] = getBrushColor(x, y, currentColor, brushMode === "rainbow");
+            }
           }
+        };
+
+        // Standard draw
+        plot(targetX, targetY);
+
+        // Symmetry draw
+        if (symmetryMode === "horizontal" || symmetryMode === "both") {
+          const mirrorX = gridWidth - 1 - targetX;
+          plot(mirrorX, targetY);
+        }
+
+        if (symmetryMode === "vertical" || symmetryMode === "both") {
+          const mirrorY = gridHeight - 1 - targetY;
+          plot(targetX, mirrorY);
+        }
+
+        if (symmetryMode === "both") {
+          const mirrorX = gridWidth - 1 - targetX;
+          const mirrorY = gridHeight - 1 - targetY;
+          plot(mirrorX, mirrorY);
         }
       }
     }
@@ -542,11 +671,19 @@ export const EnhancedPixelCanvas: React.FC<EnhancedPixelCanvasProps> = ({
                       type="number"
                       min="8"
                       max="128"
-                      value={Math.round(activeText.fontSize)}
+                      value={localFontSize}
                       onChange={(e) => {
-                        const newSize = parseInt(e.target.value);
-                        if (!isNaN(newSize) && newSize >= 8) {
-                          setActiveText({ ...activeText, fontSize: newSize });
+                        const val = e.target.value;
+                        setLocalFontSize(val);
+                        const newSize = parseInt(val);
+                        if (!isNaN(newSize) && newSize >= 8 && onFontSizeChange) {
+                          onFontSizeChange(newSize);
+                        }
+                      }}
+                      onBlur={() => {
+                        const numVal = parseInt(localFontSize);
+                        if (isNaN(numVal) || numVal < 8) {
+                          setLocalFontSize(fontSize.toString());
                         }
                       }}
                       onMouseDown={(e) => e.stopPropagation()}
@@ -567,14 +704,14 @@ export const EnhancedPixelCanvas: React.FC<EnhancedPixelCanvasProps> = ({
                       const ctx = tempCanvas.getContext("2d");
                       if (!ctx) return;
 
-                      const fontString = `${activeText.fontSize}px "${fontName}", sans-serif`;
+                      const fontString = `${fontSize}px "${fontName}", sans-serif`;
                       ctx.font = fontString;
                       ctx.textBaseline = "top";
 
                       // Calculate exact bounds
                       const metrics = ctx.measureText(activeText.text);
                       const textWidth = Math.ceil(metrics.width) + 2;
-                      const textHeight = Math.ceil(activeText.fontSize * 1.3);
+                      const textHeight = Math.ceil(fontSize * 1.3);
 
                       tempCanvas.width = textWidth;
                       tempCanvas.height = textHeight;
@@ -642,7 +779,7 @@ export const EnhancedPixelCanvas: React.FC<EnhancedPixelCanvasProps> = ({
                 onMouseDown={(e) => e.stopPropagation()}
                 style={{
                   fontFamily: currentFontInfo.family,
-                  fontSize: `${activeText.fontSize * actualPixelSize}px`,
+                  fontSize: `${fontSize * actualPixelSize}px`,
                   lineHeight: 1,
                   color: currentColor,
                   background: "rgba(255,255,255,0.9)",
@@ -692,6 +829,20 @@ export const EnhancedPixelCanvas: React.FC<EnhancedPixelCanvasProps> = ({
               />
             ))}
           </div>
+        )}
+
+        {/* Selection Overlay */}
+        {activeSelection && (
+          <div
+            className="absolute pointer-events-none border-2 border-dashed border-primary animate-pulse"
+            style={{
+              left: Math.min(activeSelection.start.x, activeSelection.end.x) * actualPixelSize,
+              top: Math.min(activeSelection.start.y, activeSelection.end.y) * actualPixelSize,
+              width: (Math.abs(activeSelection.end.x - activeSelection.start.x) + 1) * actualPixelSize,
+              height: (Math.abs(activeSelection.end.y - activeSelection.start.y) + 1) * actualPixelSize,
+              zIndex: 50,
+            }}
+          />
         )}
       </div>
 

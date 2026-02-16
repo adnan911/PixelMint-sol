@@ -24,7 +24,7 @@ export default function SplashPage() {
     switch (currentTheme) {
       case "candy":
         return "/images/logo/pixel-mint-logo-candy.png";
-      case "default":
+      case "coffee":
         return "/images/logo/pixel-mint-logo-coffee.png";
       default:
         return "/images/logo/pixel-mint-logo.png";

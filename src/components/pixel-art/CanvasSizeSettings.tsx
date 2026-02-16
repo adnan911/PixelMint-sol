@@ -35,17 +35,31 @@ export const CanvasSizeSettings: React.FC<CanvasSizeSettingsProps> = ({
 }) => {
   const [width, setWidth] = useState(currentWidth);
   const [height, setHeight] = useState(currentHeight);
+  const [widthInput, setWidthInput] = useState(currentWidth.toString());
+  const [heightInput, setHeightInput] = useState(currentHeight.toString());
+
+  // Update local state when props change
+  React.useEffect(() => {
+    setWidth(currentWidth);
+    setHeight(currentHeight);
+    setWidthInput(currentWidth.toString());
+    setHeightInput(currentHeight.toString());
+  }, [currentWidth, currentHeight, open]);
 
   const handleApply = () => {
-    const w = Math.max(8, Math.min(256, width));
-    const h = Math.max(8, Math.min(256, height));
-    onSizeChange(w, h);
+    const w = parseInt(widthInput) || width;
+    const h = parseInt(heightInput) || height;
+    const finalW = Math.max(8, Math.min(256, w));
+    const finalH = Math.max(8, Math.min(256, h));
+    onSizeChange(finalW, finalH);
     onOpenChange(false);
   };
 
   const handlePreset = (w: number, h: number) => {
     setWidth(w);
     setHeight(h);
+    setWidthInput(w.toString());
+    setHeightInput(h.toString());
   };
 
   return (
@@ -86,8 +100,19 @@ export const CanvasSizeSettings: React.FC<CanvasSizeSettingsProps> = ({
                 type="number"
                 min={8}
                 max={256}
-                value={width}
-                onChange={(e) => setWidth(parseInt(e.target.value) || 32)}
+                value={widthInput}
+                onChange={(e) => {
+                    setWidthInput(e.target.value);
+                    const val = parseInt(e.target.value);
+                    if (!isNaN(val)) setWidth(val);
+                }}
+                onBlur={() => {
+                    let val = parseInt(widthInput);
+                    if (isNaN(val)) val = 32;
+                    val = Math.max(8, Math.min(256, val));
+                    setWidth(val);
+                    setWidthInput(val.toString());
+                }}
                 className="pixel-inset font-retro text-base"
               />
             </div>
@@ -98,8 +123,19 @@ export const CanvasSizeSettings: React.FC<CanvasSizeSettingsProps> = ({
                 type="number"
                 min={8}
                 max={256}
-                value={height}
-                onChange={(e) => setHeight(parseInt(e.target.value) || 32)}
+                value={heightInput}
+                onChange={(e) => {
+                    setHeightInput(e.target.value);
+                    const val = parseInt(e.target.value);
+                    if (!isNaN(val)) setHeight(val);
+                }}
+                onBlur={() => {
+                    let val = parseInt(heightInput);
+                    if (isNaN(val)) val = 32;
+                    val = Math.max(8, Math.min(256, val));
+                    setHeight(val);
+                    setHeightInput(val.toString());
+                }}
                 className="pixel-inset font-retro text-base"
               />
             </div>

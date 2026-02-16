@@ -20,8 +20,9 @@ import {
   Paintbrush,
   Type,
   Stamp,
+  BoxSelect,
 } from "lucide-react";
-import type { Tool, BrushMode, PencilSize } from "@/types/pixel-art";
+import type { Tool, BrushMode, PencilSize, SymmetryMode } from "@/types/pixel-art";
 import { PIXEL_FONTS } from "./FontSelector";
 
 interface DrawingToolbarProps {
@@ -33,6 +34,12 @@ interface DrawingToolbarProps {
   onPencilSizeChange?: (size: PencilSize) => void;
   currentFont?: string;
   onFontChange?: (font: string) => void;
+  fontSize?: number;
+  onFontSizeChange?: (size: number) => void;
+  shapeStyle?: "stroke" | "fill";
+  onShapeStyleChange?: (style: "stroke" | "fill") => void;
+  symmetryMode?: SymmetryMode;
+  onSymmetryModeChange?: (mode: SymmetryMode) => void;
 }
 
 
@@ -110,7 +117,20 @@ export const DrawingToolbar: React.FC<DrawingToolbarProps> = ({
   onPencilSizeChange,
   currentFont = "jersey-10",
   onFontChange,
+  fontSize = 16,
+  onFontSizeChange,
+  shapeStyle,
+  onShapeStyleChange,
+  symmetryMode,
+  onSymmetryModeChange,
 }) => {
+  // Local state for font size input to allow typing (e.g. clearing the input)
+  const [localFontSize, setLocalFontSize] = React.useState(fontSize.toString());
+
+  // Sync local state when prop changes
+  React.useEffect(() => {
+    setLocalFontSize(fontSize.toString());
+  }, [fontSize]);
   // Get current shape tool info
   const currentShapeTool = shapeTools.find((tool) => tool.id === currentTool);
   const isShapeTool = !!currentShapeTool;
@@ -258,8 +278,53 @@ export const DrawingToolbar: React.FC<DrawingToolbarProps> = ({
                 <span className="ml-auto text-xs text-muted-foreground">{tool.shortcut}</span>
               </DropdownMenuItem>
             ))}
+            
+            {/* Shape Style Toggle */}
+            {onShapeStyleChange && (
+              <div className="p-2 border-t border-border">
+                <div className="text-xs font-semibold text-muted-foreground font-pixel mb-1">STYLE</div>
+                <div className="flex gap-1">
+                  <Button
+                    variant={shapeStyle === "stroke" ? "default" : "outline"}
+                    size="sm"
+                    className="flex-1 text-xs h-7"
+                    onClick={() => onShapeStyleChange("stroke")}
+                  >
+                    Output
+                  </Button>
+                  <Button
+                    variant={shapeStyle === "fill" ? "default" : "outline"}
+                    size="sm"
+                    className="flex-1 text-xs h-7"
+                    onClick={() => onShapeStyleChange("fill")}
+                  >
+                    Fill
+                  </Button>
+                </div>
+              </div>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
+
+
+
+        {/* 4.5 Selection Tool */}
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant={currentTool === "select" ? "default" : "outline"}
+              size="icon"
+              onClick={() => onToolChange("select")}
+              className="h-11 w-11"
+              aria-label="Select"
+            >
+              <BoxSelect className="h-5 w-5" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="top">
+            <p>Select (S)</p>
+          </TooltipContent>
+        </Tooltip>
 
         {/* 5. Fill Tool */}
         <Tooltip>
@@ -337,6 +402,80 @@ export const DrawingToolbar: React.FC<DrawingToolbarProps> = ({
                 )}
               </DropdownMenuItem>
             ))}
+            
+            {/* Font Size Input */}
+            {onFontSizeChange && (
+              <div className="p-2 border-t border-border">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-xs font-semibold text-muted-foreground font-pixel">SIZE</span>
+                  <div className="flex items-center gap-1">
+                    <input
+                      type="number"
+                      min="8"
+                      max="128"
+                      value={localFontSize}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setLocalFontSize(val);
+                        const numVal = parseInt(val);
+                        if (!isNaN(numVal) && numVal >= 8 && numVal <= 128) {
+                          onFontSizeChange(numVal);
+                        }
+                      }}
+                      onBlur={() => {
+                        const numVal = parseInt(localFontSize);
+                        if (isNaN(numVal) || numVal < 8 || numVal > 128) {
+                          setLocalFontSize(fontSize.toString());
+                        }
+                      }}
+                      className="w-12 h-6 text-xs border rounded bg-background text-right px-1 font-mono"
+                    />
+                    <span className="text-xs text-muted-foreground">px</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Symmetry Toggle */}
+            {onSymmetryModeChange && (
+              <div className="p-2 border-t border-border">
+                <div className="text-xs font-semibold text-muted-foreground font-pixel mb-1">SYMMETRY</div>
+                <div className="grid grid-cols-2 gap-1.5">
+                  <Button
+                    variant={!symmetryMode || symmetryMode === "none" ? "default" : "outline"}
+                    size="sm"
+                    className="h-7 text-[10px]"
+                    onClick={() => onSymmetryModeChange("none")}
+                  >
+                    None
+                  </Button>
+                  <Button
+                    variant={symmetryMode === "horizontal" ? "default" : "outline"}
+                    size="sm"
+                    className="h-7 text-[10px]"
+                    onClick={() => onSymmetryModeChange("horizontal")}
+                  >
+                    Horiz
+                  </Button>
+                  <Button
+                    variant={symmetryMode === "vertical" ? "default" : "outline"}
+                    size="sm"
+                    className="h-7 text-[10px]"
+                    onClick={() => onSymmetryModeChange("vertical")}
+                  >
+                    Vert
+                  </Button>
+                  <Button
+                    variant={symmetryMode === "both" ? "default" : "outline"}
+                    size="sm"
+                    className="h-7 text-[10px]"
+                    onClick={() => onSymmetryModeChange("both")}
+                  >
+                    Both
+                  </Button>
+                </div>
+              </div>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
 

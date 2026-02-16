@@ -100,7 +100,7 @@ Pixel Art Theme: Retro 8-bit/16-bit inspired design
   }
 
   /* Coffee Theme (Previously Default) */
-  :root[data-theme="default"] {
+  :root[data-theme="coffee"] {
     --background: 44 42.8571% 93.1373%;
     --foreground: 28.5714 16.5354% 24.902%;
 

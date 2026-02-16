@@ -9,7 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Palette, Sparkles, Grid3x3, Zap } from "lucide-react";
+import { Palette, Layers, Grid3x3, Zap } from "lucide-react";
 
 const CANVAS_SIZES = [
   { size: 16, label: "16×16", description: "Small" },
@@ -36,25 +36,26 @@ export default function WelcomePage() {
 
   const toggleTheme = () => {
     setCurrentTheme((prev) => {
-      if (prev === "default") return "retro";
+      if (prev === "coffee") return "retro";
       if (prev === "retro") return "candy";
       if (prev === "candy") return "dark";
-      return "default";
+      return "coffee";
     });
   };
 
   const getThemeLabel = () => {
     switch (currentTheme) {
-      case "default":
+      case "coffee":
         return "Theme: Coffee";
       case "retro":
         return "Theme: Based";
       case "candy":
         return "Theme: Candy";
       case "dark":
-        return "Theme: Dark";
+        return "Theme: Dark Coffee";
       default:
-        return "Theme: Coffee";
+        // Handle legacy "default" case by mapping it to Based (the new default)
+        return "Theme: Based";
     }
   };
 
@@ -62,9 +63,10 @@ export default function WelcomePage() {
     switch (currentTheme) {
       case "candy":
         return "/images/logo/pixel-mint-logo-candy.png";
-      case "default":
+      case "coffee":
         return "/images/logo/pixel-mint-logo-coffee.png";
       default:
+        // Based/Retro logic (and legacy fallback)
         return "/images/logo/pixel-mint-logo.png";
     }
   };
@@ -127,13 +129,13 @@ export default function WelcomePage() {
             </h1>
 
             <p className="sm:text-lg xl:text-xl text-muted-foreground font-retro max-w-2xl mx-auto animate-fade-in-delay px-2 bg-[#8db9d800] bg-none text-[20px] border-solid border-[rgb(20,20,82)] border-[0px] border-[rgb(20,20,82)]">
-              Create stunning pixel art with professional tools and effects
+              Create pixel art with professional tools
             </p>
 
             {/* Feature Pills */}
             <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 pt-4 sm:pt-6 animate-fade-in-delay-2 px-2">
               <div className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-card border-2 border-border rounded-full pixel-card-sm shadow-sm">
-                <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0" />
+                <Layers className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0" />
                 <span className="text-sm sm:text-base font-retro whitespace-nowrap">Layers</span>
               </div>
               <div className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-card border-2 border-border rounded-full pixel-card-sm shadow-sm">

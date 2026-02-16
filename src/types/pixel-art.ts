@@ -15,13 +15,18 @@ export type Tool =
   | "circle"
   | "square"
   | "text"
-  | "stamp";
+  | "stamp"
+  | "select";
 
 export type FillMode = "contiguous" | "global";
 
 export type BrushMode = "normal" | "rainbow" | "random" | "dither";
 
 export type DitherPattern = "bayer2x2" | "bayer4x4" | "bayer8x8";
+
+export type ShapeStyle = "stroke" | "fill";
+
+export type SymmetryMode = "none" | "horizontal" | "vertical" | "both";
 
 export type PencilSize = 1 | 2 | 3 | 4 | 5;
 

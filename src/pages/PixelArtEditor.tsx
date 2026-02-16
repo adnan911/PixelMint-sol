@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 import { useGesture } from "@use-gesture/react";
 import { EnhancedPixelCanvas } from "@/components/pixel-art/PixelCanvas";
 import { MiniMap } from "@/components/pixel-art/MiniMap";
 import { DrawingToolbar } from "@/components/pixel-art/DrawingToolbar";
 import { ColorPicker } from "@/components/pixel-art/ColorPicker";
 
-import { Controls } from "@/components/pixel-art/Controls";
+
 import { LayerPanel } from "@/components/pixel-art/LayerPanel";
 import { PaletteManager } from "@/components/pixel-art/PaletteManager";
 import { CanvasSizeSettings } from "@/components/pixel-art/CanvasSizeSettings";
@@ -43,7 +43,7 @@ import type {
   DitherPattern,
   PencilSize,
 } from "@/types/pixel-art";
-import { Palette, Settings, Undo2, Redo2, Layers, Download, Maximize2, FlipHorizontal2, RotateCw, FlipVertical2, Grid3x3, Trash2, ZoomIn, ZoomOut, Maximize, X, Plus, Ruler, Map, SlidersHorizontal } from "lucide-react";
+import { Settings, Undo2, Redo2, Layers, Download, FlipHorizontal2, RotateCw, FlipVertical2, Grid3x3, Trash2, ZoomIn, ZoomOut, Maximize, X, Plus, Ruler, Map, Diamond } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -71,7 +71,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-const CANVAS_SIZE = 32;
+// Removed unused CANVAS_SIZE constant
 
 interface EditorState {
   layers: Layer[];
@@ -98,6 +98,12 @@ export default function PixelArtEditor() {
   const [ditherPattern] = useState<DitherPattern>("bayer4x4");
   const [pencilSize, setPencilSize] = useState<PencilSize>(1);
   const [currentFont, setCurrentFont] = useState("jersey-10");
+  const [fontSize, setFontSize] = useState(16);
+  const [shapeStyle, setShapeStyle] = useState<"stroke" | "fill">("stroke");
+  const [symmetryMode, setSymmetryMode] = useState<"none" | "horizontal" | "vertical" | "both">("none");
+  const [currentTheme, setCurrentTheme] = useState(() => {
+    return localStorage.getItem("theme") || "retro";
+  });
   const [activeStamp, setActiveStamp] = useState<Stamp>(PREMADE_STAMPS[0]);
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
@@ -131,7 +137,7 @@ export default function PixelArtEditor() {
         // Zoom
         // useGesture handles pinch as wheel with ctrl on trackpads usually, 
         // but we might need manual handling if generic wheel
-        const newZoom = Math.max(0.5, Math.min(zoom - event.deltaY * 0.01, 8));
+        const newZoom = Math.max(0.01, Math.min(zoom - event.deltaY * 0.01, 100));
         setZoom(newZoom);
       } else {
         // Pan
@@ -141,12 +147,12 @@ export default function PixelArtEditor() {
   }, {
     target: containerRef,
     drag: { from: () => [pan.x, pan.y], filterTaps: true, modifierKey: undefined },
-    pinch: { scaleBounds: { min: 0.5, max: 8 }, from: () => [zoom, 0] },
+    pinch: { scaleBounds: { min: 0.01, max: 100 }, from: () => [zoom, 0] },
     wheel: { eventOptions: { passive: false } } // Prevent default browser zoom
   });
   const [clipboard] = useState<Clipboard | null>(null);
   const [colorsOpen, setColorsOpen] = useState(false);
-  const [toolsOpen, setToolsOpen] = useState(false);
+
   const [layersOpen, setLayersOpen] = useState(false);
   const [canvasSizeOpen, setCanvasSizeOpen] = useState(false);
   const [exportPreviewOpen, setExportPreviewOpen] = useState(false);
@@ -347,8 +353,8 @@ export default function PixelArtEditor() {
 
   const handlePaste = () => {
     if (clipboard && activeLayer && !activeLayer.locked) {
-      const x = Math.floor((CANVAS_SIZE - clipboard.width) / 2);
-      const y = Math.floor((CANVAS_SIZE - clipboard.height) / 2);
+      const x = Math.floor((canvasWidth - clipboard.width) / 2);
+      const y = Math.floor((canvasHeight - clipboard.height) / 2);
       const newGrid = pastePixels(activeLayer.pixels, clipboard.pixels, x, y);
 
       setEditorState({
@@ -517,11 +523,11 @@ export default function PixelArtEditor() {
 
   // Zoom controls
   const handleZoomIn = () => {
-    setZoom((prev) => Math.min(prev + 0.25, 4)); // Max 4x zoom
+    setZoom((prev) => Math.min(prev + 0.25, 100)); // Max 100x zoom
   };
 
   const handleZoomOut = () => {
-    setZoom((prev) => Math.max(prev - 0.25, 0.5)); // Min 0.5x zoom
+    setZoom((prev) => Math.max(prev - 0.25, 0.01)); // Min 0.01x zoom
   };
 
   const handleZoomFit = () => {
@@ -598,15 +604,52 @@ export default function PixelArtEditor() {
     setTimeout(() => setExportPreviewUrl(null), 300); // Delay cleanup for smooth animation
   };
 
+  const handleMint = () => {
+    // Placeholder for minting logic
+    console.log("Minting pixel art...");
+    // You could add a toast here later
+  };
+
+  const handleThemeChange = (theme: string) => {
+    setCurrentTheme(theme);
+    localStorage.setItem("theme", theme);
+    document.documentElement.setAttribute("data-theme", theme);
+  };
+
+
+  // Helper for theme logo
+  const getThemeLogo = () => {
+    switch (currentTheme) {
+      case "candy":
+        return "/images/logo/pixel-mint-logo-candy.png";
+      case "coffee":
+        return "/images/logo/pixel-mint-logo-coffee.png";
+      default:
+        return "/images/logo/pixel-mint-logo.png";
+    }
+  };
+
+// ...
+
+                    <DropdownMenuItem onClick={() => handleThemeChange('default')} className="cursor-pointer font-retro text-base py-3">
+                      <span className={currentTheme === 'default' ? 'text-primary font-bold' : ''}>Coffee</span>
+                    </DropdownMenuItem>
+
   return (
     <div className="fixed inset-0 flex flex-col overflow-hidden pixel-grid mt-[0px] ml-[5px] mr-[5px] bg-inherit bg-cover bg-center bg-no-repeat bg-[url(https://miaoda-edit-image.s3cdn.medo.dev/8ydy3wce8yrl/IMG-8z4wrlhevlds.jpg)]">
       {/* Header with Title */}
       <header className="flex-shrink-0 border-b-4 border-border bg-card px-2 sm:px-4 py-2 pixel-card shadow-pixel mt-[50px] ml-[10px] mr-[10px]">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 bg-primary text-primary-foreground pixel-border-primary">
-              <Palette className="h-4 w-4 sm:h-5 sm:w-5" />
-            </div>
+            <Link to="/welcome" className="block hover:opacity-90 transition-opacity">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center">
+                <img
+                  src={getThemeLogo()}
+                  alt="Pixel Mint Logo"
+                  className="w-full h-full object-contain pixel-crisp"
+                />
+              </div>
+            </Link>
             <h1 className="text-sm sm:text-base font-pixel pixel-heading text-primary">{"PIXEL MINT"}</h1>
           </div>
         </div>
@@ -629,6 +672,12 @@ export default function PixelArtEditor() {
                   onPencilSizeChange={setPencilSize}
                   currentFont={currentFont}
                   onFontChange={setCurrentFont}
+                  fontSize={fontSize}
+                  onFontSizeChange={setFontSize}
+                  shapeStyle={shapeStyle}
+                  onShapeStyleChange={setShapeStyle}
+                  symmetryMode={symmetryMode}
+                  onSymmetryModeChange={setSymmetryMode}
                 />
               </div>
             </div>
@@ -648,15 +697,7 @@ export default function PixelArtEditor() {
 
               {/* Canvas Size & Zoom Buttons */}
               <div className="flex items-center gap-1">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => setCanvasSizeOpen(true)}
-                  className="h-11 w-11 sm:h-10 sm:w-10 pixel-button font-retro"
-                  title="Canvas Size"
-                >
-                  <Maximize2 className="h-5 w-5" />
-                </Button>
+
 
                 {/* Zoom Dropdown */}
                 <DropdownMenu>
@@ -677,7 +718,7 @@ export default function PixelArtEditor() {
                     <DropdownMenuSeparator className="bg-border h-1" />
                     <DropdownMenuItem
                       onClick={handleZoomIn}
-                      disabled={zoom >= 4}
+                      disabled={zoom >= 100}
                       className="font-retro text-base cursor-pointer hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground"
                     >
                       <ZoomIn className="mr-2 h-4 w-4" />
@@ -685,7 +726,7 @@ export default function PixelArtEditor() {
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       onClick={handleZoomOut}
-                      disabled={zoom <= 0.5}
+                      disabled={zoom <= 0.01}
                       className="font-retro text-base cursor-pointer hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground"
                     >
                       <ZoomOut className="mr-2 h-4 w-4" />
@@ -704,32 +745,7 @@ export default function PixelArtEditor() {
                 {/* Action Buttons */}
 
 
-                <Sheet open={toolsOpen} onOpenChange={setToolsOpen}>
-                  <SheetTrigger asChild>
-                    <Button variant="outline" size="icon" className="h-11 w-11 sm:h-10 sm:w-10 pixel-button font-retro" title="Tools & Settings">
-                      <SlidersHorizontal className="h-5 w-5" />
-                    </Button>
-                  </SheetTrigger>
-                  <SheetContent side="right" className="w-full sm:w-[320px] p-6 overflow-y-auto pixel-card">
-                    <div className="space-y-6">
-                      <div>
-                        <h3 className="font-pixel text-lg mb-4 text-primary">Canvas</h3>
-                        <Controls
-                          canvasGrid={canvasGrid}
-                          canvasWidth={canvasWidth}
-                          canvasHeight={canvasHeight}
-                          showGrid={showGrid}
-                          canUndo={canUndo}
-                          canRedo={canRedo}
-                          onUndo={undo}
-                          onRedo={redo}
-                          onClear={handleClear}
-                          onToggleGrid={handleToggleGrid}
-                        />
-                      </div>
-                    </div>
-                  </SheetContent>
-                </Sheet>
+
 
                 <Sheet open={layersOpen} onOpenChange={setLayersOpen}>
                   <SheetTrigger asChild>
@@ -784,22 +800,44 @@ export default function PixelArtEditor() {
                   <DropdownMenuContent align="end" className="w-56 pixel-card border-4 font-retro">
                     <DropdownMenuLabel className="font-pixel text-xs text-primary">OPTIONS</DropdownMenuLabel>
                     <DropdownMenuSeparator className="bg-border h-[2px]" />
-                    <DropdownMenuItem onClick={handleToggleGrid} className="cursor-pointer font-retro text-base py-3 bg-[#8867eb03] bg-none">
+                    <DropdownMenuItem 
+                      onClick={() => setCanvasSizeOpen(true)} 
+                      className="cursor-pointer font-retro text-base py-1.5 bg-[#8867eb03] bg-none"
+                    >
+                      <Maximize className="mr-2 h-5 w-5" />
+                      <span>Canvas Size</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleToggleGrid} className="cursor-pointer font-retro text-base py-1.5 bg-[#8867eb03] bg-none">
                       <Grid3x3 className="mr-2 h-5 w-5" />
                       <span>{showGrid ? "Hide Grid" : "Show Grid"}</span>
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setShowRuler(!showRuler)} className="cursor-pointer font-retro text-base py-3 bg-[#8867eb03] bg-none">
+                    <DropdownMenuItem onClick={() => setShowRuler(!showRuler)} className="cursor-pointer font-retro text-base py-1.5 bg-[#8867eb03] bg-none">
                       <Ruler className="mr-2 h-5 w-5" />
                       <span>{showRuler ? "Hide Ruler" : "Show Ruler"}</span>
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setShowMiniMap(!showMiniMap)} className="cursor-pointer font-retro text-base py-3 bg-[#8867eb03] bg-none">
+                    <DropdownMenuItem onClick={() => setShowMiniMap(!showMiniMap)} className="cursor-pointer font-retro text-base py-1.5 bg-[#8867eb03] bg-none">
                       <Map className="mr-2 h-5 w-5" />
                       <span>{showMiniMap ? "Hide MiniMap" : "Show MiniMap"}</span>
+                    </DropdownMenuItem>
+                    
+                    <DropdownMenuSeparator className="bg-border h-[2px]" />
+                    <DropdownMenuLabel className="font-pixel text-xs text-primary">THEME</DropdownMenuLabel>
+                    <DropdownMenuItem onClick={() => handleThemeChange('retro')} className="cursor-pointer font-retro text-base py-1.5">
+                      <span className={currentTheme === 'retro' ? 'text-primary font-bold' : ''}>Based</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleThemeChange('candy')} className="cursor-pointer font-retro text-base py-1.5">
+                      <span className={currentTheme === 'candy' ? 'text-primary font-bold' : ''}>Candy</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleThemeChange('coffee')} className="cursor-pointer font-retro text-base py-1.5">
+                      <span className={currentTheme === 'coffee' ? 'text-primary font-bold' : ''}>Coffee</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleThemeChange('dark')} className="cursor-pointer font-retro text-base py-1.5">
+                      <span className={currentTheme === 'dark' ? 'text-primary font-bold' : ''}>Dark Coffee</span>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator className="bg-border h-[2px]" />
                     <DropdownMenuItem
                       onClick={handleClear}
-                      className="cursor-pointer font-retro text-base py-3 text-destructive focus:text-destructive bg-[#ffffff] bg-none"
+                      className="cursor-pointer font-retro text-base py-1.5 text-destructive focus:text-destructive bg-[#ffffff] bg-none"
                     >
                       <Trash2 className="mr-2 h-5 w-5" />
                       <span>Clear Canvas</span>
@@ -844,6 +882,10 @@ export default function PixelArtEditor() {
             ditherPattern={ditherPattern}
             pencilSize={pencilSize}
             currentFont={currentFont}
+            fontSize={fontSize}
+            onFontSizeChange={setFontSize}
+            shapeStyle={shapeStyle}
+            symmetryMode={symmetryMode}
             onPixelChange={handlePixelChange}
             onColorPick={handleColorPick}
             onPanChange={setPan}
@@ -1032,6 +1074,14 @@ export default function PixelArtEditor() {
             >
               <X className="mr-2 h-4 w-4" />
               Cancel
+            </Button>
+            <Button
+              variant="default"
+              onClick={handleMint}
+              className="flex-1 sm:flex-none pixel-button font-retro bg-purple-500 hover:bg-purple-600 text-white border-purple-700"
+            >
+              <Diamond className="mr-2 h-4 w-4" />
+              MINT IT
             </Button>
             <Button
               variant="default"
