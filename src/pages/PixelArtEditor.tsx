@@ -130,8 +130,24 @@ export default function PixelArtEditor() {
   }, []);
 
   useGesture({
-    // onDrag removed to lock canvas. Panning is now only via MiniMap or Wheel.
-    // onDrag: ({ offset: [dx, dy], event }) => { ... },
+    onDrag: ({ offset: [x, y], event, touches, buttons, ctrlKey }) => {
+      const target = event.target as HTMLElement;
+      // Check if interacting with canvas
+      const isCanvas = target.tagName === 'CANVAS' || target.closest('canvas');
+      
+      // Allow pan if:
+      // 1. Two fingers (mobile pinch/pan)
+      // 2. Middle mouse button
+      // 3. Ctrl key is held (common alternative)
+      // 4. Not clicking on the canvas (background drag)
+      const isMultiTouch = touches > 1;
+      const isMiddleClick = buttons === 4;
+      const isBackground = !isCanvas;
+      
+      if (isMultiTouch || isMiddleClick || ctrlKey || isBackground) {
+        setPan({ x, y });
+      }
+    },
     onPinch: ({ offset: [d] }) => {
       // d is the zoom factor
       setZoom(d);
@@ -139,8 +155,6 @@ export default function PixelArtEditor() {
     onWheel: ({ event, offset: [,], ctrlKey }) => {
       if (ctrlKey) {
         // Zoom
-        // useGesture handles pinch as wheel with ctrl on trackpads usually, 
-        // but we might need manual handling if generic wheel
         const newZoom = Math.max(0.01, Math.min(zoom - event.deltaY * 0.01, 100));
         setZoom(newZoom);
       } else {
@@ -152,7 +166,7 @@ export default function PixelArtEditor() {
     target: containerRef,
     drag: { from: () => [pan.x, pan.y], filterTaps: true, modifierKey: undefined },
     pinch: { scaleBounds: { min: 0.01, max: 100 }, from: () => [zoom, 0] },
-    wheel: { eventOptions: { passive: false } } // Prevent default browser zoom
+    wheel: { eventOptions: { passive: false } }
   });
   const [clipboard] = useState<Clipboard | null>(null);
   const [colorsOpen, setColorsOpen] = useState(false);
@@ -918,7 +932,10 @@ export default function PixelArtEditor() {
         {currentTool === "stamp" && isStampSelectorOpen && (
           <div className="absolute left-2 top-2 bottom-2 z-20">
             <StampSelector
-              onSelectStamp={setActiveStamp}
+              onSelectStamp={(stamp) => {
+                setActiveStamp(stamp);
+                setIsStampSelectorOpen(false); // Auto-close on selection
+              }}
               selectedStampId={activeStamp?.id}
             />
           </div>
@@ -961,7 +978,7 @@ export default function PixelArtEditor() {
               onFontSizeChange={setFontSize}
               shapeStyle={shapeStyle}
               symmetryMode={symmetryMode}
-              currentStamp={isStampSelectorOpen ? activeStamp : null}
+              currentStamp={activeStamp}
               onPixelChange={handlePixelChange}
               onColorPick={handleColorPick}
               onPanChange={setPan}

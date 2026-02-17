@@ -147,12 +147,14 @@ export const MiniMap: React.FC<MiniMapProps> = ({
     };
 
     const onMouseDown = (e: React.MouseEvent) => {
+        e.stopPropagation();
         isDragging.current = true;
         handleInteraction(e.clientX, e.clientY);
     };
 
     const onMouseMove = (e: React.MouseEvent) => {
         if (isDragging.current) {
+            e.stopPropagation();
             handleInteraction(e.clientX, e.clientY);
         }
     };

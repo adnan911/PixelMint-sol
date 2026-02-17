@@ -75,6 +75,7 @@ export const EnhancedPixelCanvas: React.FC<EnhancedPixelCanvasProps> = ({
   showRuler = false,
   fillMode,
   zoom,
+  pan,
   brushMode = "normal",
   ditherPattern = "bayer4x4",
   pencilSize = 1,
@@ -369,6 +370,49 @@ export const EnhancedPixelCanvas: React.FC<EnhancedPixelCanvasProps> = ({
     return null;
   };
 
+  // Overlay Rendering for Stamp
+  useEffect(() => {
+    const canvas = overlayCanvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Clear overlay
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Debug: Always draw a small indicator to confirm overlay renders
+    if (currentTool === 'stamp') {
+      ctx.fillStyle = 'red';
+      ctx.globalAlpha = 1.0;
+      ctx.fillRect(0, 0, 10, 10); // Tiny red square in top-left corner
+    }
+
+    if (currentTool === 'stamp' && currentStamp && hoverPoint) {
+        console.log('[STAMP OVERLAY] Drawing preview at', hoverPoint.x, hoverPoint.y, 'stamp:', currentStamp.width, 'x', currentStamp.height);
+        // Draw Stamp Preview
+        const ps = pixelSize * zoom;
+        const startX = (hoverPoint.x - Math.floor(currentStamp.width / 2)) * ps;
+        const startY = (hoverPoint.y - Math.floor(currentStamp.height / 2)) * ps;
+
+        // Draw a subtle border reference
+        ctx.strokeStyle = "rgba(255,0,0,0.8)";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(startX, startY, currentStamp.width * ps, currentStamp.height * ps);
+
+        currentStamp.data.forEach((row, y) => {
+            row.forEach((color, x) => {
+                if (color !== 'transparent') {
+                    ctx.fillStyle = color;
+                    ctx.globalAlpha = 0.7; // Ghost effect
+                    ctx.fillRect(startX + x * ps, startY + y * ps, ps, ps);
+                }
+            });
+        });
+        
+        ctx.globalAlpha = 1.0; // Reset alpha
+    }
+  }, [hoverPoint, currentTool, currentStamp, pixelSize, zoom]);
+
   const handleStart = (clientX: number, clientY: number) => {
     onCanvasInteract?.();
 
@@ -387,22 +431,11 @@ export const EnhancedPixelCanvas: React.FC<EnhancedPixelCanvasProps> = ({
     if (!coords) return;
 
     if (currentTool === "stamp" && currentStamp) {
-      // Commit stamp
-      const newGrid = canvasGrid.map(row => [...row]);
-      for (let y = 0; y < currentStamp.height; y++) {
-        for (let x = 0; x < currentStamp.width; x++) {
-          const color = currentStamp.data[y][x];
-          if (color !== "transparent") {
-            const gridX = coords.x + x - Math.floor(currentStamp.width / 2);
-            const gridY = coords.y + y - Math.floor(currentStamp.height / 2);
-            if (gridX >= 0 && gridX < gridWidth && gridY >= 0 && gridY < gridHeight) {
-              newGrid[gridY][gridX] = color;
-            }
-          }
-        }
-      }
-      onPixelChange(newGrid);
-      return;
+       // Start drag-to-place for stamp
+       // Preview handled by overlay
+       setStartPoint(coords);
+       setIsDrawing(true);
+       return;
     }
 
     if (currentTool === "text") {
@@ -456,8 +489,22 @@ export const EnhancedPixelCanvas: React.FC<EnhancedPixelCanvasProps> = ({
     const coords = getPixelCoords(clientX, clientY);
     setHoverPoint(coords);
 
-    if (!isDrawing || !startPoint) return;
-    if (!coords) return;
+    // Simplified Logic: 
+    // 1. If we are drawing, we generally need a startPoint (except maybe simple tools, but here we enforce it).
+    // 2. If we are NOT drawing, usually we return, UNLESS it's a tool that supports hover preview (like valid Stamp).
+    
+    if (isDrawing) {
+        if (!startPoint) return; 
+    } else {
+        // Not drawing (Hovering) - Stamp uses overlay, no need to return here anymore as overlay effect depends on hoverPoint
+        // But for other tools, we might want to return? 
+        // Actually, just let it update hoverPoint.
+    }
+
+    if (!coords) {
+      setPreviewGrid(null);
+      return;
+    }
 
     switch (currentTool) {
       case "pencil":
@@ -465,14 +512,18 @@ export const EnhancedPixelCanvas: React.FC<EnhancedPixelCanvasProps> = ({
         handleDraw(coords);
         break;
       case "line":
-        setPreviewGrid(drawLine(canvasGrid, startPoint.x, startPoint.y, coords.x, coords.y, currentColor));
+        if (startPoint) setPreviewGrid(drawLine(canvasGrid, startPoint.x, startPoint.y, coords.x, coords.y, currentColor));
         break;
       case "circle":
-        const radius = Math.floor(Math.sqrt(Math.pow(coords.x - startPoint.x, 2) + Math.pow(coords.y - startPoint.y, 2)));
-        setPreviewGrid(drawCircle(canvasGrid, startPoint.x, startPoint.y, radius, currentColor, shapeStyle === "fill"));
+        if (startPoint) {
+            const radius = Math.floor(Math.sqrt(Math.pow(coords.x - startPoint.x, 2) + Math.pow(coords.y - startPoint.y, 2)));
+            setPreviewGrid(drawCircle(canvasGrid, startPoint.x, startPoint.y, radius, currentColor, shapeStyle === "fill"));
+        }
         break;
       case "square":
-        setPreviewGrid(drawRectangle(canvasGrid, startPoint.x, startPoint.y, coords.x, coords.y, currentColor, shapeStyle === "fill"));
+        if (startPoint) {
+            setPreviewGrid(drawRectangle(canvasGrid, startPoint.x, startPoint.y, coords.x, coords.y, currentColor, shapeStyle === "fill"));
+        }
         break;
       case "select":
         if (activeSelection) {
@@ -482,11 +533,31 @@ export const EnhancedPixelCanvas: React.FC<EnhancedPixelCanvasProps> = ({
           });
         }
         break;
+      // Stamp preview handled by overlay effect now
     }
   };
 
   const handleEnd = () => {
     if (!isDrawing) return;
+    
+    // Commit Stamp if active
+    if (currentTool === "stamp" && currentStamp && hoverPoint) {
+       const newGrid = canvasGrid.map(row => [...row]);
+       for (let y = 0; y < currentStamp.height; y++) {
+        for (let x = 0; x < currentStamp.width; x++) {
+          const color = currentStamp.data[y][x];
+          if (color !== "transparent") {
+            const gridX = hoverPoint.x + x - Math.floor(currentStamp.width / 2);
+            const gridY = hoverPoint.y + y - Math.floor(currentStamp.height / 2);
+            if (gridX >= 0 && gridX < gridWidth && gridY >= 0 && gridY < gridHeight) {
+              newGrid[gridY][gridX] = color;
+            }
+          }
+        }
+      }
+      onPixelChange(newGrid);
+    }
+
     if (previewGrid) {
       onPixelChange(previewGrid);
       setPreviewGrid(null);
@@ -575,8 +646,14 @@ export const EnhancedPixelCanvas: React.FC<EnhancedPixelCanvasProps> = ({
   const currentFontInfo = PIXEL_FONTS.find(f => f.id === currentFont) || PIXEL_FONTS[0];
 
   return (
-    <div ref={containerRef} className="w-full h-full flex items-center justify-center relative select-none">
-      <div className="relative">
+    <div ref={containerRef} className="w-full h-full flex items-center justify-center relative select-none overflow-hidden">
+      <div 
+        className="relative"
+        style={{
+          transform: `translate(${pan.x}px, ${pan.y}px)`,
+          transition: 'transform 0.05s ease-out'
+        }}
+      >
         <canvas
           ref={canvasRef}
           width={canvasWidthPx}
@@ -604,7 +681,13 @@ export const EnhancedPixelCanvas: React.FC<EnhancedPixelCanvasProps> = ({
           width={canvasWidthPx}
           height={canvasHeightPx}
           className="absolute top-0 left-0 pointer-events-none"
-          style={{ imageRendering: "pixelated", width: canvasWidthPx, height: canvasHeightPx }}
+          style={{ 
+            imageRendering: "pixelated", 
+            width: canvasWidthPx, 
+            height: canvasHeightPx,
+            zIndex: 50, // Ensure it's on top
+            pointerEvents: "none" 
+          }}
         />
 
         {/* Horizontal Ruler (Top - Inside Canvas) */}

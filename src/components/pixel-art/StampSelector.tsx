@@ -63,34 +63,58 @@ export const StampSelector: React.FC<StampSelectorProps> = ({
 };
 
 const StampPreview: React.FC<{ grid: CanvasGrid }> = ({ grid }) => {
+    const canvasRef = React.useRef<HTMLCanvasElement>(null);
     const height = grid.length;
     const width = height > 0 ? grid[0].length : 0;
-    const size = Math.max(width, height);
+
+    React.useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+
+        // Clear canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        if (width === 0 || height === 0) return;
+
+        // Disable smoothing for pixel art look
+        ctx.imageSmoothingEnabled = false;
+
+        // Calculate scale to fit
+        const scale = Math.min(
+            canvas.width / width,
+            canvas.height / height
+        );
+        
+        // Center the stamp
+        const drawWidth = width * scale;
+        const drawHeight = height * scale;
+        const offsetX = (canvas.width - drawWidth) / 2;
+        const offsetY = (canvas.height - drawHeight) / 2;
+
+        grid.forEach((row, y) => {
+            row.forEach((color, x) => {
+                if (color !== "transparent") {
+                    ctx.fillStyle = color;
+                    // Use slightly smaller size to avoid bleeding if needed, or floor
+                    const px = Math.floor(offsetX + x * scale);
+                    const py = Math.floor(offsetY + y * scale);
+                    const pw = Math.ceil(scale);
+                    const ph = Math.ceil(scale);
+                    ctx.fillRect(px, py, pw, ph);
+                }
+            });
+        });
+    }, [grid, width, height]);
 
     return (
-        <div
-            style={{
-                display: "grid",
-                gridTemplateColumns: `repeat(${width}, 1fr)`,
-                width: "100%",
-                maxWidth: "40px",
-                height: "auto",
-                aspectRatio: `${width} / ${height}`,
-                gap: "1px",
-            }}
-        >
-            {grid.map((row, y) =>
-                row.map((color, x) => (
-                    <div
-                        key={`${x}-${y}`}
-                        style={{
-                            backgroundColor: color === "transparent" ? "transparent" : color,
-                            width: "100%",
-                            height: "100%",
-                        }}
-                    />
-                ))
-            )}
-        </div>
+        <canvas 
+            ref={canvasRef} 
+            width={64} 
+            height={64} 
+            className="w-full h-full object-contain"
+            style={{ imageRendering: "pixelated" }}
+        />
     );
 };

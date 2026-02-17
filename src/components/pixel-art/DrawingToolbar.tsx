@@ -19,7 +19,7 @@ import {
   ChevronDown,
   Paintbrush,
   Type,
-  Stamp,
+  StickyNote,
   BoxSelect,
 } from "lucide-react";
 import type { Tool, BrushMode, PencilSize, SymmetryMode } from "@/types/pixel-art";
@@ -494,7 +494,7 @@ export const DrawingToolbar: React.FC<DrawingToolbarProps> = ({
               className="h-11 w-11"
               aria-label="Stamp Tool"
             >
-              <Stamp className="h-5 w-5" />
+              <StickyNote className="h-5 w-5" />
             </Button>
           </TooltipTrigger>
           <TooltipContent side="top">
