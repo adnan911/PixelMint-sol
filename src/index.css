@@ -580,3 +580,72 @@ Pixel Art Theme: Retro 8-bit/16-bit inspired design
       6px 6px 0 0 hsl(var(--border) / 0.3);
   }
 }
+
+/* Wallet Adapter Overrides */
+.wallet-adapter-button {
+  font-family: "VT323", monospace !important;
+  font-size: 1rem !important; /* Slightly smaller text */
+  padding: 0.25rem 0.75rem !important; /* Reduced padding for height */
+  border-radius: 0 !important; /* Pixelated corners */
+  background-color: hsl(var(--primary)) !important;
+  color: hsl(var(--primary-foreground)) !important;
+
+  /* Pixel Button Styling */
+  border: 3px solid hsl(var(--border)) !important;
+  box-shadow: 4px 4px 0 0 hsl(var(--border)) !important;
+  transition: all 0.1s ease !important;
+}
+
+.wallet-adapter-button:hover {
+  background-color: hsl(var(--primary) / 0.9) !important;
+  transform: translate(2px, 2px) !important;
+  box-shadow: 2px 2px 0 0 hsl(var(--border)) !important;
+}
+
+.wallet-adapter-button:not([disabled]):focus-visible {
+  outline-color: hsl(var(--ring)) !important;
+}
+
+.wallet-adapter-button:active {
+  transform: translate(4px, 4px) !important;
+  box-shadow: none !important;
+}
+
+/* Dropdown/Modal Styling */
+.wallet-adapter-modal-wrapper {
+  background-color: hsl(var(--card)) !important;
+  color: hsl(var(--card-foreground)) !important;
+  border: 3px solid hsl(var(--border)) !important;
+  box-shadow: 6px 6px 0 0 hsl(var(--border)) !important;
+  border-radius: 0 !important;
+  font-family: "VT323", monospace !important;
+}
+
+.wallet-adapter-modal-title {
+  font-family: "Press Start 2P", monospace !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+.wallet-adapter-modal-button-close {
+  background-color: hsl(var(--muted)) !important;
+  border: 2px solid hsl(var(--border)) !important;
+}
+
+.wallet-adapter-dropdown-list {
+  background-color: hsl(var(--popover)) !important;
+  border: 3px solid hsl(var(--border)) !important;
+  box-shadow: 4px 4px 0 0 hsl(var(--border)) !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+}
+
+.wallet-adapter-dropdown-list-item {
+  font-family: "VT323", monospace !important;
+  color: hsl(var(--popover-foreground)) !important;
+  border-radius: 0 !important;
+}
+
+.wallet-adapter-dropdown-list-item:hover {
+  background-color: hsl(var(--accent)) !important;
+  color: hsl(var(--accent-foreground)) !important;
+}

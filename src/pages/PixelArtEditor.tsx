@@ -5,6 +5,7 @@ import { EnhancedPixelCanvas } from "@/components/pixel-art/PixelCanvas";
 import { MiniMap } from "@/components/pixel-art/MiniMap";
 import { DrawingToolbar } from "@/components/pixel-art/DrawingToolbar";
 import { ColorPicker } from "@/components/pixel-art/ColorPicker";
+import { WalletBar } from "@/components/WalletBar";
 
 
 import { LayerPanel } from "@/components/pixel-art/LayerPanel";
@@ -705,6 +706,10 @@ export default function PixelArtEditor() {
               </div>
             </Link>
             <h1 className="text-sm sm:text-base font-pixel pixel-heading text-primary">{"PIXEL MINT"}</h1>
+          </div>
+          
+          <div className="flex items-center">
+            <WalletBar />
           </div>
         </div>
       </header>

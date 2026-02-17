@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import IntersectObserver from '@/components/common/IntersectObserver';
 
 import routes from './routes';
@@ -7,23 +7,30 @@ import routes from './routes';
 // import { AuthProvider } from '@/contexts/AuthContext';
 // import { RouteGuard } from '@/components/common/RouteGuard';
 import { WalletBar } from '@/components/WalletBar';
-import { WalletActions } from '@/components/WalletActions';
+
 import { Toaster } from '@/components/ui/toaster';
 
-const App: React.FC = () => {
+const Layout: React.FC = () => {
+  const location = useLocation();
+  const isEditor = location.pathname.startsWith('/editor');
+
   return (
-    <Router>
-      {/*<AuthProvider>*/}
-      {/*<RouteGuard>*/}
-      <IntersectObserver />
       <div className="flex flex-col min-h-screen">
-        <header style={{ display: "flex", justifyContent: "space-between", padding: 12 }} className="relative z-50" >
-          <div className="text-xl font-bold">Pixel Mint</div>
+        {!isEditor && (
+        <header 
+          style={{ 
+            display: "flex", 
+            justifyContent: "flex-start", 
+            padding: 12 
+          }} 
+          className="relative z-50" 
+        >
           <WalletBar />
         </header>
+        )}
         {/*<Header />*/}
         <main className="flex-grow p-3">
-          <WalletActions />
+
           <Routes>
           {routes.map((route, index) => (
             <Route
@@ -36,6 +43,16 @@ const App: React.FC = () => {
           </Routes>
         </main>
       </div>
+  );
+};
+
+const App: React.FC = () => {
+  return (
+    <Router>
+      {/*<AuthProvider>*/}
+      {/*<RouteGuard>*/}
+      <IntersectObserver />
+      <Layout />
       <Toaster />
       {/*</RouteGuard>*/}
       {/*</AuthProvider>*/}
