@@ -4,7 +4,7 @@
     "target": {
       "namespace": "android_app",
       "package_name": "com.onchainerslab.pixelmint",
-      "sha256_cert_fingerprints": ["AD:71:30:F8:F0:56:57:8A:E1:D5:B8:B1:4C:E6:59:1D:35:34:32:58:89:07:1E:2F:7D:D2:F0:36:44:0D:EB:62"]
+      "sha256_cert_fingerprints": ["4D:DD:67:1B:7F:C1:99:8C:92:E0:CE:9F:55:2E:77:91:57:7E:C2:CC:60:28:1C:81:2D:9A:52:53:B6:F4:DF:75"]
     }
   }
 ]
