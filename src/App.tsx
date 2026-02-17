@@ -6,6 +6,7 @@ import routes from './routes';
 
 // import { AuthProvider } from '@/contexts/AuthContext';
 // import { RouteGuard } from '@/components/common/RouteGuard';
+import GalleryPage from "@/pages/GalleryPage";
 import { WalletBar } from '@/components/WalletBar';
 
 import { Toaster } from '@/components/ui/toaster';
@@ -39,6 +40,7 @@ const Layout: React.FC = () => {
               element={route.element}
             />
           ))}
+          <Route path="/gallery" element={<GalleryPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>

@@ -1,0 +1,3 @@
+Mint Authority Keypair generated!
+Public Key: 99TzTmYCrKWq4sRLak41RUgMPVRgYqydMTZAcwHSx2pW
+Private Key (Base58): 3iAnVaZ1kNXY1HnkZQmJNCvW6o294Arsh3BShWqvP4jJAgnS1E6HxTVg4epvQQP1BksMxypRHMD1iU45FHaNSWPg

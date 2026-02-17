@@ -29,7 +29,7 @@ interface EnhancedPixelCanvasProps {
   onFontSizeChange?: (size: number) => void;
   shapeStyle?: "stroke" | "fill";
   symmetryMode?: SymmetryMode;
-  onPixelChange: (newGrid: CanvasGrid) => void;
+  onPixelChange: (newGrid: CanvasGrid, isIntermediate?: boolean) => void;
   onColorPick: (color: Color) => void;
   onPanChange: (pan: Point) => void;
   currentStamp?: { width: number; height: number; data: CanvasGrid } | null;
@@ -480,7 +480,7 @@ export const EnhancedPixelCanvas: React.FC<EnhancedPixelCanvasProps> = ({
         break;
       case "pencil":
       case "eraser":
-        handleDraw(coords);
+        handleDraw(coords, false);
         break;
     }
   };
@@ -502,7 +502,7 @@ export const EnhancedPixelCanvas: React.FC<EnhancedPixelCanvasProps> = ({
     switch (currentTool) {
       case "pencil":
       case "eraser":
-        handleDraw(coords);
+        handleDraw(coords, true);
         break;
       case "line":
         if (startPoint) setPreviewGrid(drawLine(canvasGrid, startPoint.x, startPoint.y, coords.x, coords.y, currentColor));
@@ -559,7 +559,7 @@ export const EnhancedPixelCanvas: React.FC<EnhancedPixelCanvasProps> = ({
     setStartPoint(null);
   };
 
-  const handleDraw = (coords: Point) => {
+  const handleDraw = (coords: Point, isDrawingMove = false) => {
     const newGrid = canvasGrid.map((row) => [...row]);
     const halfSize = Math.floor(pencilSize / 2);
     const isEraser = currentTool === "eraser";
@@ -603,7 +603,7 @@ export const EnhancedPixelCanvas: React.FC<EnhancedPixelCanvasProps> = ({
       }
     }
 
-    onPixelChange(newGrid);
+    onPixelChange(newGrid, isDrawingMove);
   };
 
   // Mouse/Touch Handlers

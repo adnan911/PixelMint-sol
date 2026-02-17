@@ -41,3 +41,4 @@ history/*.json
 # Android Build
 android-twa/.gradle
 android-twa/app/build
+mint-authority.json

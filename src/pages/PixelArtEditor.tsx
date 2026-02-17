@@ -12,6 +12,10 @@ import { LayerPanel } from "@/components/pixel-art/LayerPanel";
 import { PaletteManager } from "@/components/pixel-art/PaletteManager";
 import { CanvasSizeSettings } from "@/components/pixel-art/CanvasSizeSettings";
 import { StampSelector } from "@/components/pixel-art/StampSelector";
+import { saveArt, loadArt, markAsMinted, generateThumbnail } from "@/utils/storage-utils";
+import { v4 as uuidv4 } from 'uuid';
+import { Save } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 import { PREMADE_STAMPS, Stamp } from "@/data/stamps";
 import { useHistory } from "@/hooks/use-history";
 import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts";
@@ -87,11 +91,14 @@ interface EditorState {
 }
 
 export default function PixelArtEditor() {
-  const [searchParams] = useSearchParams();
+  const { toast } = useToast();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const artIdParam = searchParams.get("artId");
   const sizeParam = searchParams.get("size");
-  const parsedSize = parseInt(sizeParam || "32", 10);
-  const initialSize = !isNaN(parsedSize) && parsedSize > 0 && parsedSize <= 256 ? parsedSize : 32;
+  const initialSize = sizeParam ? parseInt(sizeParam) : 64;
 
+  // Track the ID of the current artwork
+  const [currentArtId, setCurrentArtId] = useState<string | null>(artIdParam);
   const [currentTool, setCurrentTool] = useState<Tool>("pencil");
   const [currentColor, setCurrentColor] = useState<Color>("#000000");
   const [showGrid, setShowGrid] = useState(true);
@@ -129,6 +136,25 @@ export default function PixelArtEditor() {
     window.addEventListener('resize', updateDimensions);
     return () => window.removeEventListener('resize', updateDimensions);
   }, []);
+
+  // Load Art effect removed in favor of synchronous initialState initialization
+  // but we might want a toast to confirm load
+  useEffect(() => {
+    if (artIdParam) {
+       // Just a toast, actual load happens in useMemo
+       // We can check if it loaded by checking canvasWidth/Height maybe?
+       // Or just assume success if it exists in storage
+       const art = loadArt(artIdParam);
+        if (art) {
+          toast({
+            title: "Artwork Loaded",
+            description: `Loaded "${art.title}"`,
+          });
+        }
+    }
+  }, [artIdParam, toast]);
+
+
 
   useGesture({
     onDrag: ({ offset: [x, y], event, touches, buttons, ctrlKey }) => {
@@ -204,7 +230,30 @@ export default function PixelArtEditor() {
 
   // Initialize with one default layer and default palettes (memoized to prevent recreation)
   // Using defensive initialization to avoid conflicts with browser extensions
+  // Initialize with one default layer and default palettes (memoized to prevent recreation)
+  // Using defensive initialization to avoid conflicts with browser extensions
   const initialState: EditorState = useMemo(() => {
+    // Try to load from Gallery if artId is present
+    if (artIdParam) {
+      try {
+        const loaded = loadArt(artIdParam);
+        if (loaded && loaded.layers) {
+           return {
+             layers: loaded.layers,
+             activeLayerId: loaded.activeLayerId,
+             palettes: loaded.palettes,
+             activePaletteId: loaded.activePaletteId,
+             canvasWidth: loaded.width,
+             canvasHeight: loaded.height,
+             textObjects: loaded.textObjects || [],
+             activeTextId: null
+           };
+        }
+      } catch (e) {
+        console.error("Failed to load art:", e);
+      }
+    }
+
     try {
       const state: EditorState = {
         layers: [createLayer("Background", initialSize, initialSize)],
@@ -233,7 +282,7 @@ export default function PixelArtEditor() {
         activeTextId: null,
       };
     }
-  }, [initialSize]);
+  }, [initialSize, artIdParam]);
 
   const {
     state: editorState,
@@ -250,7 +299,38 @@ export default function PixelArtEditor() {
   // Get merged canvas for display
   const canvasGrid = mergeLayers(layers, canvasWidth, canvasHeight);
 
-  const handlePixelChange = (newGrid: CanvasGrid) => {
+  const handleSave = () => {
+    const id = currentArtId || uuidv4();
+    const thumbnail = generateThumbnail(canvasGrid, canvasWidth, canvasHeight);
+    
+    saveArt({
+      id,
+      title: `Pixel Art ${new Date().toLocaleDateString()}`,
+      layers: editorState.layers,
+      activeLayerId: editorState.activeLayerId,
+      palettes: editorState.palettes,
+      activePaletteId: editorState.activePaletteId,
+      textObjects: editorState.textObjects,
+      width: canvasWidth,
+      height: canvasHeight,
+      thumbnail,
+      createdAt: Date.now(), 
+      updatedAt: Date.now(),
+      isMinted: false
+    });
+
+    if (!currentArtId) {
+       setCurrentArtId(id);
+       setSearchParams({ artId: id });
+    }
+
+    toast({
+      title: "Saved!",
+      description: "Artwork saved to Gallery",
+    });
+  };
+
+  const handlePixelChange = (newGrid: CanvasGrid, isIntermediate = false) => {
     if (!activeLayer || activeLayer.locked) return;
 
     // Calculate the difference between new grid and merged canvas
@@ -270,7 +350,7 @@ export default function PixelArtEditor() {
       layers: layers.map((layer) =>
         layer.id === activeLayerId ? { ...layer, pixels: updatedLayerPixels } : layer
       ),
-    });
+    }, isIntermediate);
   };
 
   const handleColorPick = (color: Color) => {
@@ -677,9 +757,26 @@ export default function PixelArtEditor() {
   };
 
   const handleMint = () => {
-    // Placeholder for minting logic
-    console.log("Minting pixel art...");
-    // You could add a toast here later
+    if (!currentArtId) {
+      toast({
+        title: "Save Required",
+        description: "Please save your artwork before minting.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    // In a real app, this would trigger a wallet transaction
+    // For now, we simulate the minting process
+    markAsMinted(currentArtId, "simulated-signature-" + Date.now());
+    
+    toast({
+      title: "Minted!",
+      description: "Artwork marked as minted in Gallery.",
+    });
+    
+    // Close preview if open
+    setExportPreviewOpen(false);
   };
 
   const handleThemeChange = (theme: string) => {
@@ -695,6 +792,7 @@ export default function PixelArtEditor() {
       case "candy":
         return "/images/logo/pixel-mint-logo-candy.png";
       case "coffee":
+      case "dark":
         return "/images/logo/pixel-mint-logo-coffee.png";
       default:
         return "/images/logo/pixel-mint-logo.png";
@@ -771,8 +869,19 @@ export default function PixelArtEditor() {
                 <Download className="h-5 w-5" />
                 <span className="hidden sm:inline text-sm">EXPORT ART</span>
               </Button>
-
-              {/* Canvas Size & Zoom Buttons */}
+              
+               {/* Save Button */}
+               <Button
+                 variant="outline"
+                 onClick={handleSave}
+                 className="h-11 sm:h-10 px-6 sm:px-4 pixel-button font-retro flex-shrink-0 gap-2"
+                 title="Save to Gallery"
+               >
+                 <Save className="h-5 w-5" />
+                 <span className="hidden sm:inline text-sm">SAVE</span>
+               </Button>
+ 
+               {/* Canvas Size & Zoom Buttons */}
               <div className="flex items-center gap-1">
 
                 {/* Movement Lock/Unlock Button */}

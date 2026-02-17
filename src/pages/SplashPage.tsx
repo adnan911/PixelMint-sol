@@ -25,6 +25,7 @@ export default function SplashPage() {
       case "candy":
         return "/images/logo/pixel-mint-logo-candy.png";
       case "coffee":
+      case "dark":
         return "/images/logo/pixel-mint-logo-coffee.png";
       default:
         return "/images/logo/pixel-mint-logo.png";

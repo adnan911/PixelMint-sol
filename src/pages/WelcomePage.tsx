@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
 import {
@@ -64,6 +64,7 @@ export default function WelcomePage() {
       case "candy":
         return "/images/logo/pixel-mint-logo-candy.png";
       case "coffee":
+      case "dark":
         return "/images/logo/pixel-mint-logo-coffee.png";
       default:
         // Based/Retro logic (and legacy fallback)
@@ -138,7 +139,6 @@ export default function WelcomePage() {
               </div>
             </div>
 
-            {/* Start Button */}
             <div className="flex flex-col items-center gap-4 pt-8 sm:pt-12 animate-fade-in-delay-3">
               <Button
                 onClick={handleStartDrawing}
@@ -157,6 +157,12 @@ export default function WelcomePage() {
                 <Palette className="mr-3 h-6 w-6 sm:h-7 sm:w-7 flex-shrink-0" />
                 <span className="whitespace-nowrap">START DRAWING</span>
               </Button>
+              
+              <Link to="/gallery">
+                <Button size="lg" variant="outline" className="w-full sm:w-auto px-8 sm:px-12 py-4 pixel-button font-retro">
+                  VIEW GALLERY
+                </Button>
+              </Link>
             </div>
 
             {/* Theme Toggle (Moved) */}

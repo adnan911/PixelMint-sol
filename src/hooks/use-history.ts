@@ -2,7 +2,7 @@ import { useState, useCallback, useRef } from "react";
 
 interface UseHistoryReturn<T> {
   state: T;
-  setState: (newState: T) => void;
+  setState: (newState: T, shouldOverwrite?: boolean) => void;
   undo: () => void;
   redo: () => void;
   canUndo: boolean;
@@ -31,24 +31,31 @@ export const useHistory = <T>(
   currentIndexRef.current = currentIndex;
 
   const setState = useCallback(
-    (newState: T) => {
+    (newState: T, shouldOverwrite = false) => {
       const currentIdx = currentIndexRef.current;
       const currentHistory = historyRef.current;
       
-      // Remove any future states if we're not at the end
-      const newHistory = currentHistory.slice(0, currentIdx + 1);
-      
-      // Add new state
-      newHistory.push(newState);
-      
-      // Limit history size
-      if (newHistory.length > maxHistory) {
-        newHistory.shift();
+      if (shouldOverwrite) {
+        const newHistory = [...currentHistory];
+        newHistory[currentIdx] = newState;
         setHistory(newHistory);
-        setCurrentIndex(maxHistory - 1);
+        // currentIndex remains same
       } else {
-        setHistory(newHistory);
-        setCurrentIndex(newHistory.length - 1);
+        // Remove any future states if we're not at the end
+        const newHistory = currentHistory.slice(0, currentIdx + 1);
+        
+        // Add new state
+        newHistory.push(newState);
+        
+        // Limit history size
+        if (newHistory.length > maxHistory) {
+          newHistory.shift();
+          setHistory(newHistory);
+          setCurrentIndex(maxHistory - 1);
+        } else {
+          setHistory(newHistory);
+          setCurrentIndex(newHistory.length - 1);
+        }
       }
     },
     [maxHistory]
