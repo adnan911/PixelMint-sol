@@ -45,7 +45,7 @@ import type {
   PencilSize,
   TextObject,
 } from "@/types/pixel-art";
-import { Settings, Undo2, Redo2, Layers, Download, FlipHorizontal2, RotateCw, FlipVertical2, Grid3x3, Trash2, ZoomIn, ZoomOut, Maximize, X, Plus, Ruler, Map, Diamond } from "lucide-react";
+import { Settings, Undo2, Redo2, Layers, Download, FlipHorizontal2, RotateCw, FlipVertical2, Grid3x3, Trash2, ZoomIn, ZoomOut, Maximize, X, Plus, Ruler, Map, Diamond, Lock, Unlock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -110,6 +110,7 @@ export default function PixelArtEditor() {
   });
   const [activeStamp, setActiveStamp] = useState<Stamp>(PREMADE_STAMPS[0]);
   const [zoom, setZoom] = useState(1);
+  const [isMovementLocked, setIsMovementLocked] = useState(false);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const containerRef = React.useRef<HTMLDivElement>(null);
   const [containerDimensions, setContainerDimensions] = useState({ width: 0, height: 0 });
@@ -144,15 +145,17 @@ export default function PixelArtEditor() {
       const isMiddleClick = buttons === 4;
       const isBackground = !isCanvas;
       
-      if (isMultiTouch || isMiddleClick || ctrlKey || isBackground) {
+      if (!isMovementLocked && (isMultiTouch || isMiddleClick || ctrlKey || isBackground)) {
         setPan({ x, y });
       }
     },
     onPinch: ({ offset: [d] }) => {
+      if (isMovementLocked) return;
       // d is the zoom factor
       setZoom(d);
     },
     onWheel: ({ event, offset: [,], ctrlKey }) => {
+      if (isMovementLocked) return;
       if (ctrlKey) {
         // Zoom
         const newZoom = Math.max(0.01, Math.min(zoom - event.deltaY * 0.01, 100));
@@ -761,7 +764,8 @@ export default function PixelArtEditor() {
               <Button
                 variant="default"
                 onClick={handleExport}
-                className="h-11 sm:h-10 px-6 sm:px-4 pixel-button font-retro flex-shrink-0 gap-2 bg-orange-500 hover:bg-orange-600"
+                className="h-11 sm:h-10 px-6 sm:px-4 pixel-button font-retro flex-shrink-0 gap-2 text-white"
+                style={{ backgroundColor: '#d46a6a', borderColor: '#b85555' }}
                 title="Export Art"
               >
                 <Download className="h-5 w-5" />
@@ -771,6 +775,16 @@ export default function PixelArtEditor() {
               {/* Canvas Size & Zoom Buttons */}
               <div className="flex items-center gap-1">
 
+                {/* Movement Lock/Unlock Button */}
+                <Button
+                  variant={isMovementLocked ? "destructive" : "outline"}
+                  size="icon"
+                  onClick={() => setIsMovementLocked(prev => !prev)}
+                  className="h-11 w-11 sm:h-10 sm:w-10 pixel-button font-retro"
+                  title={isMovementLocked ? "Unlock Canvas Movement" : "Lock Canvas Movement"}
+                >
+                  {isMovementLocked ? <Lock className="h-5 w-5" /> : <Unlock className="h-5 w-5" />}
+                </Button>
 
                 {/* Zoom Dropdown */}
                 <DropdownMenu>
@@ -981,7 +995,7 @@ export default function PixelArtEditor() {
               currentStamp={activeStamp}
               onPixelChange={handlePixelChange}
               onColorPick={handleColorPick}
-              onPanChange={setPan}
+              onPanChange={(newPan) => { if (!isMovementLocked) setPan(newPan); }}
               textObjects={textObjects}
               activeTextId={activeTextId}
               onTextObjectCreate={handleTextObjectCreate}
@@ -1002,7 +1016,7 @@ export default function PixelArtEditor() {
               zoom={zoom}
               pan={pan}
               containerDimensions={containerDimensions}
-              onPanChange={(newPan) => setPan(newPan)}
+              onPanChange={(newPan) => { if (!isMovementLocked) setPan(newPan); }}
               className="w-24 h-24 sm:w-32 sm:h-32"
             />
           </div>
@@ -1177,7 +1191,8 @@ export default function PixelArtEditor() {
             <Button
               variant="default"
               onClick={handleMint}
-              className="flex-1 sm:flex-none pixel-button font-retro bg-purple-500 hover:bg-purple-600 text-white border-purple-700"
+              className="flex-1 sm:flex-none pixel-button font-retro text-white"
+              style={{ backgroundColor: '#d46a6a', borderColor: '#b85555' }}
             >
               <Diamond className="mr-2 h-4 w-4" />
               MINT IT

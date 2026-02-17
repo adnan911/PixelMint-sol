@@ -489,17 +489,10 @@ export const EnhancedPixelCanvas: React.FC<EnhancedPixelCanvasProps> = ({
     const coords = getPixelCoords(clientX, clientY);
     setHoverPoint(coords);
 
-    // Simplified Logic: 
-    // 1. If we are drawing, we generally need a startPoint (except maybe simple tools, but here we enforce it).
-    // 2. If we are NOT drawing, usually we return, UNLESS it's a tool that supports hover preview (like valid Stamp).
-    
-    if (isDrawing) {
-        if (!startPoint) return; 
-    } else {
-        // Not drawing (Hovering) - Stamp uses overlay, no need to return here anymore as overlay effect depends on hoverPoint
-        // But for other tools, we might want to return? 
-        // Actually, just let it update hoverPoint.
-    }
+    // Only proceed into the switch if we are actively drawing (mouse down).
+    // Stamp hover preview is handled by the overlay useEffect (not the switch), so we just return here.
+    if (!isDrawing) return;
+    if (!startPoint) return;
 
     if (!coords) {
       setPreviewGrid(null);
