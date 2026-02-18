@@ -1,29 +1,10 @@
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
-import {
-  Dialog,
-  DialogContent,
-
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Palette, Layers, Grid3x3, Zap } from "lucide-react";
 
-const CANVAS_SIZES = [
-  { size: 16, label: "16×16", description: "Small" },
-  { size: 32, label: "32×32", description: "Medium" },
-  { size: 64, label: "64×64", description: "Large" },
-  { size: 128, label: "128×128", description: "XL" },
-
-];
-
 export default function WelcomePage() {
-  const navigate = useNavigate();
-  const [selectedSize, setSelectedSize] = useState(64);
-  const [isAnimating, setIsAnimating] = useState(false);
-  const [showSizeDialog, setShowSizeDialog] = useState(false);
   const [currentTheme, setCurrentTheme] = useState(() => {
     return localStorage.getItem("theme") || "retro";
   });
@@ -70,18 +51,6 @@ export default function WelcomePage() {
         // Based/Retro logic (and legacy fallback)
         return "/images/logo/pixel-mint-logo.png";
     }
-  };
-
-  const handleStartDrawing = () => {
-    setShowSizeDialog(true);
-  };
-
-  const handleSizeConfirm = () => {
-    setIsAnimating(true);
-    setShowSizeDialog(false);
-    setTimeout(() => {
-      navigate(`/editor?size=${selectedSize}`);
-    }, 300);
   };
 
   return (
@@ -140,27 +109,21 @@ export default function WelcomePage() {
             </div>
 
             <div className="flex flex-col items-center gap-4 pt-8 sm:pt-12 animate-fade-in-delay-3">
-              <Button
-                onClick={handleStartDrawing}
-                disabled={isAnimating}
-                size="lg"
-                className={`
-                  w-full max-w-xs sm:w-auto px-8 sm:px-16 py-6 sm:py-8 
-                  text-lg sm:text-xl font-pixel
-                  pixel-button shadow-pixel hover:shadow-pixel-lg
-                  transition-all duration-200
-                  min-h-[60px] sm:min-h-[72px]
-                  active:scale-95 touch-manipulation
-                  ${isAnimating ? "animate-pulse" : "animate-bounce-subtle"}
-                `}
-              >
-                <Palette className="mr-3 h-6 w-6 sm:h-7 sm:w-7 flex-shrink-0" />
-                <span className="whitespace-nowrap">START DRAWING</span>
-              </Button>
-              
-              <Link to="/gallery">
-                <Button size="lg" variant="outline" className="w-full sm:w-auto px-8 sm:px-12 py-4 pixel-button font-retro">
-                  VIEW GALLERY
+              <Link to="/home">
+                <Button
+                  size="lg"
+                  className={`
+                    w-full max-w-xs sm:w-auto px-8 sm:px-16 py-6 sm:py-8 
+                    text-lg sm:text-xl font-pixel
+                    pixel-button shadow-pixel hover:shadow-pixel-lg
+                    transition-all duration-200
+                    min-h-[60px] sm:min-h-[72px]
+                    active:scale-95 touch-manipulation
+                    animate-bounce-subtle
+                  `}
+                >
+                  <Palette className="mr-3 h-6 w-6 sm:h-7 sm:w-7 flex-shrink-0" />
+                  <span className="whitespace-nowrap">GET STARTED</span>
                 </Button>
               </Link>
             </div>
@@ -184,62 +147,7 @@ export default function WelcomePage() {
           </div>
         </div>
       </div>
-      {/* Canvas Size Selection Dialog */}
-      <Dialog open={showSizeDialog} onOpenChange={setShowSizeDialog}>
-        <DialogContent className="pixel-card shadow-pixel max-w-sm mx-5 border-[5px] border-solid border-[rgb(20,20,82)] ml-[0px] mr-[0px]">
-          <DialogHeader>
-            <DialogTitle className="font-pixel text-base sm:text-lg text-primary text-center leading-tight">
-              CHOOSE CANVAS SIZE
-            </DialogTitle>
 
-          </DialogHeader>
-
-          <div className="space-y-2 pt-1">
-            {/* Size Grid */}
-            <div className="grid grid-cols-2 gap-2">
-              {CANVAS_SIZES.map((option) => (
-                <button
-                  key={option.size}
-                  onClick={() => setSelectedSize(option.size)}
-                  className={`
-                    relative group p-2 rounded-md border-2 transition-all duration-200
-                    min-h-[50px]
-                    active:scale-95 touch-manipulation
-                    ${selectedSize === option.size
-                      ? "border-primary bg-primary/10 shadow-lg scale-105"
-                      : "border-border bg-card hover:border-primary/50 hover:bg-primary/5 active:bg-primary/10"
-                    }
-                  `}
-                >
-                  <div className="text-center space-y-0.5">
-                    <div className="font-pixel text-sm text-primary leading-tight">
-                      {option.label}
-                    </div>
-                    <div className="text-xs text-muted-foreground font-retro leading-tight">
-                      {option.description}
-                    </div>
-                  </div>
-                  {selectedSize === option.size && (
-                    <div className="absolute inset-0 border-2 border-primary rounded-md animate-pulse pointer-events-none" />
-                  )}
-                </button>
-              ))}
-            </div>
-
-            {/* Confirm Button */}
-            <div className="flex items-center justify-center pt-1">
-              <Button
-                onClick={handleSizeConfirm}
-                size="sm"
-                className="w-full px-6 py-3 text-sm font-pixel pixel-button shadow-pixel hover:shadow-pixel-lg min-h-[40px] active:scale-95 touch-manipulation"
-              >
-                <Palette className="mr-2 h-3.5 w-3.5 flex-shrink-0" />
-                <span className="whitespace-nowrap">CONFIRM & START</span>
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

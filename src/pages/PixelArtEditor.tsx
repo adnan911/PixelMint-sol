@@ -16,6 +16,8 @@ import { saveArt, loadArt, markAsMinted, generateThumbnail } from "@/utils/stora
 import { v4 as uuidv4 } from 'uuid';
 import { Save } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { mintStandardNftWithFee } from "@/lib/mintStandardNft";
+import { useWallet } from "@solana/wallet-adapter-react";
 import { PREMADE_STAMPS, Stamp } from "@/data/stamps";
 import { useHistory } from "@/hooks/use-history";
 import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts";
@@ -92,6 +94,7 @@ interface EditorState {
 
 export default function PixelArtEditor() {
   const { toast } = useToast();
+  const wallet = useWallet();
   const [searchParams, setSearchParams] = useSearchParams();
   const artIdParam = searchParams.get("artId");
   const sizeParam = searchParams.get("size");
@@ -756,7 +759,7 @@ export default function PixelArtEditor() {
     setTimeout(() => setExportPreviewUrl(null), 300); // Delay cleanup for smooth animation
   };
 
-  const handleMint = () => {
+  const handleMint = async () => {
     if (!currentArtId) {
       toast({
         title: "Save Required",
@@ -765,18 +768,63 @@ export default function PixelArtEditor() {
       });
       return;
     }
-    
-    // In a real app, this would trigger a wallet transaction
-    // For now, we simulate the minting process
-    markAsMinted(currentArtId, "simulated-signature-" + Date.now());
-    
-    toast({
-      title: "Minted!",
-      description: "Artwork marked as minted in Gallery.",
-    });
-    
-    // Close preview if open
-    setExportPreviewOpen(false);
+
+    if (!wallet.publicKey) {
+      toast({
+        title: "Wallet Required",
+        description: "Please connect your Solana wallet first.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!exportPreviewUrl) {
+      toast({
+        title: "Export Required",
+        description: "Please generate an export preview first.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      // Extract base64 from data URL
+      const base64 = exportPreviewUrl.split(",")[1];
+      
+      toast({
+        title: "Minting...",
+        description: "Please approve the transaction in your wallet.",
+      });
+
+      const res = await mintStandardNftWithFee({
+        wallet,
+        ownerBase58: wallet.publicKey.toBase58(),
+        name: "PixelMint",
+        description: "Minted from PixelMint",
+        imagePngBase64: base64,
+        attributes: [{ trait_type: "App", value: "PixelMint" }],
+      });
+
+      console.log("Minted:", res);
+      
+      markAsMinted(currentArtId, res.signature);
+      
+      toast({
+        title: "Minted Successfully!",
+        description: "Your pixel art is now on the blockchain.",
+      });
+      
+      // Close preview if open
+      setExportPreviewOpen(false);
+
+    } catch (error: any) {
+      console.error("Minting error:", error);
+      toast({
+        title: "Minting Failed",
+        description: error.message || "Unknown error occurred",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleThemeChange = (theme: string) => {

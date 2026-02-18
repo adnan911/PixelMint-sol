@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { getAllArt, deleteArt, SavedArt } from "@/utils/storage-utils";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Trash2, Edit, Plus, Diamond } from "lucide-react";
+import { Trash2, Plus, Diamond } from "lucide-react";
 
 export default function GalleryPage() {
   const [artworks, setArtworks] = useState<SavedArt[]>([]);
@@ -32,11 +32,6 @@ export default function GalleryPage() {
       <header className="border-b-4 border-muted p-4 bg-card">
         <div className="container mx-auto max-w-4xl flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Link to="/">
-              <Button variant="ghost" size="icon" className="pixel-button">
-                <ArrowLeft className="h-6 w-6" />
-              </Button>
-            </Link>
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">MY GALLERY</h1>
           </div>
           <Link to="/editor">

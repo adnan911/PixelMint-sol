@@ -10,6 +10,8 @@ interface RouteConfig {
   visible?: boolean;
 }
 
+import GalleryPage from './pages/GalleryPage';
+
 const routes: RouteConfig[] = [
   {
     name: 'Splash Logic',
@@ -21,6 +23,11 @@ const routes: RouteConfig[] = [
     name: 'Welcome',
     path: '/welcome',
     element: <WelcomePage />
+  },
+  {
+    name: 'Home (Gallery)',
+    path: '/home',
+    element: <GalleryPage />
   },
   {
     name: 'Pixel Art Editor',
