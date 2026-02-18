@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { useGesture } from "@use-gesture/react";
-import { EnhancedPixelCanvas } from "@/components/pixel-art/PixelCanvas";
+import { EnhancedPixelCanvas, type PixelCanvasHandle } from "@/components/pixel-art/PixelCanvas";
 import { MiniMap } from "@/components/pixel-art/MiniMap";
 import { DrawingToolbar } from "@/components/pixel-art/DrawingToolbar";
 import { ColorPicker } from "@/components/pixel-art/ColorPicker";
@@ -123,6 +123,9 @@ export default function PixelArtEditor() {
   const [isMovementLocked, setIsMovementLocked] = useState(false);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const containerRef = React.useRef<HTMLDivElement>(null);
+  const canvasRef = React.useRef<PixelCanvasHandle>(null);
+  const [minting, setMinting] = useState(false);
+  const [mintResult, setMintResult] = useState<string | null>(null);
   const [containerDimensions, setContainerDimensions] = useState({ width: 0, height: 0 });
 
   // Update container dimensions on resize
@@ -760,37 +763,26 @@ export default function PixelArtEditor() {
   };
 
   const handleMint = async () => {
-    if (!currentArtId) {
-      toast({
-        title: "Save Required",
-        description: "Please save your artwork before minting.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    if (!wallet.publicKey) {
-      toast({
-        title: "Wallet Required",
-        description: "Please connect your Solana wallet first.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    if (!exportPreviewUrl) {
-      toast({
-        title: "Export Required",
-        description: "Please generate an export preview first.",
-        variant: "destructive"
-      });
-      return;
-    }
-
     try {
-      // Extract base64 from data URL
-      const base64 = exportPreviewUrl.split(",")[1];
+      if (!wallet.publicKey) throw new Error("Connect wallet first");
+      if (!canvasRef.current) throw new Error("Canvas ref not ready");
       
+      // Basic check if artwork is saved, though user snippet didn't strictly require it, 
+      // keeping it for safety but focusing on the requested flow
+      if (!currentArtId) {
+         toast({
+          title: "Save Required",
+          description: "Please save your artwork before minting.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      setMinting(true);
+      setMintResult(null);
+
+      const base64 = canvasRef.current.exportPngBase64();
+
       toast({
         title: "Minting...",
         description: "Please approve the transaction in your wallet.",
@@ -799,31 +791,38 @@ export default function PixelArtEditor() {
       const res = await mintStandardNftWithFee({
         wallet,
         ownerBase58: wallet.publicKey.toBase58(),
-        name: "PixelMint",
+        name: `PixelMint #${Date.now()}`,
         description: "Minted from PixelMint",
         imagePngBase64: base64,
         attributes: [{ trait_type: "App", value: "PixelMint" }],
       });
 
       console.log("Minted:", res);
+      setMintResult(res.signature);
       
       markAsMinted(currentArtId, res.signature);
       
       toast({
         title: "Minted Successfully!",
-        description: "Your pixel art is now on the blockchain.",
+        description: `Tx: ${res.signature.slice(0, 8)}...`,
       });
       
-      // Close preview if open
-      setExportPreviewOpen(false);
-
+      // We don't close the preview immediately so user can see success state if desired?
+      // User snippet has a success message. 
+      // I'll keep the dialog open to show the result or let them close it.
+      // But purely following user snippet, they just update state. 
+      // I will close it for better UX after a delay or let them close.
+      // For now, let's keep it open so they see the result if I add it to the dialog.
+      
     } catch (error: any) {
       console.error("Minting error:", error);
       toast({
         title: "Minting Failed",
-        description: error.message || "Unknown error occurred",
+        description: error.message || String(error),
         variant: "destructive"
       });
+    } finally {
+      setMinting(false);
     }
   };
 
@@ -1132,6 +1131,7 @@ export default function PixelArtEditor() {
             }}
           >
             <EnhancedPixelCanvas
+              ref={canvasRef}
               canvasGrid={canvasGrid}
               currentTool={currentTool}
               currentColor={currentColor}
@@ -1322,7 +1322,7 @@ export default function PixelArtEditor() {
           </DialogHeader>
 
           {/* Preview Image */}
-          <div className="flex items-center justify-center p-4 bg-muted/20 border-2 border-border rounded-md min-h-[300px] max-h-[500px] overflow-auto">
+          <div className="flex flex-col items-center justify-center p-4 bg-muted/20 border-2 border-border rounded-md min-h-[300px] max-h-[500px] overflow-auto">
             {exportPreviewUrl && (
               <img
                 src={exportPreviewUrl}
@@ -1332,6 +1332,14 @@ export default function PixelArtEditor() {
                   imageRendering: "pixelated",
                 }}
               />
+            )}
+            {mintResult && (
+              <div className="mt-4 p-3 bg-green-900/20 border border-green-500 rounded text-center w-full">
+                <p className="text-green-500 font-bold mb-1">Success! NFT Minted</p>
+                <div className="text-xs text-muted-foreground break-all font-mono select-all">
+                  Tx: {mintResult}
+                </div>
+              </div>
             )}
           </div>
 
@@ -1348,11 +1356,12 @@ export default function PixelArtEditor() {
             <Button
               variant="default"
               onClick={handleMint}
+              disabled={minting || !wallet.publicKey}
               className="flex-1 sm:flex-none pixel-button font-retro text-white"
               style={{ backgroundColor: '#d46a6a', borderColor: '#b85555' }}
             >
               <Diamond className="mr-2 h-4 w-4" />
-              MINT IT
+              {minting ? "Minting..." : "Mint (0.0015 SOL fee)"}
             </Button>
             <Button
               variant="default"

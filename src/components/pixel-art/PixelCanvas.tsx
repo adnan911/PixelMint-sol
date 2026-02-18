@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from "react";
 import { usePixelCanvas } from "@/hooks/use-pixel-canvas";
 import type { CanvasGrid, Tool, Color, Point, FillMode, BrushMode, DitherPattern, PencilSize, SymmetryMode, TextObject } from "@/types/pixel-art";
 import {
@@ -10,6 +10,10 @@ import {
 } from "@/utils/canvas-utils";
 import { shiftHue, getRandomColor } from "@/utils/color-utils";
 import { PIXEL_FONTS } from "./FontSelector";
+
+export type PixelCanvasHandle = {
+  exportPngBase64: () => string; // returns base64 WITHOUT prefix
+};
 
 interface EnhancedPixelCanvasProps {
   canvasGrid: CanvasGrid;
@@ -67,7 +71,7 @@ const BAYER_8X8 = [
   [63, 31, 55, 23, 61, 29, 53, 21],
 ];
 
-export const EnhancedPixelCanvas: React.FC<EnhancedPixelCanvasProps> = ({
+export const EnhancedPixelCanvas = forwardRef<PixelCanvasHandle, EnhancedPixelCanvasProps>(({
   canvasGrid,
   currentTool,
   currentColor,
@@ -95,7 +99,7 @@ export const EnhancedPixelCanvas: React.FC<EnhancedPixelCanvasProps> = ({
   onTextObjectUpdate,
   onTextObjectDelete,
   onTextObjectSelect,
-}) => {
+}, ref) => {
   const [isDrawing, setIsDrawing] = useState(false);
   const [pixelSize, setPixelSize] = useState(16);
   const [startPoint, setStartPoint] = useState<Point | null>(null);
@@ -183,6 +187,18 @@ export const EnhancedPixelCanvas: React.FC<EnhancedPixelCanvasProps> = ({
     pixelSize: pixelSize * zoom,
     showGrid,
   });
+
+  useImperativeHandle(ref, () => ({
+    exportPngBase64: () => {
+      const canvas = canvasRef.current;
+      if (!canvas) throw new Error("Canvas not ready");
+
+      const dataUrl = canvas.toDataURL("image/png");
+      const base64 = dataUrl.split(",")[1];
+      if (!base64) throw new Error("Failed to export PNG base64");
+      return base64;
+    },
+  }));
 
   // Local state for font size input to allow typing
   const [localFontSize, setLocalFontSize] = useState(fontSize.toString());
@@ -1090,4 +1106,4 @@ export const EnhancedPixelCanvas: React.FC<EnhancedPixelCanvasProps> = ({
 
     </div>
   );
-};
+});
