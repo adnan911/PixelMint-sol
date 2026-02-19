@@ -907,13 +907,12 @@ export default function PixelArtEditor() {
             </div>
 
             {/* Row 2 (Mobile) / Center+Right (Desktop): Canvas Size, Zoom + Actions */}
-            <div className="flex items-center justify-between gap-2 sm:gap-3">
+            <div className="flex items-center justify-between gap-1 sm:gap-2">
               {/* Export Button - Rectangular and Prominent (moved to Row 2) */}
               <Button
                 variant="default"
                 onClick={handleExport}
-                className="h-11 sm:h-10 px-6 sm:px-4 pixel-button font-retro flex-shrink-0 gap-2 text-white"
-                style={{ backgroundColor: '#d46a6a', borderColor: '#b85555' }}
+                className="h-11 sm:h-10 px-8 sm:px-6 pixel-button font-retro flex-shrink-0 gap-2 text-primary-foreground min-w-[140px] sm:min-w-[160px]"
                 title="Export Art"
               >
                 <Download className="h-5 w-5" />
@@ -934,16 +933,7 @@ export default function PixelArtEditor() {
                {/* Canvas Size & Zoom Buttons */}
               <div className="flex items-center gap-1">
 
-                {/* Movement Lock/Unlock Button */}
-                <Button
-                  variant={isMovementLocked ? "destructive" : "outline"}
-                  size="icon"
-                  onClick={() => setIsMovementLocked(prev => !prev)}
-                  className="h-11 w-11 sm:h-10 sm:w-10 pixel-button font-retro"
-                  title={isMovementLocked ? "Unlock Canvas Movement" : "Lock Canvas Movement"}
-                >
-                  {isMovementLocked ? <Lock className="h-5 w-5" /> : <Unlock className="h-5 w-5" />}
-                </Button>
+
 
                 {/* Zoom Dropdown */}
                 <DropdownMenu>
@@ -1303,6 +1293,17 @@ export default function PixelArtEditor() {
               title="Redo (Ctrl+Y)"
             >
               <Redo2 className="h-5 w-5" />
+            </Button>
+            
+            {/* Movement Lock/Unlock Button - Moved to Footer */}
+            <Button
+              variant={isMovementLocked ? "destructive" : "outline"}
+              size="icon"
+              onClick={() => setIsMovementLocked(prev => !prev)}
+              className="h-11 w-11 sm:h-10 sm:w-10 pixel-button font-retro"
+              title={isMovementLocked ? "Unlock Canvas Movement" : "Lock Canvas Movement"}
+            >
+              {isMovementLocked ? <Lock className="h-5 w-5" /> : <Unlock className="h-5 w-5" />}
             </Button>
           </div>
 
