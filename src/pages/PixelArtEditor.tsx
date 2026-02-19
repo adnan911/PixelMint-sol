@@ -98,7 +98,11 @@ export default function PixelArtEditor() {
   const [searchParams, setSearchParams] = useSearchParams();
   const artIdParam = searchParams.get("artId");
   const sizeParam = searchParams.get("size");
-  const initialSize = sizeParam ? parseInt(sizeParam) : 64;
+  const widthParam = searchParams.get("width");
+  const heightParam = searchParams.get("height");
+  
+  const initialWidth = widthParam ? parseInt(widthParam) : (sizeParam ? parseInt(sizeParam) : 64);
+  const initialHeight = heightParam ? parseInt(heightParam) : (sizeParam ? parseInt(sizeParam) : 64);
 
   // Track the ID of the current artwork
   const [currentArtId, setCurrentArtId] = useState<string | null>(artIdParam);
@@ -209,6 +213,9 @@ export default function PixelArtEditor() {
   const [layersOpen, setLayersOpen] = useState(false);
   const [canvasSizeOpen, setCanvasSizeOpen] = useState(false);
   const [exportPreviewOpen, setExportPreviewOpen] = useState(false);
+  const [confirmMintOpen, setConfirmMintOpen] = useState(false);
+  const [mintSuccessOpen, setMintSuccessOpen] = useState(false);
+  const [mintFailOpen, setMintFailOpen] = useState(false);
   const [exportPreviewUrl, setExportPreviewUrl] = useState<string | null>(null);
   const [isStampSelectorOpen, setIsStampSelectorOpen] = useState(false);
 
@@ -262,12 +269,12 @@ export default function PixelArtEditor() {
 
     try {
       const state: EditorState = {
-        layers: [createLayer("Background", initialSize, initialSize)],
+        layers: [createLayer("Background", initialWidth, initialHeight)],
         activeLayerId: "",
         palettes: getDefaultPalettes(),
         activePaletteId: "default",
-        canvasWidth: initialSize,
-        canvasHeight: initialSize,
+        canvasWidth: initialWidth,
+        canvasHeight: initialHeight,
         textObjects: [],
         activeTextId: null,
       };
@@ -276,19 +283,19 @@ export default function PixelArtEditor() {
     } catch (error) {
       console.error("Error initializing editor state:", error);
       // Fallback to minimal state
-      const fallbackLayer = createLayer("Background", initialSize, initialSize);
+      const fallbackLayer = createLayer("Background", initialWidth, initialHeight);
       return {
         layers: [fallbackLayer],
         activeLayerId: fallbackLayer.id,
         palettes: getDefaultPalettes(),
         activePaletteId: "default",
-        canvasWidth: initialSize,
-        canvasHeight: initialSize,
+        canvasWidth: initialWidth,
+        canvasHeight: initialHeight,
         textObjects: [],
         activeTextId: null,
       };
     }
-  }, [initialSize, artIdParam]);
+  }, [initialWidth, initialHeight, artIdParam]);
 
   const {
     state: editorState,
@@ -757,74 +764,71 @@ export default function PixelArtEditor() {
   };
 
   // Cancel export
-  const handleCancelExport = () => {
-    setExportPreviewOpen(false);
-    setTimeout(() => setExportPreviewUrl(null), 300); // Delay cleanup for smooth animation
-  };
+
 
   const handleMint = async () => {
-    try {
-      if (!wallet.publicKey) throw new Error("Connect wallet first");
-      if (!canvasRef.current) throw new Error("Canvas ref not ready");
-      
-      // Basic check if artwork is saved, though user snippet didn't strictly require it, 
-      // keeping it for safety but focusing on the requested flow
-      if (!currentArtId) {
-         toast({
-          title: "Save Required",
-          description: "Please save your artwork before minting.",
-          variant: "destructive"
-        });
-        return;
-      }
+    if (!wallet.publicKey) {
+      toast({
+        title: "Wallet not connected",
+        description: "Please connect your Solana wallet to mint.",
+        variant: "destructive",
+      });
+      return;
+    }
+    setConfirmMintOpen(true);
+  };
 
+  const executeMint = async () => {
+    setConfirmMintOpen(false); // Close confirm dialog
+    if (!wallet.publicKey || !canvasRef.current) return;
+
+    try {
       setMinting(true);
       setMintResult(null);
 
-      const base64 = canvasRef.current.exportPngBase64();
+      // 1. Export Image
+      const dataUrl = canvasRef.current.exportPngBase64();
+      
+      // 2. Prepare Metadata
+      const metadata = {
+        name: "Pixel Art #" + Date.now().toString().slice(-4),
+        description: "Created with PixelMint on Solana",
+        symbol: "PIXEL",
+      };
 
-      toast({
-        title: "Minting...",
-        description: "Please approve the transaction in your wallet.",
-      });
-
+      // 3. Mint
       const res = await mintStandardNftWithFee({
         wallet,
         ownerBase58: wallet.publicKey.toBase58(),
-        name: `PixelMint #${Date.now()}`,
-        description: "Minted from PixelMint",
-        imagePngBase64: base64,
+        name: metadata.name,
+        description: metadata.description,
+        imagePngBase64: dataUrl,
         attributes: [{ trait_type: "App", value: "PixelMint" }],
       });
 
-      console.log("Minted:", res);
-      setMintResult(res.signature);
-      
-      markAsMinted(currentArtId, res.signature);
-      
+      if (res && res.signature) {
+        setMintResult(res.signature);
+        markAsMinted(currentArtId || "unknown", res.signature);
+        setMintSuccessOpen(true); // Open Success Dialog
+        toast({
+          title: "Mint Successful!",
+          description: `Transaction confirmed: ${res.signature.slice(0, 8)}...`,
+        });
+      }
+
+    } catch (error) {
+      console.error("Minting failed:", error);
+      setMintFailOpen(true); // Open Fail Dialog
       toast({
-        title: "Minted Successfully!",
-        description: `Tx: ${res.signature.slice(0, 8)}...`,
-      });
-      
-      // We don't close the preview immediately so user can see success state if desired?
-      // User snippet has a success message. 
-      // I'll keep the dialog open to show the result or let them close it.
-      // But purely following user snippet, they just update state. 
-      // I will close it for better UX after a delay or let them close.
-      // For now, let's keep it open so they see the result if I add it to the dialog.
-      
-    } catch (error: any) {
-      console.error("Minting error:", error);
-      toast({
-        title: "Minting Failed",
-        description: error.message || String(error),
-        variant: "destructive"
+        title: "Mint Failed",
+        description: error instanceof Error ? error.message : "Unknown error",
+        variant: "destructive",
       });
     } finally {
       setMinting(false);
     }
   };
+
 
   const handleThemeChange = (theme: string) => {
     setCurrentTheme(theme);
@@ -839,7 +843,6 @@ export default function PixelArtEditor() {
       case "candy":
         return "/images/logo/pixel-mint-logo-candy.png";
       case "coffee":
-      case "dark":
         return "/images/logo/pixel-mint-logo-coffee.png";
       default:
         return "/images/logo/pixel-mint-logo.png";
@@ -1068,15 +1071,19 @@ export default function PixelArtEditor() {
                     <DropdownMenuItem onClick={() => handleThemeChange('retro')} className="cursor-pointer font-retro text-base py-1.5">
                       <span className={currentTheme === 'retro' ? 'text-primary font-bold' : ''}>Based</span>
                     </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleThemeChange('based-dark')} className="cursor-pointer font-retro text-base py-1.5">
+                      <span className={currentTheme === 'based-dark' ? 'text-primary font-bold' : ''}>Based Dark</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleThemeChange('rust')} className="cursor-pointer font-retro text-base py-1.5">
+                      <span className={currentTheme === 'rust' ? 'text-primary font-bold' : ''}>Rust</span>
+                    </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => handleThemeChange('candy')} className="cursor-pointer font-retro text-base py-1.5">
                       <span className={currentTheme === 'candy' ? 'text-primary font-bold' : ''}>Candy</span>
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => handleThemeChange('coffee')} className="cursor-pointer font-retro text-base py-1.5">
                       <span className={currentTheme === 'coffee' ? 'text-primary font-bold' : ''}>Coffee</span>
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleThemeChange('dark')} className="cursor-pointer font-retro text-base py-1.5">
-                      <span className={currentTheme === 'dark' ? 'text-primary font-bold' : ''}>Dark Coffee</span>
-                    </DropdownMenuItem>
+
                     <DropdownMenuSeparator className="bg-border h-[2px]" />
                     <DropdownMenuItem
                       onClick={handleClear}
@@ -1311,7 +1318,7 @@ export default function PixelArtEditor() {
       />
       {/* Export Preview Dialog */}
       <Dialog open={exportPreviewOpen} onOpenChange={setExportPreviewOpen}>
-        <DialogContent className="max-w-3xl pixel-card border-4 border-border">
+        <DialogContent className="w-full max-w-[95vw] sm:max-w-3xl pixel-card border-4 border-border p-4 sm:p-6">
           <DialogHeader>
             <DialogTitle className="font-pixel text-primary text-xl">
               Export Preview
@@ -1322,7 +1329,7 @@ export default function PixelArtEditor() {
           </DialogHeader>
 
           {/* Preview Image */}
-          <div className="flex flex-col items-center justify-center p-4 bg-muted/20 border-2 border-border rounded-md min-h-[300px] max-h-[500px] overflow-auto">
+          <div className="flex flex-col items-center justify-center p-4 bg-muted/20 border-2 border-border rounded-md min-h-[200px] sm:min-h-[300px] max-h-[50vh] overflow-auto">
             {exportPreviewUrl && (
               <img
                 src={exportPreviewUrl}
@@ -1343,21 +1350,13 @@ export default function PixelArtEditor() {
             )}
           </div>
 
-          {/* Footer with Download and Cancel buttons */}
-          <DialogFooter className="flex flex-row gap-2 sm:gap-3">
-            <Button
-              variant="outline"
-              onClick={handleCancelExport}
-              className="flex-1 sm:flex-none pixel-button font-retro"
-            >
-              <X className="mr-2 h-4 w-4" />
-              Cancel
-            </Button>
+          {/* Footer with Download buttons */}
+          <DialogFooter className="flex flex-col gap-2 sm:flex-row sm:gap-3">
             <Button
               variant="default"
               onClick={handleMint}
               disabled={minting || !wallet.publicKey}
-              className="flex-1 sm:flex-none pixel-button font-retro text-white"
+              className="flex-1 pixel-button font-retro text-white"
               style={{ backgroundColor: '#d46a6a', borderColor: '#b85555' }}
             >
               <Diamond className="mr-2 h-4 w-4" />
@@ -1366,7 +1365,7 @@ export default function PixelArtEditor() {
             <Button
               variant="default"
               onClick={handleConfirmExport}
-              className="flex-1 sm:flex-none pixel-button font-retro"
+              className="flex-1 pixel-button font-retro"
             >
               <Download className="mr-2 h-4 w-4" />
               Download PNG
@@ -1406,6 +1405,93 @@ export default function PixelArtEditor() {
               <X className="mr-2 h-4 w-4" />
               Cancel
             </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      {/* Confirm Mint Dialog */}
+      <Dialog open={confirmMintOpen} onOpenChange={setConfirmMintOpen}>
+        <DialogContent className="max-w-sm pixel-card border-4 border-border font-retro">
+          <DialogHeader>
+            <DialogTitle className="font-pixel text-primary text-xl">Confirm Mint</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="bg-muted/30 p-4 rounded border-2 border-border space-y-2">
+              <div className="flex justify-between">
+                <span>PixelMint fee:</span>
+                <span className="font-bold">0.0015 SOL</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Protocol fee:</span>
+                <span className="font-bold">0.0015 SOL</span>
+              </div>
+              <div className="flex justify-between text-muted-foreground">
+                <span>+ network fees</span>
+                <span>(varies)</span>
+              </div>
+            </div>
+            
+            <p className="text-xs text-muted-foreground text-center">
+              Not financial advice.
+            </p>
+          </div>
+          <DialogFooter className="flex-col sm:flex-col gap-2">
+            <div className="text-xs text-destructive text-center mb-2 font-bold">
+              Minting is permanent and cannot be reversed.
+            </div>
+            <div className="flex gap-2 w-full">
+              <Button variant="outline" onClick={() => setConfirmMintOpen(false)} className="flex-1 pixel-button font-retro">Cancel</Button>
+              <Button onClick={executeMint} className="flex-1 pixel-button font-retro bg-primary text-white">Confirm</Button>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Mint Success Dialog */}
+      <Dialog open={mintSuccessOpen} onOpenChange={setMintSuccessOpen}>
+        <DialogContent className="max-w-sm pixel-card border-4 border-border font-retro">
+          <DialogHeader>
+            <DialogTitle className="font-pixel text-green-500 text-xl">Minted Successfully</DialogTitle>
+          </DialogHeader>
+          <div className="py-4 text-center space-y-4">
+            <p>Your NFT is now on Solana mainnet.</p>
+            {mintResult && (
+              <a 
+                href={`https://solscan.io/tx/${mintResult}`} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-xs text-primary hover:underline break-all block bg-muted p-2 rounded"
+              >
+                Tx: {mintResult.slice(0, 8)}...{mintResult.slice(-8)}
+              </a>
+            )}
+          </div>
+          <DialogFooter>
+            <Button 
+              onClick={() => {
+                setMintSuccessOpen(false);
+                if (mintResult) {
+                  window.open(`https://solscan.io/tx/${mintResult}`, '_blank');
+                }
+              }} 
+              className="w-full pixel-button font-retro"
+            >
+              View Transaction
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Mint Fail Dialog */}
+      <Dialog open={mintFailOpen} onOpenChange={setMintFailOpen}>
+        <DialogContent className="max-w-sm pixel-card border-4 border-border font-retro">
+          <DialogHeader>
+            <DialogTitle className="font-pixel text-destructive text-xl">Mint Failed</DialogTitle>
+          </DialogHeader>
+          <div className="py-4 text-center space-y-2">
+            <p>No funds were taken except possible network fees.</p>
+          </div>
+          <DialogFooter className="flex-col sm:flex-col gap-2">
+            <Button onClick={() => setMintFailOpen(false)} className="w-full pixel-button font-retro">Try again later</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

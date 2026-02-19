@@ -226,6 +226,125 @@ Pixel Art Theme: Retro 8-bit/16-bit inspired design
     --pixel-orange: 30 100% 50%;
   }
 
+  /* Based Dark Theme */
+  :root[data-theme="based-dark"] {
+    --background: 240 20% 8%;
+    --foreground: 0 0% 95%;
+    --card: 240 15% 12%;
+    --card-foreground: 0 0% 95%;
+    --popover: 240 15% 12%;
+    --popover-foreground: 0 0% 95%;
+    --primary: 220 100% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 340 100% 60%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 240 15% 18%;
+    --muted-foreground: 210 20% 60%;
+    --accent: 50 100% 60%;
+    --accent-foreground: 240 80% 10%;
+    --destructive: 0 100% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 80% 40%;
+    --input: 240 15% 18%;
+    --ring: 220 100% 60%;
+
+    --pixel-green: 120 100% 40%;
+    --pixel-cyan: 180 100% 50%;
+    --pixel-orange: 30 100% 50%;
+
+    /* Chart colors for dark mode */
+    --chart-1: 220 100% 60%;
+    --chart-2: 340 100% 60%;
+    --chart-3: 120 100% 50%;
+    --chart-4: 50 100% 60%;
+    --chart-5: 30 100% 60%;
+    
+    --sidebar-background: 240 15% 12%;
+    --sidebar-foreground: 0 0% 95%;
+    --sidebar-primary: 220 100% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 15% 18%;
+    --sidebar-accent-foreground: 0 0% 95%;
+    --sidebar-border: 220 80% 40%;
+    --sidebar-ring: 220 100% 60%;
+  }
+
+  /* Rust Theme (Dark by Default) */
+  :root[data-theme="rust"] {
+    --background: 270 5% 7%;
+    --foreground: 0 0% 76%;
+    --card: 0 0% 7%;
+    --card-foreground: 0 0% 76%;
+    --popover: 270 5% 7%;
+    --popover-foreground: 0 0% 76%;
+    --primary: 21 76% 62%;
+    --primary-foreground: 0 0% 0%; /* Adjusted for contrast on dark primary if needed, or keep provided */
+    --secondary: 180 17% 45%;
+    --secondary-foreground: 270 5% 7%;
+    --muted: 0 0% 13%;
+    --muted-foreground: 0 0% 53%;
+    --accent: 0 0% 20%;
+    --accent-foreground: 0 0% 76%;
+    --destructive: 180 17% 45%;
+    --destructive-foreground: 270 5% 7%;
+    --border: 0 0% 13%;
+    --input: 0 0% 13%;
+    --ring: 21 76% 62%;
+    
+    --chart-1: 180 17% 45%;
+    --chart-2: 21 76% 62%;
+    --chart-3: 31 90% 79%;
+    --chart-4: 0 0% 53%;
+    --chart-5: 0 0% 60%;
+
+    --sidebar-background: 0 0% 7%;
+    --sidebar-foreground: 0 0% 76%;
+    --sidebar-primary: 21 76% 62%;
+    --sidebar-primary-foreground: 270 5% 7%;
+    --sidebar-accent: 0 0% 20%;
+    --sidebar-accent-foreground: 0 0% 76%;
+    --sidebar-border: 0 0% 13%;
+    --sidebar-ring: 21 76% 62%;
+
+    /* Pixel specific colors - keeping defaults or matching theme intent */
+    --pixel-green: 120 100% 40%;
+    --pixel-cyan: 180 100% 50%;
+    --pixel-orange: 30 100% 50%;
+  }
+
+  /* Rust Light Mode (Optional - kept provided light values if system prefers light, or user toggles) */
+  :root[data-theme="rust"] .light,
+  :root[data-theme="rust"].light {
+    --background: 0 0% 100%;
+    --foreground: 220 39% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 39% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 39% 11%;
+    --primary: 22 66% 55%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 180 18% 39%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 210 20% 96%;
+    --muted-foreground: 215 14% 46%;
+    --accent: 0 0% 93%;
+    --accent-foreground: 220 39% 11%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 22 66% 55%;
+    
+    --sidebar-background: 210 20% 96%;
+    --sidebar-foreground: 220 39% 11%;
+    --sidebar-primary: 22 66% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 100%;
+    --sidebar-accent-foreground: 220 39% 11%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 22 66% 55%;
+  }
+
   /* Dark Mode Styles */
   .dark {
     /* Default Dark Mode (Warm) */
@@ -250,9 +369,9 @@ Pixel Art Theme: Retro 8-bit/16-bit inspired design
     --ring: 30 33.6842% 62.7451%;
   }
 
-  /* Retro Dark Mode */
-  :root[data-theme="retro"] .dark,
-  :root[data-theme="retro"].dark {
+  /* Rust Dark Mode */
+  :root[data-theme="rust"] .dark,
+  :root[data-theme="rust"].dark {
     --background: 240 20% 8%;
     --foreground: 0 0% 95%;
     --card: 240 15% 12%;
