@@ -25,9 +25,7 @@ function getNetwork(): WalletAdapterNetwork {
 
 function isMobileUA() {
   if (typeof navigator === "undefined") return false;
-  const ua = navigator.userAgent;
-  // Standard mobile UA patterns + check for touch points (common in specialized mobile browsers)
-  return /Android|iPhone|iPad|iPod/i.test(ua) || (navigator.maxTouchPoints > 0 && /Android/i.test(ua));
+  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 }
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
@@ -40,9 +38,9 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
 
   const wallets = useMemo(() => {
     const appIdentity = {
-      name: "PixelMint",
-      uri: "https://pixel-mint-sol.vercel.app/",
-      icon: "https://pixel-mint-sol.vercel.app/icons/icon-192.png",
+      name: import.meta.env.VITE_APP_NAME || "Pixel Mint",
+      uri: import.meta.env.VITE_APP_URL || window.location.origin,
+      icon: new URL(import.meta.env.VITE_APP_ICON || "/icons/icon-192.png", import.meta.env.VITE_APP_URL || window.location.origin).toString(),
     };
 
     const mobile = new SolanaMobileWalletAdapter({
@@ -53,8 +51,8 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
       onWalletNotFound: createDefaultWalletNotFoundHandler(),
     });
 
-    // ✅ Mobile: show MWA/Seed Vault + Phantom (fallback)
-    if (isMobileUA()) return [mobile, new PhantomWalletAdapter()];
+    // ✅ Mobile (Seeker): show ONLY MWA/Seed Vault (smooth)
+    if (isMobileUA()) return [mobile];
 
     // ✅ Desktop: show Phantom + Solflare
     return [

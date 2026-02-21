@@ -1,19 +1,71 @@
 import { WalletMultiButton, useWalletModal } from "@solana/wallet-adapter-react-ui";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Wallet } from "lucide-react";
-import { useCallback } from "react";
+import { Wallet, Shield } from "lucide-react";
+import { useState, useCallback } from "react";
+
+/**
+ * Detects if the current user agent is a mobile device (Android/iOS)
+ */
+function isMobileUA() {
+  if (typeof navigator === "undefined") return false;
+  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+}
 
 export function WalletBar() {
-  const { connected } = useWallet();
+  const { connected, select, wallets, connect } = useWallet();
   const { setVisible } = useWalletModal();
+  const [open, setOpen] = useState(false);
+  const [connecting, setConnecting] = useState(false);
 
-  const handleConnectClick = useCallback(() => {
-    // Always open the official wallet modal.
-    // If Mobile Wallet Adapter is correctly configured in AppProviders,
-    // Seed Vault / MWA will appear automatically on Seeker.
-    setVisible(true);
-  }, [setVisible]);
+  /**
+   * Handles the primary connect button click.
+   * On mobile, it attempts to directly trigger the Mobile Wallet Adapter (MWA).
+   * On desktop, it opens the selection modal.
+   */
+  const handleConnectClick = useCallback(async () => {
+    if (isMobileUA()) {
+      // Find the Mobile Wallet Adapter in the available wallets
+      const mwaWallet = wallets.find(
+        (w) => w.adapter.name === "Solana Mobile Wallet Adapter"
+      );
+
+      if (mwaWallet) {
+        try {
+          setConnecting(true);
+          
+          // Selection must happen before connection
+          select(mwaWallet.adapter.name);
+          
+          // We wait a bit for the selection to propagate, then connect
+          setTimeout(async () => {
+            try {
+              await connect();
+            } catch (err) {
+              console.error("Connect call failed:", err);
+              // If it fails, fallback to official modal
+              setVisible(true);
+            } finally {
+              setConnecting(false);
+            }
+          }, 100);
+          
+          return;
+        } catch (error) {
+          console.error("MWA selection error:", error);
+          setConnecting(false);
+          setVisible(true);
+        }
+      } else {
+        // MWA not found in wallets array
+        setVisible(true);
+      }
+    } else {
+      // Desktop - Use standard modal
+      setVisible(true);
+    }
+  }, [wallets, select, connect, setVisible]);
 
   if (connected) {
     return (
@@ -24,12 +76,40 @@ export function WalletBar() {
   }
 
   return (
-    <Button
-      onClick={handleConnectClick}
-      className="font-retro pixel-button bg-primary text-primary-foreground hover:bg-primary/90"
-    >
-      <Wallet className="mr-2 h-4 w-4" />
-      Connect Wallet
-    </Button>
+    <>
+      <Button 
+        onClick={handleConnectClick}
+        disabled={connecting}
+        className="font-retro pixel-button bg-primary text-primary-foreground hover:bg-primary/90"
+      >
+        <Wallet className="mr-2 h-4 w-4" />
+        {connecting ? "Connecting..." : "Connect Wallet"}
+      </Button>
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="sm:max-w-md pixel-card border-4 border-border font-retro">
+          <DialogHeader>
+            <DialogTitle className="font-pixel text-primary text-xl text-center">
+              Connect Wallet
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="flex flex-col items-center space-y-6 py-4">
+            <p className="text-center text-foreground leading-relaxed">
+              Use <span className="font-bold text-primary">Seed Vault</span> on Solana Seeker for the best experience.
+            </p>
+
+            <div className="button-group flex flex-col gap-4 w-full px-4">
+               <WalletMultiButton />
+            </div>
+
+            <p className="text-xs text-muted-foreground text-center flex items-center gap-2">
+              <Shield className="h-3 w-3" />
+              We never access your private keys.
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
