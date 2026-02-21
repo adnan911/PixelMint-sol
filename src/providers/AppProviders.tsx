@@ -29,6 +29,7 @@ function isMobileUA() {
 }
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
+  const network = getNetwork();
   const endpoint = useMemo(() => {
     const custom = import.meta.env.VITE_SOLANA_RPC_URL?.trim();
     if (custom) return custom;
