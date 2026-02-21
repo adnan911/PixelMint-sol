@@ -35,7 +35,7 @@ export default function GalleryPage() {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => navigate("/")}
+              onClick={() => navigate("/welcome")}
               className="mr-2"
             >
               <span className="sr-only">Back</span>

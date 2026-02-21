@@ -168,14 +168,13 @@ export const LayerItem: React.FC<LayerItemProps> = ({
         />
       </div>
 
-      {/* Blend Mode */}
-      <div className="space-y-1">
-        <label className="text-xs text-muted-foreground">Blend Mode</label>
+      {/* Blend Mode + Alpha Lock in one row */}
+      <div className="flex items-center gap-2">
         <select
           value={layer.blendMode}
           onChange={(e) => onBlendModeChange(e.target.value as BlendMode)}
           onClick={(e) => e.stopPropagation()}
-          className="w-full px-2 py-1 text-sm border rounded bg-background"
+          className="flex-1 px-2 py-1 text-xs border rounded bg-background"
         >
           {blendModes.map((mode) => (
             <option key={mode} value={mode}>
@@ -183,25 +182,23 @@ export const LayerItem: React.FC<LayerItemProps> = ({
             </option>
           ))}
         </select>
-      </div>
-
-      {/* Alpha Lock */}
-      <div className="flex items-center gap-2">
-        <input
-          type="checkbox"
-          id={`alpha-lock-${layer.id}`}
-          checked={layer.alphaLock}
-          onChange={onToggleAlphaLock}
-          onClick={(e) => e.stopPropagation()}
-          className="h-4 w-4"
-        />
-        <label
-          htmlFor={`alpha-lock-${layer.id}`}
-          className="text-xs text-muted-foreground cursor-pointer"
-          onClick={(e) => e.stopPropagation()}
-        >
-          Alpha Lock
-        </label>
+        <div className="flex items-center gap-1 flex-shrink-0">
+          <input
+            type="checkbox"
+            id={`alpha-lock-${layer.id}`}
+            checked={layer.alphaLock}
+            onChange={onToggleAlphaLock}
+            onClick={(e) => e.stopPropagation()}
+            className="h-3.5 w-3.5"
+          />
+          <label
+            htmlFor={`alpha-lock-${layer.id}`}
+            className="text-xs text-muted-foreground cursor-pointer whitespace-nowrap"
+            onClick={(e) => e.stopPropagation()}
+          >
+            α Lock
+          </label>
+        </div>
       </div>
     </div>
   );

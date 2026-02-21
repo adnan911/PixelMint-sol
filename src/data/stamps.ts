@@ -20,6 +20,43 @@ const createGrid = (width: number, height: number, pixels: { x: number; y: numbe
 };
 
 export const PREMADE_STAMPS: Stamp[] = [
+    // --- Seeker (Solana) ---
+    {
+        id: "seeker_white",
+        name: "Seeker Logo (W)",
+        category: "Seeker",
+        width: 12,
+        height: 10,
+        data: createGrid(12, 10, [
+            // Bar 1 (Top)
+            { x: 2, y: 1, color: "#FFFFFF" }, { x: 3, y: 1, color: "#FFFFFF" }, { x: 4, y: 1, color: "#FFFFFF" }, { x: 5, y: 1, color: "#FFFFFF" }, { x: 6, y: 1, color: "#FFFFFF" }, { x: 7, y: 1, color: "#FFFFFF" }, { x: 8, y: 1, color: "#FFFFFF" },
+            { x: 1, y: 2, color: "#FFFFFF" }, { x: 2, y: 2, color: "#FFFFFF" }, { x: 3, y: 2, color: "#FFFFFF" }, { x: 4, y: 2, color: "#FFFFFF" }, { x: 5, y: 2, color: "#FFFFFF" }, { x: 6, y: 2, color: "#FFFFFF" }, { x: 7, y: 2, color: "#FFFFFF" },
+            // Bar 2 (Middle)
+            { x: 3, y: 4, color: "#FFFFFF" }, { x: 4, y: 4, color: "#FFFFFF" }, { x: 5, y: 4, color: "#FFFFFF" }, { x: 6, y: 4, color: "#FFFFFF" }, { x: 7, y: 4, color: "#FFFFFF" }, { x: 8, y: 4, color: "#FFFFFF" }, { x: 9, y: 4, color: "#FFFFFF" },
+            { x: 2, y: 5, color: "#FFFFFF" }, { x: 3, y: 5, color: "#FFFFFF" }, { x: 4, y: 5, color: "#FFFFFF" }, { x: 5, y: 5, color: "#FFFFFF" }, { x: 6, y: 5, color: "#FFFFFF" }, { x: 7, y: 5, color: "#FFFFFF" }, { x: 8, y: 5, color: "#FFFFFF" },
+            // Bar 3 (Bottom)
+            { x: 4, y: 7, color: "#FFFFFF" }, { x: 5, y: 7, color: "#FFFFFF" }, { x: 6, y: 7, color: "#FFFFFF" }, { x: 7, y: 7, color: "#FFFFFF" }, { x: 8, y: 7, color: "#FFFFFF" }, { x: 9, y: 7, color: "#FFFFFF" }, { x: 10, y: 7, color: "#FFFFFF" },
+            { x: 3, y: 8, color: "#FFFFFF" }, { x: 4, y: 8, color: "#FFFFFF" }, { x: 5, y: 8, color: "#FFFFFF" }, { x: 6, y: 8, color: "#FFFFFF" }, { x: 7, y: 8, color: "#FFFFFF" }, { x: 8, y: 8, color: "#FFFFFF" }, { x: 9, y: 8, color: "#FFFFFF" }
+        ])
+    },
+    {
+        id: "seeker_gradient",
+        name: "Seeker Logo (G)",
+        category: "Seeker",
+        width: 12,
+        height: 10,
+        data: createGrid(12, 10, [
+            // Bar 1 (Top - Teal)
+            { x: 2, y: 1, color: "#14F195" }, { x: 3, y: 1, color: "#14F195" }, { x: 4, y: 1, color: "#14F195" }, { x: 5, y: 1, color: "#14F195" }, { x: 6, y: 1, color: "#14F195" }, { x: 7, y: 1, color: "#14F195" }, { x: 8, y: 1, color: "#14F195" },
+            { x: 1, y: 2, color: "#14F195" }, { x: 2, y: 2, color: "#14F195" }, { x: 3, y: 2, color: "#14F195" }, { x: 4, y: 2, color: "#14F195" }, { x: 5, y: 2, color: "#14F195" }, { x: 6, y: 2, color: "#14F195" }, { x: 7, y: 2, color: "#14F195" },
+            // Bar 2 (Middle - Blue)
+            { x: 3, y: 4, color: "#00C2FF" }, { x: 4, y: 4, color: "#00C2FF" }, { x: 5, y: 4, color: "#00C2FF" }, { x: 6, y: 4, color: "#00C2FF" }, { x: 7, y: 4, color: "#00C2FF" }, { x: 8, y: 4, color: "#00C2FF" }, { x: 9, y: 4, color: "#00C2FF" },
+            { x: 2, y: 5, color: "#00C2FF" }, { x: 3, y: 5, color: "#00C2FF" }, { x: 4, y: 5, color: "#00C2FF" }, { x: 5, y: 5, color: "#00C2FF" }, { x: 6, y: 5, color: "#00C2FF" }, { x: 7, y: 5, color: "#00C2FF" }, { x: 8, y: 5, color: "#00C2FF" },
+            // Bar 3 (Bottom - Purple)
+            { x: 4, y: 7, color: "#9945FF" }, { x: 5, y: 7, color: "#9945FF" }, { x: 6, y: 7, color: "#9945FF" }, { x: 7, y: 7, color: "#9945FF" }, { x: 8, y: 7, color: "#9945FF" }, { x: 9, y: 7, color: "#9945FF" }, { x: 10, y: 7, color: "#9945FF" },
+            { x: 3, y: 8, color: "#9945FF" }, { x: 4, y: 8, color: "#9945FF" }, { x: 5, y: 8, color: "#9945FF" }, { x: 6, y: 8, color: "#9945FF" }, { x: 7, y: 8, color: "#9945FF" }, { x: 8, y: 8, color: "#9945FF" }, { x: 9, y: 8, color: "#9945FF" }
+        ])
+    },
     // --- UI & Interface ---
     {
         id: "ui_btn_idle",

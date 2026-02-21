@@ -16,10 +16,10 @@ import { Palette, Layers, Grid3x3, Zap, Image as ImageIcon } from "lucide-react"
 export default function WelcomePage() {
   const navigate = useNavigate();
   const [isSizeDialogOpen, setIsSizeDialogOpen] = useState(false);
-  const [width, setWidth] = useState(64);
-  const [height, setHeight] = useState(64);
-  const [widthInput, setWidthInput] = useState("64");
-  const [heightInput, setHeightInput] = useState("64");
+  const [width, setWidth] = useState(16);
+  const [height, setHeight] = useState(16);
+  const [widthInput, setWidthInput] = useState("16");
+  const [heightInput, setHeightInput] = useState("16");
 
   const handleStart = () => {
     navigate(`/editor?width=${width}&height=${height}`);
@@ -118,7 +118,7 @@ export default function WelcomePage() {
             </h1>
 
             <p className="sm:text-lg xl:text-xl text-muted-foreground font-retro max-w-2xl mx-auto animate-fade-in-delay px-2 bg-[#8db9d800] bg-none text-[20px] border-solid border-[rgb(20,20,82)] border-[0px] border-[rgb(20,20,82)]">
-              Create pixel art with professional tools
+              Create and Mint Pixel Art on Solana
             </p>
 
             {/* Feature Pills */}
@@ -193,10 +193,10 @@ export default function WelcomePage() {
        </div>
 
       {/* Global Footer */}
-      <div className="absolute bottom-0 left-0 right-0 p-4 flex justify-between items-end text-[4px] text-muted-foreground font-retro z-10 pointer-events-none">
+      <div className="absolute bottom-0 left-0 right-0 p-4 flex justify-between items-end text-[10px] text-muted-foreground font-retro z-10 pointer-events-none opacity-30">
         <Link 
           to="/settings" 
-          className="hover:text-primary transition-colors hover:underline flex items-center gap-2 pointer-events-auto opacity-70 hover:opacity-100"
+          className="hover:text-primary transition-colors hover:underline flex items-center gap-2 pointer-events-auto "
         >
           <span>Legal information</span>
         </Link>

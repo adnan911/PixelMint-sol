@@ -51,7 +51,7 @@ import type {
   PencilSize,
   TextObject,
 } from "@/types/pixel-art";
-import { Settings, Undo2, Redo2, Layers, Download, FlipHorizontal2, RotateCw, FlipVertical2, Grid3x3, Trash2, ZoomIn, ZoomOut, Maximize, X, Plus, Ruler, Map, Diamond, Lock, Unlock } from "lucide-react";
+import { Settings, Undo2, Redo2, Layers, Download, FlipHorizontal2, RotateCw, FlipVertical2, Grid3x3, Trash2, ZoomIn, ZoomOut, Maximize, X, Plus, Ruler, Map, Diamond, Lock, Unlock, Images } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -67,7 +67,6 @@ import {
   SheetDescription,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
 } from "@/components/ui/sheet";
 import {
   DropdownMenu,
@@ -75,6 +74,9 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -101,8 +103,8 @@ export default function PixelArtEditor() {
   const widthParam = searchParams.get("width");
   const heightParam = searchParams.get("height");
   
-  const initialWidth = widthParam ? parseInt(widthParam) : (sizeParam ? parseInt(sizeParam) : 64);
-  const initialHeight = heightParam ? parseInt(heightParam) : (sizeParam ? parseInt(sizeParam) : 64);
+  const initialWidth = widthParam ? parseInt(widthParam) : (sizeParam ? parseInt(sizeParam) : 16);
+  const initialHeight = heightParam ? parseInt(heightParam) : (sizeParam ? parseInt(sizeParam) : 16);
 
   // Track the ID of the current artwork
   const [currentArtId, setCurrentArtId] = useState<string | null>(artIdParam);
@@ -210,7 +212,7 @@ export default function PixelArtEditor() {
   const [clipboard] = useState<Clipboard | null>(null);
   const [colorsOpen, setColorsOpen] = useState(false);
 
-  const [layersOpen, setLayersOpen] = useState(false);
+
   const [canvasSizeOpen, setCanvasSizeOpen] = useState(false);
   const [exportPreviewOpen, setExportPreviewOpen] = useState(false);
   const [confirmMintOpen, setConfirmMintOpen] = useState(false);
@@ -238,6 +240,8 @@ export default function PixelArtEditor() {
     return [null, null, null, null];
   });
   const [editingFooterColorIndex, setEditingFooterColorIndex] = useState<number | null>(null);
+  const [isFooterColorDeleteMode, setIsFooterColorDeleteMode] = useState(false);
+  const longPressTimerRef = React.useRef<any>(null);
 
 
 
@@ -403,6 +407,28 @@ export default function PixelArtEditor() {
 
   const handleFooterColorEditCancel = () => {
     setEditingFooterColorIndex(null);
+  };
+
+  const handleFooterColorDelete = (index: number) => {
+    const newColors = [...footerColors];
+    newColors[index] = null;
+    setFooterColors(newColors);
+    localStorage.setItem('pixelart-footer-colors', JSON.stringify(newColors));
+  };
+
+  const startLongPress = (index: number) => {
+    // We don't need the index for the timer itself, but we keep it to satisfy the button click
+    console.log("Starting long press for slot", index);
+    longPressTimerRef.current = setTimeout(() => {
+      setIsFooterColorDeleteMode(true);
+    }, 800); // 800ms for more deliberate long press
+  };
+
+  const endLongPress = () => {
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current);
+      longPressTimerRef.current = null;
+    }
   };
 
   const handleClear = () => {
@@ -668,6 +694,26 @@ export default function PixelArtEditor() {
     };
   }, []);
 
+  // Exit footer color delete mode on click outside
+  useEffect(() => {
+    if (!isFooterColorDeleteMode) return;
+
+    const handleClickOutside = (e: MouseEvent | TouchEvent) => {
+      const target = e.target as HTMLElement;
+      // If clicking outside the footer colors area, exit delete mode
+      if (!target.closest('.footer-colors-group')) {
+        setIsFooterColorDeleteMode(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, [isFooterColorDeleteMode]);
+
   // Apply theme from localStorage on mount (default to 'retro' = Based theme)
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme") || "retro";
@@ -879,8 +925,8 @@ export default function PixelArtEditor() {
         </div>
       </header>
       {/* Top Toolbar - Main Controls */}
-      <div className="flex-shrink-0 border-b-4 border-border bg-card pixel-inset mt-[0px] ml-[5px] mr-[5px]">
-        <div className="px-2 sm:px-4 py-2 sm:py-3 ml-[5px] mt-[0px] border-solid mr-[15px] border-[rgb(20,20,82)] border-[0px] border-[rgb(20,20,82)]">
+      <div className="flex-shrink-0 border-b-4 border-border bg-card pixel-inset mx-1 sm:mx-2">
+        <div className="px-2 sm:px-4 py-2 sm:py-3 border-solid border-[rgb(20,20,82)] border-0">
           {/* Mobile: Stacked Layout, Desktop: Single Row */}
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
             {/* Row 1 (Mobile) / Left (Desktop): Drawing Tools */}
@@ -907,31 +953,42 @@ export default function PixelArtEditor() {
             </div>
 
             {/* Row 2 (Mobile) / Center+Right (Desktop): Canvas Size, Zoom + Actions */}
-            <div className="flex items-center justify-between gap-1 sm:gap-2">
-              {/* Export Button - Rectangular and Prominent (moved to Row 2) */}
+            <div className="flex items-center justify-between gap-2 w-full">
+              {/* Export Button - Flexible width */}
               <Button
                 variant="default"
                 onClick={handleExport}
-                className="h-11 sm:h-10 px-8 sm:px-6 pixel-button font-retro flex-shrink-0 gap-2 text-primary-foreground min-w-[140px] sm:min-w-[160px]"
+                className="h-10 px-2 sm:px-4 pixel-button font-retro flex-1 gap-1 sm:gap-2 text-primary-foreground"
                 title="Export Art"
               >
                 <Download className="h-5 w-5" />
-                <span className="hidden sm:inline text-sm">EXPORT ART</span>
+                <span className="text-sm">EXPORT ART</span>
               </Button>
-              
-               {/* Save Button */}
-               <Button
-                 variant="outline"
-                 onClick={handleSave}
-                 className="h-11 sm:h-10 px-6 sm:px-4 pixel-button font-retro flex-shrink-0 gap-2"
-                 title="Save to Gallery"
-               >
-                 <Save className="h-5 w-5" />
-                 <span className="hidden sm:inline text-sm">SAVE</span>
-               </Button>
- 
-               {/* Canvas Size & Zoom Buttons */}
-              <div className="flex items-center gap-1">
+
+              {/* Action Buttons Group (Right side) */}
+              <div className="flex items-center gap-1 sm:gap-2">
+                {/* My Creations Button */}
+                <Link to="/home">
+                  <Button
+                    variant="outline"
+                    className="h-10 px-2 sm:px-4 pixel-button font-retro flex-shrink-0 gap-1 sm:gap-2"
+                    title="My Creations"
+                  >
+                    <Images className="h-5 w-5 text-primary" />
+                    <span className="hidden sm:inline text-sm">MY CREATIONS</span>
+                  </Button>
+                </Link>
+                
+                {/* Save Button */}
+                <Button
+                  variant="outline"
+                  onClick={handleSave}
+                  className="h-10 px-2 sm:px-4 pixel-button font-retro flex-shrink-0 gap-1 sm:gap-2"
+                  title="Save to Gallery"
+                >
+                  <Save className="h-5 w-5" />
+                  <span className="hidden sm:inline text-sm">SAVE</span>
+                </Button>
 
 
 
@@ -941,8 +998,7 @@ export default function PixelArtEditor() {
                     <Button
                       variant="outline"
                       size="icon"
-                      className="h-11 w-11 sm:h-10 sm:w-10 pixel-button font-retro"
-                      title="Zoom"
+                      className="h-10 w-10 pixel-button font-retro" title="Zoom"
                     >
                       <ZoomIn className="h-5 w-5" />
                     </Button>
@@ -983,53 +1039,32 @@ export default function PixelArtEditor() {
 
 
 
-                <Sheet open={layersOpen} onOpenChange={setLayersOpen}>
-                  <SheetTrigger asChild>
-                    <Button variant="outline" size="icon" className="h-11 w-11 sm:h-10 sm:w-10 pixel-button font-retro" title="Layers">
-                      <Layers className="h-5 w-5" />
-                    </Button>
-                  </SheetTrigger>
-                  <SheetContent side="right" className="w-full sm:w-[320px] p-0">
-                    <LayerPanel
-                      layers={layers}
-                      activeLayerId={activeLayerId}
-                      onLayerSelect={handleLayerSelect}
-                      onLayerCreate={handleLayerCreate}
-                      onLayerDuplicate={handleLayerDuplicate}
-                      onLayerDelete={handleLayerDelete}
-                      onLayerUpdate={handleLayerUpdate}
-                      onLayerReorder={handleLayerReorder}
-                    />
-                  </SheetContent>
-                </Sheet>
-
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="icon" className="h-11 w-11 sm:h-10 sm:w-10 pixel-button font-retro" title="Transform">
-                      <FlipHorizontal2 className="h-5 w-5" />
+                    <Button variant="outline" size="icon" className="h-10 w-10 pixel-button font-retro" title="Layers">
+                      <Layers className="h-5 w-5" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56 pixel-card border-4 font-retro">
-                    <DropdownMenuLabel className="font-pixel text-xs text-primary">TRANSFORM</DropdownMenuLabel>
-                    <DropdownMenuSeparator className="bg-border h-[2px]" />
-                    <DropdownMenuItem onClick={handleRotate} className="cursor-pointer font-retro text-base py-3">
-                      <RotateCw className="mr-2 h-5 w-5" />
-                      <span>Rotate 90°</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={handleFlipHorizontal} className="cursor-pointer font-retro text-base py-3">
-                      <FlipHorizontal2 className="mr-2 h-5 w-5" />
-                      <span>Flip Horizontal</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={handleFlipVertical} className="cursor-pointer font-retro text-base py-3">
-                      <FlipVertical2 className="mr-2 h-5 w-5" />
-                      <span>Flip Vertical</span>
-                    </DropdownMenuItem>
+                  <DropdownMenuContent align="end" className="w-[300px] p-0 pixel-card border-4 border-border" onCloseAutoFocus={(e) => e.preventDefault()}>
+                    <div className="max-h-[70vh] overflow-y-auto">
+                      <LayerPanel
+                        layers={layers}
+                        activeLayerId={activeLayerId}
+                        onLayerSelect={handleLayerSelect}
+                        onLayerCreate={handleLayerCreate}
+                        onLayerDuplicate={handleLayerDuplicate}
+                        onLayerDelete={handleLayerDelete}
+                        onLayerUpdate={handleLayerUpdate}
+                        onLayerReorder={handleLayerReorder}
+                      />
+                    </div>
                   </DropdownMenuContent>
                 </DropdownMenu>
 
+
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="icon" className="h-11 w-11 sm:h-10 sm:w-10 pixel-button font-retro" title="More Options">
+                    <Button variant="outline" size="icon" className="h-10 w-10 pixel-button font-retro" title="More Options">
                       <Settings className="h-5 w-5" />
                     </Button>
                   </DropdownMenuTrigger>
@@ -1056,6 +1091,28 @@ export default function PixelArtEditor() {
                       <span>{showMiniMap ? "Hide MiniMap" : "Show MiniMap"}</span>
                     </DropdownMenuItem>
                     
+                    <DropdownMenuSeparator className="bg-border h-[2px]" />
+                    <DropdownMenuSub>
+                      <DropdownMenuSubTrigger className="cursor-pointer font-retro text-base py-1.5">
+                        <FlipHorizontal2 className="mr-2 h-5 w-5" />
+                        Transform
+                      </DropdownMenuSubTrigger>
+                      <DropdownMenuSubContent className="pixel-card border-4 border-border font-retro">
+                        <DropdownMenuItem onClick={handleRotate} className="cursor-pointer font-retro text-base py-1.5">
+                          <RotateCw className="mr-2 h-5 w-5" />
+                          Rotate 90°
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={handleFlipHorizontal} className="cursor-pointer font-retro text-base py-1.5">
+                          <FlipHorizontal2 className="mr-2 h-5 w-5" />
+                          Flip Horizontal
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={handleFlipVertical} className="cursor-pointer font-retro text-base py-1.5">
+                          <FlipVertical2 className="mr-2 h-5 w-5" />
+                          Flip Vertical
+                        </DropdownMenuItem>
+                      </DropdownMenuSubContent>
+                    </DropdownMenuSub>
+
                     <DropdownMenuSeparator className="bg-border h-[2px]" />
                     <DropdownMenuLabel className="font-pixel text-xs text-primary">THEME</DropdownMenuLabel>
                     <DropdownMenuItem onClick={() => handleThemeChange('retro')} className="cursor-pointer font-retro text-base py-1.5">
@@ -1173,6 +1230,16 @@ export default function PixelArtEditor() {
               onPanChange={(newPan) => { if (!isMovementLocked) setPan(newPan); }}
               className="w-24 h-24 sm:w-32 sm:h-32"
             />
+            {/* Movement Lock Toggle - Positioned on MiniMap */}
+            <Button
+              variant={isMovementLocked ? "destructive" : "secondary"}
+              size="icon"
+              onClick={() => setIsMovementLocked(prev => !prev)}
+              className="absolute bottom-1 right-1 h-8 w-8 pixel-button shadow-none border-2 p-0 z-50 bg-background/80 hover:bg-background"
+              title={isMovementLocked ? "Unlock Canvas Movement" : "Lock Canvas Movement"}
+            >
+              {isMovementLocked ? <Lock className="h-4 w-4" /> : <Unlock className="h-4 w-4" />}
+            </Button>
           </div>
         )}
 
@@ -1216,7 +1283,7 @@ export default function PixelArtEditor() {
       </div>
       {/* Bottom Status Bar with Custom Colors */}
       <div className="flex-shrink-0 border-t border-border bg-card px-2 sm:px-4 py-2">
-        <div className="flex items-center justify-between gap-4 mr-[50px]">
+        <div className="flex items-center justify-between gap-4">
 
           <div className="flex items-center gap-4">
             {/* "Change Color" Button (moved to left) */}
@@ -1239,23 +1306,52 @@ export default function PixelArtEditor() {
             </div>
 
             {/* 4 Custom Color Options */}
-            <div className="flex items-center gap-1 sm:gap-2">
+            <div 
+              className="flex items-center gap-1 sm:gap-2 footer-colors-group"
+              onPointerLeave={() => {
+                endLongPress();
+              }}
+              onPointerUp={() => {
+                endLongPress();
+              }}
+            >
               {footerColors.map((color, index) => (
                 <div
                   key={index}
                   className="relative w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center"
+                  onPointerDown={() => startLongPress(index)}
+                  onPointerUp={() => endLongPress()}
                 >
                   {color ? (
-                    <div
-                      className="w-full h-full border-4 border-border shadow-pixel cursor-pointer active:scale-95 transition-transform pixel-button"
-                      style={{ backgroundColor: color }}
-                      onClick={() => handleFooterColorClick(color)}
-                      title="Select color"
-                    >
-                      {currentColor === color && (
-                        <div className="absolute inset-0 border-2 border-primary pointer-events-none" />
+                    <>
+                      <div
+                        className={`w-full h-full border-4 border-border shadow-pixel cursor-pointer active:scale-95 transition-transform pixel-button ${isFooterColorDeleteMode ? "opacity-50" : ""}`}
+                        style={{ backgroundColor: color }}
+                        onClick={() => {
+                          if (isFooterColorDeleteMode) {
+                            handleFooterColorDelete(index);
+                          } else {
+                            handleFooterColorClick(color);
+                          }
+                        }}
+                        title={isFooterColorDeleteMode ? "Remove color" : "Select color"}
+                      >
+                        {currentColor === color && !isFooterColorDeleteMode && (
+                          <div className="absolute inset-0 border-2 border-primary pointer-events-none" />
+                        )}
+                      </div>
+                      {isFooterColorDeleteMode && (
+                        <div 
+                          className="absolute -top-2 -right-2 bg-destructive text-white rounded-full w-6 h-6 flex items-center justify-center cursor-pointer shadow-lg z-10"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleFooterColorDelete(index);
+                          }}
+                        >
+                          <X className="w-4 h-4" />
+                        </div>
                       )}
-                    </div>
+                    </>
                   ) : (
                     <Button
                       variant="outline"
@@ -1269,6 +1365,16 @@ export default function PixelArtEditor() {
                   )}
                 </div>
               ))}
+              {isFooterColorDeleteMode && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsFooterColorDeleteMode(false)}
+                  className="font-retro h-8 px-2"
+                >
+                  Done
+                </Button>
+              )}
             </div>
           </div>
 
@@ -1295,16 +1401,6 @@ export default function PixelArtEditor() {
               <Redo2 className="h-5 w-5" />
             </Button>
             
-            {/* Movement Lock/Unlock Button - Moved to Footer */}
-            <Button
-              variant={isMovementLocked ? "destructive" : "outline"}
-              size="icon"
-              onClick={() => setIsMovementLocked(prev => !prev)}
-              className="h-11 w-11 sm:h-10 sm:w-10 pixel-button font-retro"
-              title={isMovementLocked ? "Unlock Canvas Movement" : "Lock Canvas Movement"}
-            >
-              {isMovementLocked ? <Lock className="h-5 w-5" /> : <Unlock className="h-5 w-5" />}
-            </Button>
           </div>
 
         </div>
@@ -1399,12 +1495,12 @@ export default function PixelArtEditor() {
           {/* Footer with Cancel button */}
           <DialogFooter className="flex flex-row gap-2 sm:gap-3">
             <Button
-              variant="outline"
+              variant="default"
               onClick={handleFooterColorEditCancel}
-              className="flex-1 sm:flex-none pixel-button font-retro"
+              className="flex-1 sm:flex-none pixel-button font-retro bg-primary text-primary-foreground"
             >
-              <X className="mr-2 h-4 w-4" />
-              Cancel
+              <Save className="mr-2 h-4 w-4" />
+              Save
             </Button>
           </DialogFooter>
         </DialogContent>

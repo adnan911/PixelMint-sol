@@ -40,7 +40,7 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
     const appIdentity = {
       name: import.meta.env.VITE_APP_NAME || "Pixel Mint",
       uri: import.meta.env.VITE_APP_URL || window.location.origin,
-      icon: import.meta.env.VITE_APP_ICON || "/icons/icon-192.png",
+      icon: new URL(import.meta.env.VITE_APP_ICON || "/icons/icon-192.png", import.meta.env.VITE_APP_URL || window.location.origin).toString(),
     };
 
     const mobile = new SolanaMobileWalletAdapter({
