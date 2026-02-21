@@ -28,27 +28,27 @@ export function WalletBar() {
     if (isMobileUA()) {
       // Find the Mobile Wallet Adapter - more flexible name check
       const mwaWallet = wallets.find(
-        (w) => w.adapter.name.includes("Mobile Wallet Adapter")
+        (w) => w.adapter.name.toLowerCase().includes("mobile wallet adapter")
       );
 
       if (mwaWallet) {
         try {
           setConnecting(true);
           
-          // Selection MUST happen first for the provider state to update
+          // Selection MUST happen first
           select(mwaWallet.adapter.name);
           
-          // Small delay to let selection propagate
+          // Slight delay to ensure selection propagation
           setTimeout(async () => {
             try {
               await connect();
             } catch (err) {
               console.error("MWA Connect error:", err);
-              setVisible(true); // Fallback to modal
+              setVisible(true); // Fallback to modal if connect fails
             } finally {
               setConnecting(false);
             }
-          }, 50);
+          }, 100);
           
           return;
         } catch (error) {
@@ -57,6 +57,7 @@ export function WalletBar() {
           setConnecting(false);
         }
       } else {
+        // MWA not found, show standard modal
         setVisible(true);
       }
     } else {

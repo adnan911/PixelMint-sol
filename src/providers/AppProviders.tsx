@@ -51,8 +51,8 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
       onWalletNotFound: createDefaultWalletNotFoundHandler(),
     });
 
-    // ✅ Mobile (Seeker): show ONLY MWA/Seed Vault (smooth)
-    if (isMobileUA()) return [mobile];
+    // ✅ Mobile: show MWA/Seed Vault + Phantom (fallback)
+    if (isMobileUA()) return [mobile, new PhantomWalletAdapter()];
 
     // ✅ Desktop: show Phantom + Solflare
     return [
