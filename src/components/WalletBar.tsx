@@ -26,31 +26,37 @@ export function WalletBar() {
    */
   const handleConnectClick = useCallback(async () => {
     if (isMobileUA()) {
-      // Find the Mobile Wallet Adapter in the available wallets
+      // Find the Mobile Wallet Adapter - more flexible name check
       const mwaWallet = wallets.find(
-        (w) => w.adapter.name === "Solana Mobile Wallet Adapter"
+        (w) => w.adapter.name.includes("Mobile Wallet Adapter")
       );
 
       if (mwaWallet) {
         try {
           setConnecting(true);
           
-          // For MWA, we can trigger the connection directly on the adapter
-          // this is often more robust than waiting for state synchronization
-          await mwaWallet.adapter.connect();
-          
-          // Once connected, we select it to update the global wallet state
+          // Selection MUST happen first for the provider state to update
           select(mwaWallet.adapter.name);
+          
+          // Small delay to let selection propagate
+          setTimeout(async () => {
+            try {
+              await connect();
+            } catch (err) {
+              console.error("MWA Connect error:", err);
+              setVisible(true); // Fallback to modal
+            } finally {
+              setConnecting(false);
+            }
+          }, 50);
+          
           return;
         } catch (error) {
-          console.error("MWA selection/connection error:", error);
-          // If direct connection fails, fallback to the standard modal
+          console.error("MWA selection error:", error);
           setVisible(true);
-        } finally {
           setConnecting(false);
         }
       } else {
-        // MWA not found, show standard modal
         setVisible(true);
       }
     } else {
