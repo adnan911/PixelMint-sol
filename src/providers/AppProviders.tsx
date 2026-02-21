@@ -25,7 +25,9 @@ function getNetwork(): WalletAdapterNetwork {
 
 function isMobileUA() {
   if (typeof navigator === "undefined") return false;
-  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const ua = navigator.userAgent;
+  // Standard mobile UA patterns + check for touch points (common in specialized mobile browsers)
+  return /Android|iPhone|iPad|iPod/i.test(ua) || (navigator.maxTouchPoints > 0 && /Android/i.test(ua));
 }
 
 export function AppProviders({ children }: { children: React.ReactNode }) {

@@ -5,12 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Wallet, Shield } from "lucide-react";
 import { useState, useCallback } from "react";
 
-/**
- * Detects if the current user agent is a mobile device (Android/iOS)
- */
 function isMobileUA() {
   if (typeof navigator === "undefined") return false;
-  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const ua = navigator.userAgent;
+  return /Android|iPhone|iPad|iPod/i.test(ua) || (navigator.maxTouchPoints > 0 && /Android/i.test(ua));
 }
 
 export function WalletBar() {
@@ -22,46 +20,33 @@ export function WalletBar() {
   /**
    * Handles the primary connect button click.
    * On mobile, it attempts to directly trigger the Mobile Wallet Adapter (MWA).
-   * On desktop, it opens the selection modal.
    */
   const handleConnectClick = useCallback(async () => {
-    if (isMobileUA()) {
-      // Find the Mobile Wallet Adapter - more flexible name check
-      const mwaWallet = wallets.find(
-        (w) => w.adapter.name.toLowerCase().includes("mobile wallet adapter")
-      );
+    // 1. Check if we have an MWA-compatible adapter (Seed Vault)
+    const mwaWallet = wallets.find((w) =>
+      w.adapter.name.toLowerCase().includes("mobile wallet adapter")
+    );
 
-      if (mwaWallet) {
-        try {
-          setConnecting(true);
-          
-          // Selection MUST happen first
-          select(mwaWallet.adapter.name);
-          
-          // Slight delay to ensure selection propagation
-          setTimeout(async () => {
-            try {
-              await connect();
-            } catch (err) {
-              console.error("MWA Connect error:", err);
-              setVisible(true); // Fallback to modal if connect fails
-            } finally {
-              setConnecting(false);
-            }
-          }, 100);
-          
-          return;
-        } catch (error) {
-          console.error("MWA selection error:", error);
-          setVisible(true);
-          setConnecting(false);
-        }
-      } else {
-        // MWA not found, show standard modal
+    // 2. On mobile devices, try to trigger MWA directly to preserve the user gesture
+    if (mwaWallet && isMobileUA()) {
+      try {
+        setConnecting(true);
+        
+        // Select the adapter first
+        select(mwaWallet.adapter.name);
+        
+        // Trigger the connection immediately. 
+        // We avoid setTimeout here because it can break the intent-triggering gesture on Android.
+        await connect();
+      } catch (error) {
+        console.error("MWA connection failed:", error);
+        // Fallback to the standard modal if direct connect fails
         setVisible(true);
+      } finally {
+        setConnecting(false);
       }
     } else {
-      // Desktop - Use standard modal
+      // 3. On desktop or if MWA is not ready, show the standard selection modal
       setVisible(true);
     }
   }, [wallets, select, connect, setVisible]);
