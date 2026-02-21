@@ -35,30 +35,22 @@ export function WalletBar() {
         try {
           setConnecting(true);
           
-          // Selection must happen before connection
+          // For MWA, we can trigger the connection directly on the adapter
+          // this is often more robust than waiting for state synchronization
+          await mwaWallet.adapter.connect();
+          
+          // Once connected, we select it to update the global wallet state
           select(mwaWallet.adapter.name);
-          
-          // We wait a bit for the selection to propagate, then connect
-          setTimeout(async () => {
-            try {
-              await connect();
-            } catch (err) {
-              console.error("Connect call failed:", err);
-              // If it fails, fallback to official modal
-              setVisible(true);
-            } finally {
-              setConnecting(false);
-            }
-          }, 100);
-          
           return;
         } catch (error) {
-          console.error("MWA selection error:", error);
-          setConnecting(false);
+          console.error("MWA selection/connection error:", error);
+          // If direct connection fails, fallback to the standard modal
           setVisible(true);
+        } finally {
+          setConnecting(false);
         }
       } else {
-        // MWA not found in wallets array
+        // MWA not found, show standard modal
         setVisible(true);
       }
     } else {
