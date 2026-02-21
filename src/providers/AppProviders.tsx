@@ -29,18 +29,21 @@ function isMobileUA() {
 }
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
-  const network = getNetwork();
-
   const endpoint = useMemo(() => {
     const custom = import.meta.env.VITE_SOLANA_RPC_URL?.trim();
-    return custom || clusterApiUrl(network);
+    if (custom) return custom;
+
+    // IMPORTANT: clusterApiUrl wants "mainnet-beta", not "mainnet"
+    if (network === WalletAdapterNetwork.Mainnet) return clusterApiUrl("mainnet-beta");
+    if (network === WalletAdapterNetwork.Devnet) return clusterApiUrl("devnet");
+    return clusterApiUrl("testnet");
   }, [network]);
 
   const wallets = useMemo(() => {
     const appIdentity = {
-      name: import.meta.env.VITE_APP_NAME || "Pixel Mint",
-      uri: import.meta.env.VITE_APP_URL || window.location.origin,
-      icon: new URL(import.meta.env.VITE_APP_ICON || "/icons/icon-192.png", import.meta.env.VITE_APP_URL || window.location.origin).toString(),
+      name: "PixelMint",
+      uri: "https://pixel-mint-sol.vercel.app/",
+      icon: "https://pixel-mint-sol.vercel.app/icons/icon-192.png",
     };
 
     const mobile = new SolanaMobileWalletAdapter({
@@ -51,10 +54,10 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
       onWalletNotFound: createDefaultWalletNotFoundHandler(),
     });
 
-    // ✅ Mobile (Seeker): show ONLY MWA/Seed Vault (smooth)
+    // ✅ Mobile (Seeker-first): ONLY show Seed Vault / MWA
     if (isMobileUA()) return [mobile];
 
-    // ✅ Desktop: show Phantom + Solflare
+    // ✅ Desktop: show standard wallets
     return [
       mobile,
       new PhantomWalletAdapter(),
