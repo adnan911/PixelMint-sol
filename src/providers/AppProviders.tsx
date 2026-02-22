@@ -17,14 +17,12 @@ function getNetwork(): WalletAdapterNetwork {
   const n = (import.meta.env.VITE_SOLANA_NETWORK || "").trim().toLowerCase();
   if (n === "devnet") return WalletAdapterNetwork.Devnet;
   if (n === "testnet") return WalletAdapterNetwork.Testnet;
-  // Default mainnet-beta behavior
-  return WalletAdapterNetwork.Mainnet;
+  return WalletAdapterNetwork.Mainnet; // mainnet-beta
 }
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
   const network = getNetwork();
 
-  // ✅ Stable endpoint (prevents wrong "mainnet" mapping)
   const endpoint = useMemo(() => {
     const custom = (import.meta.env.VITE_SOLANA_RPC_URL || "").trim();
     if (custom) return custom;
@@ -34,18 +32,19 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
     return clusterApiUrl("testnet");
   }, [network]);
 
-  // ✅ Create ONE stable adapter instance (prevents instant-close)
   const mwaRef = useRef<SolanaMobileWalletAdapter | null>(null);
 
   const wallets = useMemo(() => {
     if (!mwaRef.current) {
+      const origin =
+        typeof window !== "undefined" ? window.location.origin : "https://pixel-mint-sol.vercel.app";
+
       mwaRef.current = new SolanaMobileWalletAdapter({
         cluster: network,
         appIdentity: {
           name: "PixelMint",
-          uri: "https://pixel-mint-sol.vercel.app/",
-          // Keep icon simple + guaranteed reachable
-          icon: "https://pixel-mint-sol.vercel.app/favicon.ico",
+          uri: origin,                 // ✅ MUST match current domain exactly
+          icon: `${origin}/favicon.ico`, // ✅ always reachable if favicon exists
         },
         addressSelector: createDefaultAddressSelector(),
         authorizationResultCache: createDefaultAuthorizationResultCache(),
@@ -57,7 +56,6 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
 
   return (
     <ConnectionProvider endpoint={endpoint}>
-      {/* ✅ autoConnect OFF for Seeker stability */}
       <WalletProvider wallets={wallets} autoConnect={false}>
         <WalletModalProvider>{children}</WalletModalProvider>
       </WalletProvider>
