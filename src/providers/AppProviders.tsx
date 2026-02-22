@@ -10,8 +10,15 @@ import {
   createDefaultAuthorizationResultCache,
   createDefaultWalletNotFoundHandler,
 } from "@solana-mobile/wallet-adapter-mobile";
+import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
+import { SolflareWalletAdapter } from "@solana/wallet-adapter-solflare";
 
 import "@solana/wallet-adapter-react-ui/styles.css";
+
+function isMobileUA() {
+  if (typeof navigator === "undefined") return false;
+  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+}
 
 function getNetwork(): WalletAdapterNetwork {
   const n = (import.meta.env.VITE_SOLANA_NETWORK || "").trim().toLowerCase();
@@ -51,12 +58,21 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
         onWalletNotFound: createDefaultWalletNotFoundHandler(),
       });
     }
-    return [mwaRef.current];
+
+    // ✅ Mobile (Seeker): show ONLY MWA/Seed Vault (smooth)
+    if (isMobileUA()) return [mwaRef.current];
+
+    // ✅ Desktop: show MWA + Phantom + Solflare
+    return [
+      mwaRef.current,
+      new PhantomWalletAdapter(),
+      new SolflareWalletAdapter({ network }),
+    ];
   }, [network]);
 
   return (
     <ConnectionProvider endpoint={endpoint}>
-      <WalletProvider wallets={wallets} autoConnect={false}>
+      <WalletProvider wallets={wallets} autoConnect>
         <WalletModalProvider>{children}</WalletModalProvider>
       </WalletProvider>
     </ConnectionProvider>
