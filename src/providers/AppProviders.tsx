@@ -1,8 +1,8 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useRef } from "react";
 import { ConnectionProvider, WalletProvider } from "@solana/wallet-adapter-react";
-import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 import { clusterApiUrl } from "@solana/web3.js";
+import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
 
 import {
   SolanaMobileWalletAdapter,
@@ -11,67 +11,55 @@ import {
   createDefaultWalletNotFoundHandler,
 } from "@solana-mobile/wallet-adapter-mobile";
 
-import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
-import { SolflareWalletAdapter } from "@solana/wallet-adapter-solflare";
-
 import "@solana/wallet-adapter-react-ui/styles.css";
 
 function getNetwork(): WalletAdapterNetwork {
-  const n = import.meta.env.VITE_SOLANA_NETWORK;
+  const n = (import.meta.env.VITE_SOLANA_NETWORK || "").trim().toLowerCase();
   if (n === "devnet") return WalletAdapterNetwork.Devnet;
   if (n === "testnet") return WalletAdapterNetwork.Testnet;
+  // Default mainnet-beta behavior
   return WalletAdapterNetwork.Mainnet;
-}
-
-function isMobileUA() {
-  if (typeof navigator === "undefined") return false;
-  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 }
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
   const network = getNetwork();
+
+  // ✅ Stable endpoint (prevents wrong "mainnet" mapping)
   const endpoint = useMemo(() => {
-    const custom = import.meta.env.VITE_SOLANA_RPC_URL?.trim();
+    const custom = (import.meta.env.VITE_SOLANA_RPC_URL || "").trim();
     if (custom) return custom;
 
-    // IMPORTANT: clusterApiUrl wants "mainnet-beta", not "mainnet"
     if (network === WalletAdapterNetwork.Mainnet) return clusterApiUrl("mainnet-beta");
     if (network === WalletAdapterNetwork.Devnet) return clusterApiUrl("devnet");
     return clusterApiUrl("testnet");
   }, [network]);
 
+  // ✅ Create ONE stable adapter instance (prevents instant-close)
+  const mwaRef = useRef<SolanaMobileWalletAdapter | null>(null);
+
   const wallets = useMemo(() => {
-    const appIdentity = {
-      name: "PixelMint",
-      uri: "https://pixel-mint-sol.vercel.app/",
-      icon: "https://pixel-mint-sol.vercel.app/icons/icon-192.png",
-    };
-
-    const mobile = new SolanaMobileWalletAdapter({
-      addressSelector: createDefaultAddressSelector(),
-      appIdentity,
-      authorizationResultCache: createDefaultAuthorizationResultCache(),
-      cluster: network,
-      onWalletNotFound: createDefaultWalletNotFoundHandler(),
-    });
-
-    // ✅ Mobile (Seeker-first): ONLY show Seed Vault / MWA
-    if (isMobileUA()) return [mobile];
-
-    // ✅ Desktop: show standard wallets
-    return [
-      mobile,
-      new PhantomWalletAdapter(),
-      new SolflareWalletAdapter({ network }),
-    ];
+    if (!mwaRef.current) {
+      mwaRef.current = new SolanaMobileWalletAdapter({
+        cluster: network,
+        appIdentity: {
+          name: "PixelMint",
+          uri: "https://pixel-mint-sol.vercel.app/",
+          // Keep icon simple + guaranteed reachable
+          icon: "https://pixel-mint-sol.vercel.app/favicon.ico",
+        },
+        addressSelector: createDefaultAddressSelector(),
+        authorizationResultCache: createDefaultAuthorizationResultCache(),
+        onWalletNotFound: createDefaultWalletNotFoundHandler(),
+      });
+    }
+    return [mwaRef.current];
   }, [network]);
 
   return (
     <ConnectionProvider endpoint={endpoint}>
-      <WalletProvider wallets={wallets} autoConnect>
-        <WalletModalProvider>
-          {children}
-        </WalletModalProvider>
+      {/* ✅ autoConnect OFF for Seeker stability */}
+      <WalletProvider wallets={wallets} autoConnect={false}>
+        <WalletModalProvider>{children}</WalletModalProvider>
       </WalletProvider>
     </ConnectionProvider>
   );
