@@ -1,0 +1,10 @@
+114ccb0:src/components/WalletActions.tsx
+114ccb0:src/components/WalletBar.tsx
+114ccb0:src/contexts/AuthContext.tsx
+114ccb0:src/index.css
+114ccb0:src/lib/mintStandardNft.ts
+114ccb0:src/pages/PixelArtEditor.tsx
+114ccb0:src/pages/SplashPage.tsx
+114ccb0:src/pages/WelcomePage.tsx
+114ccb0:src/providers/AppProviders.tsx
+114ccb0:src/utils/storage-utils.ts

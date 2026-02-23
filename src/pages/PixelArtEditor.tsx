@@ -859,7 +859,7 @@ export default function PixelArtEditor() {
   return (
     <div className="fixed inset-0 flex flex-col overflow-hidden pixel-grid mt-[0px] ml-[5px] mr-[5px] bg-inherit bg-cover bg-center bg-no-repeat bg-[url(https://miaoda-edit-image.s3cdn.medo.dev/8ydy3wce8yrl/IMG-8z4wrlhevlds.jpg)]">
       {/* Header with Title */}
-      <header className="flex-shrink-0 border-b-4 border-border bg-card px-2 sm:px-4 py-2 pixel-card shadow-pixel mt-[50px] ml-[10px] mr-[10px]">
+      <header className="flex-shrink-0 border-b-4 border-border bg-card px-2 sm:px-4 py-2 pixel-card shadow-pixel mt-[10px] ml-[10px] mr-[10px]">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Link to="/welcome" className="block hover:opacity-90 transition-opacity">
@@ -914,10 +914,9 @@ export default function PixelArtEditor() {
                 variant="default"
                 onClick={handleExport}
                 className="h-10 px-4 pixel-button font-retro flex-1 sm:flex-none min-w-0 gap-2 text-primary-foreground"
-                title="Export Art"
+                title="Mint Art"
               >
-                <Download className="h-5 w-5 flex-shrink-0" />
-                <span className="hidden sm:inline text-sm truncate">EXPORT ART</span>
+                <span className="text-sm truncate"> MINT </span>
               </Button>
               
                {/* Save Button */}
@@ -937,7 +936,7 @@ export default function PixelArtEditor() {
                   className="h-10 px-4 pixel-button font-retro flex-shrink-0 gap-2"
                   title="My Creations"
                 >
-                  <Images className="h-5 w-5" />
+                  <Images className="h-5 w-5 text-primary" />
                   <span className="hidden sm:inline text-sm">MY CREATIONS</span>
                 </Button>
 
@@ -1312,10 +1311,10 @@ export default function PixelArtEditor() {
         <DialogContent className="w-full max-w-[95vw] sm:max-w-3xl pixel-card border-4 border-border p-4 sm:p-6">
           <DialogHeader>
             <DialogTitle className="font-pixel text-primary text-xl">
-              Export Preview
+              Mint Preview
             </DialogTitle>
             <DialogDescription className="font-retro text-muted-foreground">
-              Preview your pixel art before downloading
+              Preview your pixel art before owning it
             </DialogDescription>
           </DialogHeader>
 
