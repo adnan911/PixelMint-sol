@@ -140,7 +140,7 @@ export const DrawingToolbar: React.FC<DrawingToolbarProps> = ({
 
   return (
     <TooltipProvider>
-      <div className="flex gap-1.5 justify-center items-center border-[2px] border-solid border-[rgb(20,20,82)]">
+      <div className="flex gap-1.5 justify-center items-center px-2 border-[2px] border-solid border-[rgb(20,20,82)]">
         {/* 1. Pencil Tool */}
         <Tooltip>
           <TooltipTrigger asChild>
@@ -148,7 +148,7 @@ export const DrawingToolbar: React.FC<DrawingToolbarProps> = ({
               variant={currentTool === "pencil" ? "default" : "outline"}
               size="icon"
               onClick={() => onToolChange("pencil")}
-              className="h-11 w-11"
+              className="h-10 w-10"
               aria-label="Pencil"
             >
               <Pencil className="h-5 w-5" />
@@ -168,7 +168,7 @@ export const DrawingToolbar: React.FC<DrawingToolbarProps> = ({
                   <Button
                     variant={brushMode !== "normal" || pencilSize !== 1 ? "default" : "outline"}
                     size="icon"
-                    className="h-11 w-11 relative"
+                    className="h-10 w-10 relative"
                     aria-label="Pixel Mode"
                   >
                     <Paintbrush className="h-5 w-5" />
@@ -235,7 +235,7 @@ export const DrawingToolbar: React.FC<DrawingToolbarProps> = ({
               variant={currentTool === "eraser" ? "default" : "outline"}
               size="icon"
               onClick={() => onToolChange("eraser")}
-              className="h-11 w-11"
+              className="h-10 w-10"
               aria-label="Eraser"
             >
               <Eraser className="h-5 w-5" />
@@ -254,7 +254,7 @@ export const DrawingToolbar: React.FC<DrawingToolbarProps> = ({
                 <Button
                   variant={isShapeTool ? "default" : "outline"}
                   size="icon"
-                  className="h-11 w-11 relative"
+                  className="h-10 w-10 relative"
                   aria-label="Shapes"
                 >
                   {currentShapeTool ? currentShapeTool.icon : <Shapes className="h-5 w-5" />}
@@ -318,7 +318,7 @@ export const DrawingToolbar: React.FC<DrawingToolbarProps> = ({
                   <Button
                     variant={!symmetryMode || symmetryMode === "none" ? "outline" : "default"}
                     size="icon"
-                    className="h-11 w-11 relative"
+                    className="h-10 w-10 relative"
                     aria-label="Symmetry"
                   >
                     <BoxSelect className="h-5 w-5 rotate-45" /> {/* Reusing BoxSelect as a generic 'transform/symmetry' icon for now, or just import a new one like 'Scaling' */}
@@ -379,7 +379,7 @@ export const DrawingToolbar: React.FC<DrawingToolbarProps> = ({
               variant={currentTool === "fill" ? "default" : "outline"}
               size="icon"
               onClick={() => onToolChange("fill")}
-              className="h-11 w-11"
+              className="h-10 w-10"
               aria-label="Fill"
             >
               <PaintBucket className="h-5 w-5" />
@@ -397,7 +397,7 @@ export const DrawingToolbar: React.FC<DrawingToolbarProps> = ({
               variant={currentTool === "eyedropper" ? "default" : "outline"}
               size="icon"
               onClick={() => onToolChange("eyedropper")}
-              className="h-11 w-11"
+              className="h-10 w-10"
               aria-label="Eyedropper"
             >
               <Pipette className="h-5 w-5" />
@@ -416,7 +416,7 @@ export const DrawingToolbar: React.FC<DrawingToolbarProps> = ({
                 <Button
                   variant={currentTool === "text" ? "default" : "outline"}
                   size="icon"
-                  className="h-11 w-11 relative"
+                  className="h-10 w-10 relative"
                   aria-label="Text Tool"
                 >
                   <Type className="h-5 w-5" />
@@ -491,7 +491,7 @@ export const DrawingToolbar: React.FC<DrawingToolbarProps> = ({
               variant={currentTool === "stamp" ? "default" : "outline"}
               size="icon"
               onClick={() => onToolChange("stamp")}
-              className="h-11 w-11"
+              className="h-10 w-10"
               aria-label="Stamp Tool"
             >
               <StickyNote className="h-5 w-5" />

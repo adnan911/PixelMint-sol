@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { useSearchParams, Link } from "react-router-dom";
+import { useSearchParams, Link, useNavigate } from "react-router-dom";
 import { useGesture } from "@use-gesture/react";
 import { EnhancedPixelCanvas, type PixelCanvasHandle } from "@/components/pixel-art/PixelCanvas";
 import { MiniMap } from "@/components/pixel-art/MiniMap";
@@ -51,7 +51,7 @@ import type {
   PencilSize,
   TextObject,
 } from "@/types/pixel-art";
-import { Settings, Undo2, Redo2, Layers, Download, FlipHorizontal2, RotateCw, FlipVertical2, Grid3x3, Trash2, ZoomIn, ZoomOut, Maximize, X, Plus, Ruler, Map, Diamond, Lock, Unlock } from "lucide-react";
+import { Settings, Undo2, Redo2, Layers, Download, Grid3x3, Trash2, ZoomIn, ZoomOut, Maximize, X, Plus, Ruler, Map, Diamond, Lock, Unlock, Images } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -95,6 +95,7 @@ interface EditorState {
 export default function PixelArtEditor() {
   const { toast } = useToast();
   const wallet = useWallet();
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const artIdParam = searchParams.get("artId");
   const sizeParam = searchParams.get("size");
@@ -880,7 +881,7 @@ export default function PixelArtEditor() {
       </header>
       {/* Top Toolbar - Main Controls */}
       <div className="flex-shrink-0 border-b-4 border-border bg-card pixel-inset mt-[0px] ml-[5px] mr-[5px]">
-        <div className="px-2 sm:px-4 py-2 sm:py-3 ml-[5px] mt-[0px] border-solid mr-[15px] border-[rgb(20,20,82)] border-[0px] border-[rgb(20,20,82)]">
+        <div className="px-2 sm:px-4 py-2 sm:py-3 mx-[5px] mt-[0px] border-solid border-[rgb(20,20,82)] border-[0px] border-[rgb(20,20,82)]">
           {/* Mobile: Stacked Layout, Desktop: Single Row */}
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
             {/* Row 1 (Mobile) / Left (Desktop): Drawing Tools */}
@@ -907,29 +908,39 @@ export default function PixelArtEditor() {
             </div>
 
             {/* Row 2 (Mobile) / Center+Right (Desktop): Canvas Size, Zoom + Actions */}
-            <div className="flex items-center justify-between gap-1 sm:gap-2">
+            <div className="flex items-center justify-between gap-1 sm:gap-2 px-2">
               {/* Export Button - Rectangular and Prominent (moved to Row 2) */}
               <Button
                 variant="default"
                 onClick={handleExport}
-                className="h-11 sm:h-10 px-8 sm:px-6 pixel-button font-retro flex-shrink-0 gap-2 text-primary-foreground min-w-[140px] sm:min-w-[160px]"
+                className="h-10 px-4 pixel-button font-retro flex-1 sm:flex-none min-w-0 gap-2 text-primary-foreground"
                 title="Export Art"
               >
-                <Download className="h-5 w-5" />
-                <span className="hidden sm:inline text-sm">EXPORT ART</span>
+                <Download className="h-5 w-5 flex-shrink-0" />
+                <span className="hidden sm:inline text-sm truncate">EXPORT ART</span>
               </Button>
               
                {/* Save Button */}
                <Button
                  variant="outline"
                  onClick={handleSave}
-                 className="h-11 sm:h-10 px-6 sm:px-4 pixel-button font-retro flex-shrink-0 gap-2"
+                 className="h-10 px-4 pixel-button font-retro flex-shrink-0 gap-2"
                  title="Save to Gallery"
                >
                  <Save className="h-5 w-5" />
                  <span className="hidden sm:inline text-sm">SAVE</span>
                </Button>
  
+                <Button
+                  variant="outline"
+                  onClick={() => navigate('/home')}
+                  className="h-10 px-4 pixel-button font-retro flex-shrink-0 gap-2"
+                  title="My Creations"
+                >
+                  <Images className="h-5 w-5" />
+                  <span className="hidden sm:inline text-sm">MY CREATIONS</span>
+                </Button>
+
                {/* Canvas Size & Zoom Buttons */}
               <div className="flex items-center gap-1">
 
@@ -941,7 +952,7 @@ export default function PixelArtEditor() {
                     <Button
                       variant="outline"
                       size="icon"
-                      className="h-11 w-11 sm:h-10 sm:w-10 pixel-button font-retro"
+                      className="h-10 w-10 pixel-button font-retro"
                       title="Zoom"
                     >
                       <ZoomIn className="h-5 w-5" />
@@ -985,7 +996,7 @@ export default function PixelArtEditor() {
 
                 <Sheet open={layersOpen} onOpenChange={setLayersOpen}>
                   <SheetTrigger asChild>
-                    <Button variant="outline" size="icon" className="h-11 w-11 sm:h-10 sm:w-10 pixel-button font-retro" title="Layers">
+                    <Button variant="outline" size="icon" className="h-10 w-10 pixel-button font-retro" title="Layers">
                       <Layers className="h-5 w-5" />
                     </Button>
                   </SheetTrigger>
@@ -1003,33 +1014,11 @@ export default function PixelArtEditor() {
                   </SheetContent>
                 </Sheet>
 
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="icon" className="h-11 w-11 sm:h-10 sm:w-10 pixel-button font-retro" title="Transform">
-                      <FlipHorizontal2 className="h-5 w-5" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56 pixel-card border-4 font-retro">
-                    <DropdownMenuLabel className="font-pixel text-xs text-primary">TRANSFORM</DropdownMenuLabel>
-                    <DropdownMenuSeparator className="bg-border h-[2px]" />
-                    <DropdownMenuItem onClick={handleRotate} className="cursor-pointer font-retro text-base py-3">
-                      <RotateCw className="mr-2 h-5 w-5" />
-                      <span>Rotate 90°</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={handleFlipHorizontal} className="cursor-pointer font-retro text-base py-3">
-                      <FlipHorizontal2 className="mr-2 h-5 w-5" />
-                      <span>Flip Horizontal</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={handleFlipVertical} className="cursor-pointer font-retro text-base py-3">
-                      <FlipVertical2 className="mr-2 h-5 w-5" />
-                      <span>Flip Vertical</span>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+
 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="icon" className="h-11 w-11 sm:h-10 sm:w-10 pixel-button font-retro" title="More Options">
+                    <Button variant="outline" size="icon" className="h-10 w-10 pixel-button font-retro" title="More Options">
                       <Settings className="h-5 w-5" />
                     </Button>
                   </DropdownMenuTrigger>
@@ -1165,14 +1154,25 @@ export default function PixelArtEditor() {
         {/* Navigation MiniMap */}
         {showMiniMap && (
           <div className="absolute bottom-4 right-4 z-40 block opacity-90 hover:opacity-100 transition-opacity">
-            <MiniMap
-              grid={canvasGrid}
-              zoom={zoom}
-              pan={pan}
-              containerDimensions={containerDimensions}
-              onPanChange={(newPan) => { if (!isMovementLocked) setPan(newPan); }}
-              className="w-24 h-24 sm:w-32 sm:h-32"
-            />
+            <div className="relative">
+              <MiniMap
+                grid={canvasGrid}
+                zoom={zoom}
+                pan={pan}
+                containerDimensions={containerDimensions}
+                onPanChange={(newPan) => { if (!isMovementLocked) setPan(newPan); }}
+                className="w-24 h-24 sm:w-32 sm:h-32"
+              />
+              <Button
+                variant={isMovementLocked ? "destructive" : "outline"}
+                size="icon"
+                onClick={() => setIsMovementLocked(prev => !prev)}
+                className="absolute bottom-1 left-1 h-4 w-4 pixel-button p-0"
+                title={isMovementLocked ? "Unlock Canvas Movement" : "Lock Canvas Movement"}
+              >
+                {isMovementLocked ? <Lock className="h-2.5 w-2.5" /> : <Unlock className="h-2.5 w-2.5" />}
+              </Button>
+            </div>
           </div>
         )}
 
@@ -1279,7 +1279,7 @@ export default function PixelArtEditor() {
               size="icon"
               onClick={undo}
               disabled={!canUndo}
-              className="h-11 w-11 sm:h-10 sm:w-10 pixel-button font-retro"
+              className="h-10 w-10 pixel-button font-retro"
               title="Undo (Ctrl+Z)"
             >
               <Undo2 className="h-5 w-5" />
@@ -1289,22 +1289,12 @@ export default function PixelArtEditor() {
               size="icon"
               onClick={redo}
               disabled={!canRedo}
-              className="h-11 w-11 sm:h-10 sm:w-10 pixel-button font-retro"
+              className="h-10 w-10 pixel-button font-retro"
               title="Redo (Ctrl+Y)"
             >
               <Redo2 className="h-5 w-5" />
             </Button>
-            
-            {/* Movement Lock/Unlock Button - Moved to Footer */}
-            <Button
-              variant={isMovementLocked ? "destructive" : "outline"}
-              size="icon"
-              onClick={() => setIsMovementLocked(prev => !prev)}
-              className="h-11 w-11 sm:h-10 sm:w-10 pixel-button font-retro"
-              title={isMovementLocked ? "Unlock Canvas Movement" : "Lock Canvas Movement"}
-            >
-              {isMovementLocked ? <Lock className="h-5 w-5" /> : <Unlock className="h-5 w-5" />}
-            </Button>
+
           </div>
 
         </div>

@@ -16,10 +16,10 @@ import { Palette, Layers, Grid3x3, Zap, Image as ImageIcon } from "lucide-react"
 export default function WelcomePage() {
   const navigate = useNavigate();
   const [isSizeDialogOpen, setIsSizeDialogOpen] = useState(false);
-  const [width, setWidth] = useState(64);
-  const [height, setHeight] = useState(64);
-  const [widthInput, setWidthInput] = useState("64");
-  const [heightInput, setHeightInput] = useState("64");
+  const [width, setWidth] = useState(16);
+  const [height, setHeight] = useState(16);
+  const [widthInput, setWidthInput] = useState("16");
+  const [heightInput, setHeightInput] = useState("16");
 
   const handleStart = () => {
     navigate(`/editor?width=${width}&height=${height}`);
