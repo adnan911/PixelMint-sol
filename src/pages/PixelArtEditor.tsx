@@ -340,7 +340,7 @@ export default function PixelArtEditor() {
 
     toast({
       title: "Saved!",
-      description: "Artwork saved to Gallery",
+      description: "Artwork saved to My Creations",
     });
   };
 
