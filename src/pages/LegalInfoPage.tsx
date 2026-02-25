@@ -1,18 +1,21 @@
 
 import { Button } from '@/components/ui/button';
 import { useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, ExternalLink, Shield, FileText, BadgeDollarSign, AlertTriangle, RefreshCcw } from 'lucide-react';
+import { ArrowLeft, ExternalLink, Shield, FileText, BadgeDollarSign, AlertTriangle, RefreshCcw, Copyright, Scale } from 'lucide-react';
 
-const SettingsPage = () => {
+const LegalInfoPage = () => {
   const navigate = useNavigate();
 
   const menuItems = [
     { icon: Shield, label: 'Privacy Policy', path: '/privacy' },
     { icon: FileText, label: 'Terms of Service', path: '/terms' },
+    { icon: Copyright, label: 'Copyright & Intellectual Property', path: '/copyright' },
+    { icon: Scale, label: 'License & Legal Compliance', path: '/license' },
     { icon: BadgeDollarSign, label: 'Fees & Transparency', path: '/fees-transparency' },
     { icon: AlertTriangle, label: 'Minting Risk Disclosure', path: '/minting-risk' },
     { icon: RefreshCcw, label: 'Refund Policy', path: '/refund-policy' },
   ];
+
 
   return (
     <div className="min-h-screen bg-background p-4 sm:p-8 font-retro animate-fade-in">
@@ -57,4 +60,4 @@ const SettingsPage = () => {
   );
 };
 
-export default SettingsPage;
+export default LegalInfoPage;

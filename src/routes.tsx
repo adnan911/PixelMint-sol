@@ -11,12 +11,15 @@ interface RouteConfig {
 }
 
 import GalleryPage from './pages/GalleryPage';
-import PrivacyPolicy from './pages/PrivacyPolicy';
-import TermsOfService from './pages/TermsOfService';
-import MintingRisk from './pages/MintingRisk';
-import RefundPolicy from './pages/RefundPolicy';
-import FeesTransparency from './pages/FeesTransparency';
-import SettingsPage from './pages/SettingsPage';
+import PrivacyPolicy from './pages/legal-information/PrivacyPolicy';
+import TermsOfService from './pages/legal-information/TermsOfService';
+import MintingRisk from './pages/legal-information/MintingRisk';
+import RefundPolicy from './pages/legal-information/RefundPolicy';
+import FeesTransparency from './pages/legal-information/FeesTransparency';
+import LegalInfoPage from './pages/LegalInfoPage';
+import CopyrightPage from './pages/legal-information/CopyrightPage';
+import LicensePage from './pages/legal-information/LicensePage';
+
 
 const routes: RouteConfig[] = [
   {
@@ -66,9 +69,19 @@ const routes: RouteConfig[] = [
     element: <FeesTransparency />
   },
   {
-    name: 'Settings',
-    path: '/settings',
-    element: <SettingsPage />
+    name: 'Legal Info',
+    path: '/legalinfo',
+    element: <LegalInfoPage />
+  },
+  {
+    name: 'Copyright Policy',
+    path: '/copyright',
+    element: <CopyrightPage />
+  },
+  {
+    name: 'License Agreement',
+    path: '/license',
+    element: <LicensePage />
   }
 ];
 

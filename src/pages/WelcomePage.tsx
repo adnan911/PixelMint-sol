@@ -195,11 +195,12 @@ export default function WelcomePage() {
       {/* Global Footer */}
       <div className="absolute bottom-0 left-0 right-0 p-4 flex justify-between items-end text-[4px] text-muted-foreground font-retro z-10 pointer-events-none">
         <Link 
-          to="/settings" 
+          to="/legalinfo" 
           className="hover:text-primary transition-colors hover:underline flex items-center gap-2 pointer-events-auto opacity-70 hover:opacity-100"
         >
           <span>Legal information</span>
         </Link>
+
 
         <span className="opacity-50">
           © {new Date().getFullYear()} OnchainersLab
