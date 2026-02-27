@@ -1,4 +1,4 @@
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import { WalletMultiButton, useWalletModal } from "@solana/wallet-adapter-react-ui";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -6,8 +6,40 @@ import { Wallet } from "lucide-react";
 import { useState } from "react";
 
 export function WalletBar() {
-  const { connected } = useWallet();
+  const { connected, wallet, wallets, select, connect } = useWallet();
+  const { setVisible } = useWalletModal();
   const [open, setOpen] = useState(false);
+
+  // MWA's display name as per guidelines
+  const MWA_NAME = "Solana Mobile Wallet Adapter";
+
+  const handleConnectClick = async () => {
+    try {
+      // 1. Close our custom dialog first to ensure clean focus
+      setOpen(false);
+
+      // 2. Identify MWA among available wallets
+      const mwaWallet = wallets.find(w => w.adapter.name === MWA_NAME);
+
+      if (wallet?.adapter?.name === MWA_NAME) {
+        // If MWA is already selected, connect directly (Guideline #1)
+        console.log("MWA selected, connecting directly...");
+        await connect();
+      } else if (mwaWallet) {
+        // If MWA is available but not selected, select it (Guideline #2)
+        console.log("MWA available, selecting it...");
+        select(mwaWallet.adapter.name as any);
+        // Note: WalletProvider will trigger a re-render. 
+        // We could also call connect() here after a small delay, 
+        // but select() usually triggers the first intent.
+      } else {
+        // Else (Desktop), show the standard modal
+        setVisible(true);
+      }
+    } catch (err) {
+      console.error("Connection failed:", err);
+    }
+  };
 
   if (connected) {
     return (
@@ -40,9 +72,12 @@ export function WalletBar() {
               Use <span className="font-bold text-primary">Seed Vault</span> on Solana Seeker for the best experience.
             </p>
 
-            <div className="wallet-adapter-button-override">
-              <WalletMultiButton />
-            </div>
+            <Button
+              onClick={handleConnectClick}
+              className="w-full font-retro pixel-button bg-primary text-primary-foreground hover:bg-primary/90"
+            >
+              Use Installed Wallet
+            </Button>
 
             <p className="text-xs text-muted-foreground text-center flex items-center gap-2">
               <ShieldIcon className="h-3 w-3" />
