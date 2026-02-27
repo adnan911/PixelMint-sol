@@ -39,8 +39,8 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
   const wallets = useMemo(() => {
     const appIdentity = {
       name: import.meta.env.VITE_APP_NAME || "Pixel Mint",
-      uri: import.meta.env.VITE_APP_URL || window.location.origin,
-      icon: import.meta.env.VITE_APP_ICON || "/icons/icon-192.png",
+      uri: window.location.origin,
+      icon: new URL(import.meta.env.VITE_APP_ICON || "/icons/icon-192.png", window.location.origin).toString(),
     };
 
     const mobile = new SolanaMobileWalletAdapter({
