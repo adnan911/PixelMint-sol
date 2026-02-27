@@ -66,7 +66,7 @@
 51    <application
 51-->D:\DarkDEV\PIXELMINT\pixel mint - sol\android-twa\app\src\main\AndroidManifest.xml:35:5-199:19
 52        android:name="com.onchainerslab.pixelmint.Application"
-52-->D:\DarkDEV\PIXELMINT\pixel mint - sol\android-twa\app\src\main\AndroidManifest.xml:36:9-35
+52-->D:\DarkDEV\PIXELMINT\pixel mint - sol\android-twa\app\src\main\AndroidManifest.xml:36:9-36
 53        android:allowBackup="true"
 53-->D:\DarkDEV\PIXELMINT\pixel mint - sol\android-twa\app\src\main\AndroidManifest.xml:37:9-35
 54        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
@@ -132,7 +132,7 @@
 86        <activity
 86-->D:\DarkDEV\PIXELMINT\pixel mint - sol\android-twa\app\src\main\AndroidManifest.xml:79:9-160:20
 87            android:name="com.onchainerslab.pixelmint.LauncherActivity"
-87-->D:\DarkDEV\PIXELMINT\pixel mint - sol\android-twa\app\src\main\AndroidManifest.xml:79:19-50
+87-->D:\DarkDEV\PIXELMINT\pixel mint - sol\android-twa\app\src\main\AndroidManifest.xml:79:19-51
 88            android:alwaysRetainTaskState="true"
 88-->D:\DarkDEV\PIXELMINT\pixel mint - sol\android-twa\app\src\main\AndroidManifest.xml:80:13-49
 89            android:exported="true"
@@ -171,14 +171,14 @@
 105-->D:\DarkDEV\PIXELMINT\pixel mint - sol\android-twa\app\src\main\AndroidManifest.xml:102:17-62
 106            <meta-data
 106-->D:\DarkDEV\PIXELMINT\pixel mint - sol\android-twa\app\src\main\AndroidManifest.xml:104:13-106:68
-107                android:name="androix.browser.trusted.NAVIGATION_BAR_DIVIDER_COLOR"
-107-->D:\DarkDEV\PIXELMINT\pixel mint - sol\android-twa\app\src\main\AndroidManifest.xml:105:17-84
+107                android:name="androidx.browser.trusted.NAVIGATION_BAR_DIVIDER_COLOR"
+107-->D:\DarkDEV\PIXELMINT\pixel mint - sol\android-twa\app\src\main\AndroidManifest.xml:105:17-85
 108                android:resource="@color/navigationDividerColor" />
 108-->D:\DarkDEV\PIXELMINT\pixel mint - sol\android-twa\app\src\main\AndroidManifest.xml:106:17-65
 109            <meta-data
 109-->D:\DarkDEV\PIXELMINT\pixel mint - sol\android-twa\app\src\main\AndroidManifest.xml:108:13-110:72
-110                android:name="androix.browser.trusted.NAVIGATION_BAR_DIVIDER_COLOR_DARK"
-110-->D:\DarkDEV\PIXELMINT\pixel mint - sol\android-twa\app\src\main\AndroidManifest.xml:109:17-89
+110                android:name="androidx.browser.trusted.NAVIGATION_BAR_DIVIDER_COLOR_DARK"
+110-->D:\DarkDEV\PIXELMINT\pixel mint - sol\android-twa\app\src\main\AndroidManifest.xml:109:17-90
 111                android:resource="@color/navigationDividerColorDark" />
 111-->D:\DarkDEV\PIXELMINT\pixel mint - sol\android-twa\app\src\main\AndroidManifest.xml:110:17-69
 112            <meta-data
