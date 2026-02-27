@@ -23,35 +23,40 @@ function getNetwork(): WalletAdapterNetwork {
   return WalletAdapterNetwork.Mainnet;
 }
 
+function isMobileUA() {
+  if (typeof navigator === "undefined") return false;
+  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+}
+
 export function AppProviders({ children }: { children: React.ReactNode }) {
   const network = getNetwork();
 
-  // ✅ Use custom RPC if provided, otherwise Solana public cluster URL
   const endpoint = useMemo(() => {
     const custom = import.meta.env.VITE_SOLANA_RPC_URL?.trim();
     return custom || clusterApiUrl(network);
   }, [network]);
 
-  /**
-   * ✅ CRITICAL FOR SEEKER:
-   * Never conditionally change the wallets array based on user agent.
-   * Keep the wallets list stable across renders so MWA authorization works.
-   */
   const wallets = useMemo(() => {
     const appIdentity = {
-      name: "PixelMint",
-      uri: "https://pixel-mint-sol.vercel.app/",
-      icon: "https://pixel-mint-sol.vercel.app/icons/icon-192.png",
+      name: import.meta.env.VITE_APP_NAME || "Pixel Mint",
+      uri: import.meta.env.VITE_APP_URL || window.location.origin,
+      icon: import.meta.env.VITE_APP_ICON || "/icons/icon-192.png",
     };
 
+    const mobile = new SolanaMobileWalletAdapter({
+      addressSelector: createDefaultAddressSelector(),
+      appIdentity,
+      authorizationResultCache: createDefaultAuthorizationResultCache(),
+      cluster: network,
+      onWalletNotFound: createDefaultWalletNotFoundHandler(),
+    });
+
+    // ✅ Mobile (Seeker): show ONLY MWA/Seed Vault (smooth)
+    if (isMobileUA()) return [mobile];
+
+    // ✅ Desktop: show Phantom + Solflare
     return [
-      new SolanaMobileWalletAdapter({
-        addressSelector: createDefaultAddressSelector(),
-        authorizationResultCache: createDefaultAuthorizationResultCache(),
-        appIdentity,
-        cluster: network,
-        onWalletNotFound: createDefaultWalletNotFoundHandler(),
-      }),
+      mobile,
       new PhantomWalletAdapter(),
       new SolflareWalletAdapter({ network }),
     ];
@@ -60,7 +65,9 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
   return (
     <ConnectionProvider endpoint={endpoint}>
       <WalletProvider wallets={wallets} autoConnect>
-        <WalletModalProvider>{children}</WalletModalProvider>
+        <WalletModalProvider>
+          {children}
+        </WalletModalProvider>
       </WalletProvider>
     </ConnectionProvider>
   );
