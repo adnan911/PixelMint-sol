@@ -1,13 +1,12 @@
-import { WalletMultiButton, useWalletModal } from "@solana/wallet-adapter-react-ui";
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Wallet, Shield } from "lucide-react";
+import { Wallet } from "lucide-react";
 import { useState } from "react";
 
 export function WalletBar() {
   const { connected } = useWallet();
-  const { setVisible } = useWalletModal();
   const [open, setOpen] = useState(false);
 
   if (connected) {
@@ -41,18 +40,12 @@ export function WalletBar() {
               Use <span className="font-bold text-primary">Seed Vault</span> on Solana Seeker for the best experience.
             </p>
 
-            <Button
-              onClick={() => {
-                setOpen(false);
-                setVisible(true);
-              }}
-              className="w-full font-retro pixel-button bg-primary text-primary-foreground hover:bg-primary/90"
-            >
-              Select Wallet
-            </Button>
+            <div className="wallet-adapter-button-override">
+              <WalletMultiButton />
+            </div>
 
             <p className="text-xs text-muted-foreground text-center flex items-center gap-2">
-              <Shield className="h-3 w-3" />
+              <ShieldIcon className="h-3 w-3" />
               We never access your private keys.
             </p>
           </div>
@@ -62,3 +55,21 @@ export function WalletBar() {
   );
 }
 
+function ShieldIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
+    </svg>
+  );
+}
