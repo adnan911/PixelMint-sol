@@ -31,7 +31,13 @@ export const StampSelector: React.FC<StampSelectorProps> = ({
             </div>
 
             <div className="flex-1 overflow-y-auto p-3 space-y-4 custom-scrollbar">
-                {Object.entries(categories).map(([category, stamps]) => (
+                {Object.entries(categories)
+                    .sort(([a], [b]) => {
+                        if (a === "Solana") return -1;
+                        if (b === "Solana") return 1;
+                        return 0;
+                    })
+                    .map(([category, stamps]) => (
                     <div key={category}>
                         <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 px-1">
                             {category}
