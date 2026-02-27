@@ -1,4 +1,4 @@
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import { WalletMultiButton, useWalletModal } from "@solana/wallet-adapter-react-ui";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -7,7 +7,16 @@ import { useState } from "react";
 
 export function WalletBar() {
   const { connected } = useWallet();
+  const { setVisible } = useWalletModal();
   const [open, setOpen] = useState(false);
+
+  const handleSelectWallet = () => {
+    setOpen(false);
+    // Give a small delay for the dialog to close before opening the wallet selector
+    setTimeout(() => {
+      setVisible(true);
+    }, 100);
+  };
 
   if (connected) {
     return (
@@ -40,9 +49,12 @@ export function WalletBar() {
               Use <span className="font-bold text-primary">Seed Vault</span> on Solana Seeker for the best experience.
             </p>
 
-            <div className="wallet-adapter-button-override">
-              <WalletMultiButton />
-            </div>
+            <Button
+              onClick={handleSelectWallet}
+              className="w-full font-retro pixel-button bg-primary text-primary-foreground hover:bg-primary/90"
+            >
+              Select Wallet
+            </Button>
 
             <p className="text-xs text-muted-foreground text-center flex items-center gap-2">
               <ShieldIcon className="h-3 w-3" />

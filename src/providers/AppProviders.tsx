@@ -23,10 +23,6 @@ function getNetwork(): WalletAdapterNetwork {
   return WalletAdapterNetwork.Mainnet;
 }
 
-function isMobileUA() {
-  if (typeof navigator === "undefined") return false;
-  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-}
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
   const network = getNetwork();
@@ -51,10 +47,6 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
       onWalletNotFound: createDefaultWalletNotFoundHandler(),
     });
 
-    // ✅ Mobile (Seeker): show ONLY MWA/Seed Vault (smooth)
-    if (isMobileUA()) return [mobile];
-
-    // ✅ Desktop: show Phantom + Solflare
     return [
       mobile,
       new PhantomWalletAdapter(),
