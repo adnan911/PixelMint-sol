@@ -38,20 +38,13 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
    * Keep the wallets list stable across renders so MWA authorization works.
    */
   const wallets = useMemo(() => {
-    const origin =
-      typeof window !== "undefined" ? window.location.origin : "";
-
     const appIdentity = {
-      name: import.meta.env.VITE_APP_NAME || "PixelMint",
-      uri: import.meta.env.VITE_APP_URL || origin || "https://pixel-mint-sol.vercel.app/",
-      // ✅ Use absolute URL to avoid silent failures in TWA/Seeker
-      icon:
-        import.meta.env.VITE_APP_ICON ||
-        `${origin}/icons/icon-192.png`,
+      name: "PixelMint",
+      uri: "https://pixel-mint-sol.vercel.app/",
+      icon: "https://pixel-mint-sol.vercel.app/icons/icon-192.png",
     };
 
     return [
-      // ✅ Solana Seeker / Seed Vault (MWA)
       new SolanaMobileWalletAdapter({
         addressSelector: createDefaultAddressSelector(),
         authorizationResultCache: createDefaultAuthorizationResultCache(),
@@ -59,8 +52,6 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
         cluster: network,
         onWalletNotFound: createDefaultWalletNotFoundHandler(),
       }),
-
-      // ✅ Desktop wallets (Seeker will ignore these automatically)
       new PhantomWalletAdapter(),
       new SolflareWalletAdapter({ network }),
     ];
