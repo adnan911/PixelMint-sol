@@ -1,43 +1,35 @@
 import { WalletMultiButton, useWalletModal } from "@solana/wallet-adapter-react-ui";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { SolanaMobileWalletAdapterWalletName } from "@solana-mobile/wallet-standard-mobile";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Wallet } from "lucide-react";
 import { useState } from "react";
 
 export function WalletBar() {
-  const { connected, wallet, wallets, select, connect } = useWallet();
-  const { setVisible } = useWalletModal();
+  const { connected, connect, wallet, wallets, select } = useWallet();
+  const { setVisible: showWalletSelectionModal } = useWalletModal();
   const [open, setOpen] = useState(false);
 
-  // MWA's display name as per guidelines
-  const MWA_NAME = "Solana Mobile Wallet Adapter";
-
+  // MWA Connect Button pattern (from official guide)
   const handleConnectClick = async () => {
-    try {
-      // 1. Close our custom dialog first to ensure clean focus
-      setOpen(false);
+    // Close our custom dialog first
+    setOpen(false);
 
-      // 2. Identify MWA among available wallets
-      const mwaWallet = wallets.find(w => w.adapter.name === MWA_NAME);
+    // Find MWA in wallets list
+    const mwaWallet = wallets.find(
+      (w) => w.adapter.name === SolanaMobileWalletAdapterWalletName
+    );
 
-      if (wallet?.adapter?.name === MWA_NAME) {
-        // If MWA is already selected, connect directly (Guideline #1)
-        console.log("MWA selected, connecting directly...");
-        await connect();
-      } else if (mwaWallet) {
-        // If MWA is available but not selected, select it (Guideline #2)
-        console.log("MWA available, selecting it...");
-        select(mwaWallet.adapter.name as any);
-        // Note: WalletProvider will trigger a re-render. 
-        // We could also call connect() here after a small delay, 
-        // but select() usually triggers the first intent.
-      } else {
-        // Else (Desktop), show the standard modal
-        setVisible(true);
-      }
-    } catch (err) {
-      console.error("Connection failed:", err);
+    if (wallet?.adapter?.name === SolanaMobileWalletAdapterWalletName) {
+      // If MWA is already selected, immediately connect.
+      await connect();
+    } else if (mwaWallet) {
+      // If MWA is not selected, but available, select it.
+      select(SolanaMobileWalletAdapterWalletName);
+    } else {
+      // Else (desktop), show modal as usual.
+      showWalletSelectionModal(true);
     }
   };
 
@@ -51,7 +43,7 @@ export function WalletBar() {
 
   return (
     <>
-      <Button 
+      <Button
         onClick={() => setOpen(true)}
         className="font-retro pixel-button bg-primary text-primary-foreground hover:bg-primary/90"
       >
@@ -66,10 +58,12 @@ export function WalletBar() {
               Connect Wallet
             </DialogTitle>
           </DialogHeader>
-          
+
           <div className="flex flex-col items-center space-y-6 py-4">
             <p className="text-center text-foreground leading-relaxed">
-              Use <span className="font-bold text-primary">Seed Vault</span> on Solana Seeker for the best experience.
+              Use{" "}
+              <span className="font-bold text-primary">Seed Vault</span> on
+              Solana Seeker for the best experience.
             </p>
 
             <Button

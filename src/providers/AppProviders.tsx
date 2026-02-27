@@ -4,13 +4,6 @@ import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 import { clusterApiUrl } from "@solana/web3.js";
 
-import {
-  SolanaMobileWalletAdapter,
-  createDefaultAddressSelector,
-  createDefaultAuthorizationResultCache,
-  createDefaultWalletNotFoundHandler,
-} from "@solana-mobile/wallet-adapter-mobile";
-
 import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
 import { SolflareWalletAdapter } from "@solana/wallet-adapter-solflare";
 
@@ -23,11 +16,6 @@ function getNetwork(): WalletAdapterNetwork {
   return WalletAdapterNetwork.Mainnet;
 }
 
-function isMobileUA() {
-  if (typeof navigator === "undefined") return false;
-  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-}
-
 export function AppProviders({ children }: { children: React.ReactNode }) {
   const network = getNetwork();
 
@@ -36,35 +24,16 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
     return custom || clusterApiUrl(network);
   }, [network]);
 
-  const wallets = useMemo(() => {
-    const appIdentity = {
-      name: import.meta.env.VITE_APP_NAME || "Pixel Mint",
-      uri: import.meta.env.VITE_APP_URL || window.location.origin,
-      icon: import.meta.env.VITE_APP_ICON || "/icons/icon-192.png",
-    };
-
-    const mobile = new SolanaMobileWalletAdapter({
-      addressSelector: createDefaultAddressSelector(),
-      appIdentity,
-      authorizationResultCache: createDefaultAuthorizationResultCache(),
-      cluster: network,
-      onWalletNotFound: createDefaultWalletNotFoundHandler(),
-    });
-
-    // ✅ Mobile (Seeker): show ONLY MWA/Seed Vault (smooth)
-    if (isMobileUA()) return [mobile];
-
-    // ✅ Desktop: show Phantom + Solflare
-    return [
-      mobile,
-      new PhantomWalletAdapter(),
-      new SolflareWalletAdapter({ network }),
-    ];
-  }, [network]);
+  // MWA is registered via registerMwa() in main.tsx (Wallet Standard).
+  // Only desktop wallets need to be listed here.
+  const wallets = useMemo(() => [
+    new PhantomWalletAdapter(),
+    new SolflareWalletAdapter({ network }),
+  ], [network]);
 
   return (
     <ConnectionProvider endpoint={endpoint}>
-      <WalletProvider wallets={wallets} autoConnect={!isMobileUA()}>
+      <WalletProvider wallets={wallets} autoConnect>
         <WalletModalProvider>
           {children}
         </WalletModalProvider>

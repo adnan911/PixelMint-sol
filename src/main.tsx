@@ -6,6 +6,25 @@ import { AppWrapper } from "./components/common/PageMeta.tsx";
 import { AppProviders } from "./providers/AppProviders.tsx";
 import { ErrorBoundary } from "./components/common/ErrorBoundary.tsx";
 
+import {
+  createDefaultAuthorizationCache,
+  createDefaultChainSelector,
+  createDefaultWalletNotFoundHandler,
+  registerMwa,
+} from "@solana-mobile/wallet-standard-mobile";
+
+// Register MWA via Wallet Standard (must be called before React renders)
+registerMwa({
+  appIdentity: {
+    name: "Pixel Mint",
+    uri: "https://pixel-mint-sol.vercel.app",
+    icon: "icons/icon-192.png",
+  },
+  authorizationCache: createDefaultAuthorizationCache(),
+  chains: ["solana:devnet", "solana:mainnet"],
+  chainSelector: createDefaultChainSelector(),
+  onWalletNotFound: createDefaultWalletNotFoundHandler(),
+});
 // Global error handler to suppress Chrome extension errors
 // This prevents extension conflicts from breaking the application
 window.addEventListener('error', (event) => {
