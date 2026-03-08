@@ -1,12 +1,14 @@
 {
   "name": "pixel-mint",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "author": "adnan",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "lint": "tsc --noEmit -p tsconfig.check.json; npx biome lint; .rules/check.sh;npx tailwindcss -i ./src/index.css -o /dev/null 2>&1 | grep -E '^(CssSyntaxError|Error):.*' || true;.rules/testBuild.sh"
+    "lint": "tsc --noEmit -p tsconfig.check.json; npx biome lint; .rules/check.sh;npx tailwindcss -i ./src/index.css -o /dev/null 2>&1 | grep -E '^(CssSyntaxError|Error):.*' || true;.rules/testBuild.sh",
+    "android:sync": "cd android-twa && bubblewrap update",
+    "android:build": "cd android-twa && bubblewrap build"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

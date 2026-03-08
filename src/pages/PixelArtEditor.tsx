@@ -214,7 +214,7 @@ export default function PixelArtEditor() {
   const [layersOpen, setLayersOpen] = useState(false);
   const [canvasSizeOpen, setCanvasSizeOpen] = useState(false);
   const [exportPreviewOpen, setExportPreviewOpen] = useState(false);
-  const [confirmMintOpen, setConfirmMintOpen] = useState(false);
+  // const [confirmMintOpen, setConfirmMintOpen] = useState(false);
   const [mintSuccessOpen, setMintSuccessOpen] = useState(false);
   const [mintFailOpen, setMintFailOpen] = useState(false);
   const [exportPreviewUrl, setExportPreviewUrl] = useState<string | null>(null);
@@ -776,12 +776,8 @@ export default function PixelArtEditor() {
       });
       return;
     }
-    setConfirmMintOpen(true);
-  };
 
-  const executeMint = async () => {
-    setConfirmMintOpen(false); // Close confirm dialog
-    if (!wallet.publicKey || !canvasRef.current) return;
+    if (!canvasRef.current) return;
 
     try {
       setMinting(true);
@@ -829,6 +825,8 @@ export default function PixelArtEditor() {
       setMinting(false);
     }
   };
+
+  // Removed executeMint - logic merged into handleMint
 
 
   const handleThemeChange = (theme: string) => {
@@ -1398,43 +1396,7 @@ export default function PixelArtEditor() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      {/* Confirm Mint Dialog */}
-      <Dialog open={confirmMintOpen} onOpenChange={setConfirmMintOpen}>
-        <DialogContent className="max-w-sm pixel-card border-4 border-border font-retro">
-          <DialogHeader>
-            <DialogTitle className="font-pixel text-primary text-xl">Confirm Mint</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="bg-muted/30 p-4 rounded border-2 border-border space-y-2">
-              <div className="flex justify-between">
-                <span>PixelMint fee:</span>
-                <span className="font-bold">0.0015 SOL</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Protocol fee:</span>
-                <span className="font-bold">0.0015 SOL</span>
-              </div>
-              <div className="flex justify-between text-muted-foreground">
-                <span>+ network fees</span>
-                <span>(varies)</span>
-              </div>
-            </div>
-            
-            <p className="text-xs text-muted-foreground text-center">
-              Not financial advice.
-            </p>
-          </div>
-          <DialogFooter className="flex-col sm:flex-col gap-2">
-            <div className="text-xs text-destructive text-center mb-2 font-bold">
-              Minting is permanent and cannot be reversed.
-            </div>
-            <div className="flex gap-2 w-full">
-              <Button variant="outline" onClick={() => setConfirmMintOpen(false)} className="flex-1 pixel-button font-retro">Cancel</Button>
-              <Button onClick={executeMint} className="flex-1 pixel-button font-retro bg-primary text-white">Confirm</Button>
-            </div>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* Confirm Mint Dialog removed */}
 
       {/* Mint Success Dialog */}
       <Dialog open={mintSuccessOpen} onOpenChange={setMintSuccessOpen}>

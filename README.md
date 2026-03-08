@@ -24,6 +24,7 @@
 ## ✨ Features
 
 ### 🎨 Drawing Tools
+
 - **Pencil** - Draw individual pixels with adjustable size (1x1 to 5x5)
 - **Eraser** - Remove pixels with variable brush size
 - **Fill Bucket** - Flood fill or global fill options
@@ -33,18 +34,21 @@
 - **Eyedropper** - Pick colors directly from the canvas
 
 ### 🔤 Text Tool
+
 - Interactive on-canvas text editing
 - Multiple pixel-art fonts (Jersey 10, Pixelify Sans, VT323, Press Start 2P, and more)
 - Resizable text with real-time preview
 - Drag-to-position functionality
 
 ### 🎭 Brush Modes
+
 - **Normal** - Standard drawing
 - **Rainbow** - Color shifts as you draw
 - **Random** - Random colors from palette
 - **Dither** - Bayer matrix dithering patterns (2x2, 4x4, 8x8)
 
 ### 📐 Canvas Features
+
 - Configurable canvas sizes: 16×16, 64×64, 128×128, 256×256
 - Toggle grid overlay
 - Ruler overlay for precise positioning
@@ -52,25 +56,30 @@
 - Transparent background support
 
 ### 📦 Layer System
+
 - Multiple layers support
 - Layer visibility toggle
 - Layer opacity control
 - Layer reordering
 
 ### 🎨 Color Management
+
 - Full color picker with hex input
 - Quick palette slots
 - Multiple built-in palettes
 
 ### ↩️ History
+
 - Unlimited undo/redo
 - Keyboard shortcuts support
 
 ### 💾 Export
+
 - Export to PNG with transparency
 - Preview before download
 
 ### 🎭 Themes
+
 - **Coffee** - Warm brown tones
 - **Based** - Classic retro style (default)
 - **Candy** - Vibrant pink and purple
@@ -87,6 +96,7 @@ Visit the live demo: [Coming Soon]
 ## 📦 Installation
 
 ### Prerequisites
+
 - Node.js ≥ 20
 - npm ≥ 10
 
@@ -114,6 +124,18 @@ The app will be available at `http://localhost:5173`
 npm run build
 ```
 
+### 📱 Android Build (APK/Bundle)
+
+This project uses **Trusted Web Activity (TWA)** via **Bubblewrap**.
+
+```bash
+# 1. Update Android project with manifest changes
+npm run android:sync
+
+# 2. Build the APK/Bundle
+npm run android:build
+```
+
 ---
 
 ## 🎮 Usage
@@ -128,18 +150,18 @@ npm run build
 
 ## ⌨️ Keyboard Shortcuts
 
-| Action | Shortcut |
-|--------|----------|
-| Pencil | `P` |
-| Eraser | `E` |
-| Fill | `F` |
-| Eyedropper | `I` |
-| Line | `L` |
-| Rectangle | `R` |
-| Circle | `C` |
-| Text | `T` |
-| Undo | `Ctrl + Z` |
-| Redo | `Ctrl + Y` |
+| Action     | Shortcut   |
+| ---------- | ---------- |
+| Pencil     | `P`        |
+| Eraser     | `E`        |
+| Fill       | `F`        |
+| Eyedropper | `I`        |
+| Line       | `L`        |
+| Rectangle  | `R`        |
+| Circle     | `C`        |
+| Text       | `T`        |
+| Undo       | `Ctrl + Z` |
+| Redo       | `Ctrl + Y` |
 
 ---
 
@@ -147,12 +169,12 @@ npm run build
 
 Pixel Mint comes with 4 beautiful themes:
 
-| Theme | Description |
-|-------|-------------|
-| **Based** | Classic retro pixel art style (Default) |
-| **Coffee** | Warm, cozy brown tones |
-| **Candy** | Vibrant pink and purple palette |
-| **Dark** | Dark mode for low-light environments |
+| Theme      | Description                             |
+| ---------- | --------------------------------------- |
+| **Based**  | Classic retro pixel art style (Default) |
+| **Coffee** | Warm, cozy brown tones                  |
+| **Candy**  | Vibrant pink and purple palette         |
+| **Dark**   | Dark mode for low-light environments    |
 
 Toggle themes using the theme button on the welcome page.
 
